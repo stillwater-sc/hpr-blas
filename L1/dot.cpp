@@ -4,7 +4,6 @@
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
-#include "stdafx.h"
 #include <ratio>
 #include <chrono>
 #include <iostream>
@@ -14,7 +13,7 @@
 #include <hprblas>
 
 using namespace std;
-using namespace sw::blas;
+using namespace sw::hprblas;
 
 int main(int argc, char** argv)
 try {
@@ -32,7 +31,7 @@ try {
 
 	randomVectorFillAroundOneEPS(vecSize, x);  //	sampleVector("x", x);
 	randomVectorFillAroundOneEPS(vecSize, y);  // 	sampleVector("y", y);
-	fresult = sw::blas::dot<float>(vecSize, x, 1, y, 1);
+	fresult = sw::hprblas::dot<float>(vecSize, x, 1, y, 1);
 	cout << "DOT product is " << setprecision(20) << fresult << endl;
 
 	using Posit = sw::unum::posit<nbits, es>;
@@ -42,7 +41,7 @@ try {
 	randomVectorFillAroundOneEPS(vecSize, py);  // 	sampleVector("py", py);
 
 	steady_clock::time_point t1 = steady_clock::now();
-	presult = sw::blas::dot<Posit>(vecSize, px, 1, py, 1);
+	presult = sw::hprblas::dot<Posit>(vecSize, px, 1, py, 1);
 	steady_clock::time_point t2 = steady_clock::now();
 	double ops = vecSize * 2.0; // dot product is vecSize products and vecSize adds
 	cout << "DOT product is " << setprecision(20) << presult << endl;

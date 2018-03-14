@@ -41,6 +41,9 @@ find_package(UNUM REQUIRED)
 include_directories(${UNUM_INCLUDE_DIRS})
 message(STATUS "UNUM INCLUDE DIR " ${UNUM_INCLUDE_DIRS})
 
+# Set hpr-blas include directory
+include_directories("./blas")
+
 # Possibly not under Windows
 add_compile_options ( -std=c++11 )
 
@@ -55,7 +58,7 @@ macro (compile_all testing prefix)
         # message(STATUS "Add test ${test_name} from source ${new_source}.")
         add_executable (${test_name} ${new_source})
         if (${testing} STREQUAL "true")
-            if (UNIVERSAL_CMAKE_TRACE)
+	    if (HPR_BLAS_CMAKE_TRACE)
                 message(STATUS "testing: ${test_name} ${RUNTIME_OUTPUT_DIRECTORY}/${test_name}")
             endif()
             add_test(${test_name} ${RUNTIME_OUTPUT_DIRECTORY}/${test_name})

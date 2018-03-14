@@ -4,9 +4,6 @@
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
-// enable the mathematical constants in cmath: old-style preprocessor magic which isn't best practice anymore
-#include "stdafx.h"
-
 #include <vector>
 #include <hprblas>
 #include "math_functions.hpp"

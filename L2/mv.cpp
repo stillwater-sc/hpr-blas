@@ -3,9 +3,6 @@
 // Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
-
-#include "stdafx.h"
-
 #include <vector>
 #include <hprblas>
 
@@ -68,14 +65,14 @@ try {
 
 	randomVectorFillAroundOneEPS(vecSize, x);  //	sampleVector("x", x);
 	randomVectorFillAroundOneEPS(vecSize, y);  // 	sampleVector("y", y);
-	result = sw::blas::dot(vecSize, x, 1, y, 1);
+	result = sw::hprblas::dot(vecSize, x, 1, y, 1);
 	cout << "DOT product is " << setprecision(20) << result << endl;
 
 	using Posit = sw::unum::posit<nbits, es>;
 	vector<Posit> px(vecSize), py(vecSize);
 	randomVectorFillAroundOneEPS(vecSize, px);  //	sampleVector("px", px);
 	randomVectorFillAroundOneEPS(vecSize, py);  // 	sampleVector("py", py);
-	result = (double)sw::blas::dot(vecSize, px, 1, py, 1);
+	result = (double)sw::hprblas::dot(vecSize, px, 1, py, 1);
 	cout << "DOT product is " << setprecision(20) << result << endl;
 	sampleVector("px", px);  // <-- currently shows bad conversions....
 

@@ -4,14 +4,12 @@
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
-#include "stdafx.h"
-
 #include <vector>
 #include <hprblas>
 
 using namespace std;
 using namespace sw::unum;
-using namespace sw::blas;
+using namespace sw::hprblas;
 
 int main(int argc, char** argv)
 try {
