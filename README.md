@@ -21,4 +21,21 @@ Posits allow custom tailoring of accuracy and dynamic range to the demands of th
 This is particularly important for Deep Learning applications where each layer in the network has unique requirements for accuracy and dynamic range. 
 Furthermore, posits have a higher informational density than IEEE floats providing additional savings on memory and communication bandwidth and storage.
 
+# How to build
+
+The HPR-BLAS library is a pure template library so no library build step is required. However, HPR-BLAS has two dependencies
+1- MTL
+    Matrix Template Library, a high-performance, high-productivity, scalable, parallel linear algebra library for multi-core, multi-GPU, multi-KPU, and distributed memory machines.
+2- Universal
+    Universal Library contains different universal number representations and implementations. HPR-BLAS uses the posit/valid number systems.
+
+To build the programs in the HPR-BLAS library, install the latest version of [CMake](https://cmake.org/download), and [MTL](https://simunova.com). 
+Next step is to clone the Universal library:
+```
+git clone https://github.com/stillwater-sc/universal
+```
+
+Either set environment variables MTL_DIR and UNUM_DIR to point to the root directories where you installed MTL and the Universal library, or use the CMake tool and set these variables in the CMake user interface.
+![CMake Environment Variables][cmake_img]
+[cmake_img]: images/cmake-configuration.png
 
