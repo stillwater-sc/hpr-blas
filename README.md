@@ -37,5 +37,5 @@ git clone https://github.com/stillwater-sc/universal
 
 Either set environment variables MTL_DIR and UNUM_DIR to point to the root directories where you installed MTL and the Universal library, or use the CMake tool and set these variables in the CMake user interface.
 
-![CMake Configuration](hpr-blas/images/cmake-configuration.png)
+![CMake Configuration](images/cmake-configuration.png)
 
