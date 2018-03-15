@@ -33,8 +33,9 @@ The HPR-BLAS library is a pure template library so no library build step is requ
 
 To build the programs in the HPR-BLAS library, we are using CMake, so please install the latest version of [CMake](https://cmake.org/download).
 
+Install [Boost](http://www.boost.org).
 
-Clone the [MTL library](https://simunova.com). 
+Clone the [MTL library](http://simunova.com). 
 ```
 svn checkout https://svn.simunova.com/svn/mtl4/trunk mtl4
 ```
@@ -44,7 +45,7 @@ Next step is to clone the Universal library:
 git clone https://github.com/stillwater-sc/universal
 ```
 
-Either set environment variables MTL_DIR and UNUM_DIR to point to the root directories where you installed MTL and the Universal library, or use the CMake tool and set these variables in the CMake user interface.
+Either set environment variables MTL_DIR and UNUM_DIR to point to the root directories where you installed MTL and the Universal library, or use the CMake tool and set these variables in the CMake user interface. Below shows a successful cmake configuration.
 
 ![CMake Configuration](images/cmake-configuration.png)
 
