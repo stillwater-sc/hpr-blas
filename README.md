@@ -24,12 +24,21 @@ Furthermore, posits have a higher informational density than IEEE floats providi
 # How to build
 
 The HPR-BLAS library is a pure template library so no library build step is required. However, HPR-BLAS has two dependencies
-1- MTL
+1. [Boost](http://www.boost.org)
+    Boost provides free peer-reviewed portable C++ source libraries that work well with the C++ Standard Library.
+2. [MTL](http://simunova.com)
     Matrix Template Library, a high-performance, high-productivity, scalable, parallel linear algebra library for multi-core, multi-GPU, multi-KPU, and distributed memory machines.
-2- Universal
+3. [Universal](https://github.com/stillwater-sc/universal)
     Universal Library contains different universal number representations and implementations. HPR-BLAS uses the posit/valid number systems.
 
-To build the programs in the HPR-BLAS library, install the latest version of [CMake](https://cmake.org/download), and [MTL](https://simunova.com). 
+To build the programs in the HPR-BLAS library, we are using CMake, so please install the latest version of [CMake](https://cmake.org/download).
+
+
+Clone the [MTL library](https://simunova.com). 
+```
+svn checkout https://svn.simunova.com/svn/mtl4/trunk mtl4
+```
+
 Next step is to clone the Universal library:
 ```
 git clone https://github.com/stillwater-sc/universal
