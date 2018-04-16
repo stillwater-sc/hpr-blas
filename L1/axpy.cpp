@@ -35,8 +35,8 @@ void axpy_test(std::string tag, int vecSize, Element x_value, Element y_value)
 	double alpha = 0.1;
 	AXPY = alpha*X + Y;
 
-	cout << tag << endl;
-	cout << AXPY << endl;
+	std::cout << tag << std::endl;
+	std::cout << AXPY << std::endl;
 }
 
 
@@ -95,10 +95,10 @@ try {
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 catch (char const* msg) {
-	cerr << msg << endl;
+	std::cerr << msg << std::endl;
 	return EXIT_FAILURE;
 }
 catch (...) {
-	cerr << "Caught unknown exception" << endl;
+	std::cerr << "Caught unknown exception" << std::endl;
 	return EXIT_FAILURE;
 }

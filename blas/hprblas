@@ -9,6 +9,8 @@
 #include <posit>
 #include "blas.hpp"
 #include "blas_utils.hpp"
+#include "lu_decomposition.hpp"
+#include "cholesky.hpp"
 
 
 #endif
