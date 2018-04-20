@@ -66,7 +66,7 @@ macro (compile_all testing prefix)
     endforeach (source)
 endmacro (compile_all)
 
-
+add_subdirectory("fma")
 add_subdirectory("L1")
 add_subdirectory("L2")
 add_subdirectory("L3")
