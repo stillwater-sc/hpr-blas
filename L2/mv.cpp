@@ -1,4 +1,4 @@
-// _mv.cpp example program to demonstrate BLAS L2 Matrix-Vector product
+// mv.cpp example program to demonstrate BLAS L2 Matrix-Vector product
 //
 // Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
 //
