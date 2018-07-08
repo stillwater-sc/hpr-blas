@@ -8,6 +8,8 @@
 
 #include <posit>
 #include <boost/numeric/mtl/mtl.hpp>
+#include "vector_utils.hpp"
+#include "matrix_utils.hpp"
 #include "blas.hpp"
 #include "blas_utils.hpp"
 #include "lu_decomposition.hpp"

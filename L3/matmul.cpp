@@ -1,40 +1,10 @@
-// mm.cpp example program comparing float vs posit matrix multiply algorithms
+// matmul.cpp example program comparing float vs posit matrix multiply algorithms
 //
 // Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 #include "common.hpp"
 #include <hprblas>
-
-// fill a dense MTL matrix with random values between (0, 1)
-template <typename Ty>
-void rand(mtl::dense2D<Ty>& m)
-{
-	// Use random_device to generate a seed for Mersenne twister engine.
-	std::random_device rd{};
-	// Use Mersenne twister engine to generate pseudo-random numbers.
-	std::mt19937 engine{ rd() };
-	// "Filter" MT engine's output to generate pseudo-random double values,
-	// **uniformly distributed** on the closed interval [0, 1].
-	// (Note that the range is [inclusive, inclusive].)
-	std::uniform_real_distribution<double> dist{ 0.0, 1.0 };
-	// Pattern to generate pseudo-random number.
-	// double rnd_value = dist(engine);
-
-	// inserters add to the elements, so we need to set the value to 0 before we begin
-	m = 0.0f;
-	// Create inserter for matrix m
-	mtl::mat::inserter< mtl::dense2D<Ty> > ins(m);
-
-	// generate and insert random values in m
-	for (int i = 0; i < m.num_rows(); ++i) {
-		for (int j = 0; j < m.num_cols(); ++j) {
-			ins[i][j] << float(dist(engine));
-		}
-	}
-
-	// Destructor of ins sets final state of m
-}
 
 int main(int argc, char** argv)
 try {
@@ -61,7 +31,7 @@ try {
 
 	constexpr int dim = 50;
 	using namespace std::chrono;
-	for (int dim = 16; dim < 2049; dim *= 2) {
+	for (int dim = 16; dim < 1025; dim *= 2) {
 		cout << "Matrix dimensions are: " << dim << " x " << dim << endl;
 
 		steady_clock::time_point t1 = steady_clock::now();
