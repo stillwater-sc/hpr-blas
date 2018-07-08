@@ -36,73 +36,6 @@ void rand(mtl::dense2D<Ty>& m)
 	// Destructor of ins sets final state of m
 }
 
-template <typename Matrix>
-void fill_and_print(Matrix& A, char name)
-{
-	// Set values in traditional way
-	A = 1.2, 3.4,
-		5.6, 7.8;
-
-	// Just print them
-	std::cout << name << " is \n" << A << "\n";
-}
-
-int matrix_types(int, char**)
-{
-#if defined(MTL_WITH_VARIADIC_TEMPLATE) && defined(MTL_WITH_TEMPLATE_ALIAS)
-	using namespace mtl;
-
-	// Compressed matrix
-	matrix<float, compressed>                 A(2, 2);
-	fill_and_print(A, 'A');
-
-	// Banded matrix
-	matrix<float, sparse, banded>             B(2, 2);
-	fill_and_print(B, 'B');
-
-	// Matrix in the ELLPACK format 
-	matrix<double, ellpack>                   C(2, 2);
-	fill_and_print(C, 'C');
-
-	// Coordinate matrix
-	matrix<float, coordinate>                 D(2, 2);
-	fill_and_print(D, 'D');
-
-	// Morton-order matrix with the default mask
-	matrix<double, morton>                    E(2, 2);
-	fill_and_print(E, 'E');
-
-	// Matrix with a Morton mask is of course a Morton-order matrix
-	matrix<double, mask<shark_z_64_row_mask>> F(2, 2);
-	fill_and_print(F, 'F');
-#endif
-	return 0;
-}
-
-int morton_recursion()
-{
-	using namespace mtl; 
-	using namespace mtl::mat;
-
-	const unsigned n = 20;
-	dense2D<double>                            A(n, n), B(n, n);
-	morton_dense<double, doppled_64_row_mask>  C(n, n);
-
-	hessian_setup(A, 3.0); hessian_setup(B, 1.0);
-	hessian_setup(C, 2.0);
-
-	// Corresponds to A= B * B;
-	mult(B, B, A);
-
-	A = B * B;   // use BLAS
-	A = B * C;   // use recursion + tiling from MTL4
-
-	A += B * C;  // Increment A by the product of B and C
-	A -= B * C;  // Likewise with decrement
-
-	return 0;
-}
-
 int main(int argc, char** argv)
 try {
 	using namespace std;
@@ -126,30 +59,38 @@ try {
 	float min_fexp = std::numeric_limits<IEEEType>::min_exponent;
 	cout << "IEEE float: epsilon " << eps << " min exp " << min_fexp << " max exp " << max_fexp << endl;
 
-	constexpr int dim = 1000;
+	constexpr int dim = 50;
 	using namespace std::chrono;
-	steady_clock::time_point t1 = steady_clock::now();
-	mtl::dense2D<IEEEType> A(dim, dim), B(dim, dim), C(dim, dim);
-	steady_clock::time_point t2 = steady_clock::now();
-	duration<float> time_span = duration_cast< duration<float> >(t2 - t1);
-	float elapsed = time_span.count();
-	cout << "Construction took " << elapsed << " seconds.\n";
+	for (int dim = 16; dim < 2049; dim *= 2) {
+		cout << "Matrix dimensions are: " << dim << " x " << dim << endl;
 
-	t1 = steady_clock::now();
-	rand(A);
-	rand(B);
-	t2 = steady_clock::now();
-	time_span = duration_cast< duration<float> >(t2 - t1);
-	elapsed = time_span.count();
-	cout << "Random fill took " << elapsed << " seconds.\n";
+		steady_clock::time_point t1 = steady_clock::now();
+		mtl::dense2D<IEEEType> A(dim, dim), B(dim, dim), C(dim, dim);
+		steady_clock::time_point t2 = steady_clock::now();
+		duration<float> time_span = duration_cast< duration<float> >(t2 - t1);
+		float elapsed = time_span.count();
+		cout << "  Construction     " << elapsed << " seconds.\n";
 
-	t1 = steady_clock::now();
-	C = A * B;
-	t2 = steady_clock::now();
-	time_span = duration_cast<duration<float>> (t2 - t1);
-	elapsed = time_span.count();
-	float flops = dim*dim*dim / elapsed;
-	cout << "Performance: " << flops << "SP FLOPS\n";
+		t1 = steady_clock::now();
+		rand(A);
+		rand(B);
+		t2 = steady_clock::now();
+		time_span = duration_cast< duration<float> >(t2 - t1);
+		elapsed = time_span.count();
+		cout << "  Random fill      " << elapsed << " seconds.\n";
+
+		t1 = steady_clock::now();
+		int N = 10;
+		for (int i = 0; i < N; ++i) {
+			C = A * B;
+		}
+		t2 = steady_clock::now();
+		time_span = duration_cast<duration<float>> (t2 - t1);
+		elapsed = time_span.count();
+		cout << "  Matmul iteration " << elapsed << " seconds.\n";
+		float flops = float(N)*dim*dim*dim / elapsed * 1.0e-9;
+		cout << "  Performance:     " << flops << " GFLOPS Single Precision\n";
+	}
 
 	return EXIT_SUCCESS;
 }
