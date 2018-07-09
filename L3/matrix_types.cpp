@@ -17,8 +17,11 @@ void fill_and_print(Matrix& A, char name)
 	std::cout << name << " is \n" << A << "\n";
 }
 
-int matrix_types(int, char**)
-{
+int main(int argc, char** argv)
+try {
+	using namespace sw::unum;
+	using namespace sw::hprblas;
+
 #if defined(MTL_WITH_VARIADIC_TEMPLATE) && defined(MTL_WITH_TEMPLATE_ALIAS)
 	using namespace mtl;
 
@@ -46,17 +49,6 @@ int matrix_types(int, char**)
 	matrix<double, mask<shark_z_64_row_mask>> F(2, 2);
 	fill_and_print(F, 'F');
 #endif
-	return 0;
-}
-
-int main(int argc, char** argv)
-try {
-	using namespace std;
-	using namespace sw::unum;
-	using namespace sw::hprblas;
-	using namespace mtl;
-
-	matrix_types(argc, argv);
 
 	return EXIT_SUCCESS;
 }
