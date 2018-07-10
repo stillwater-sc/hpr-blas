@@ -42,7 +42,7 @@ include_directories(${UNUM_INCLUDE_DIRS})
 message(STATUS "UNUM INCLUDE DIR " ${UNUM_INCLUDE_DIRS})
 
 # Set hpr-blas include directory
-include_directories("./blas")
+include_directories("./include")
 
 # Possibly not under Windows
 add_compile_options ( -std=c++11 )
@@ -50,7 +50,7 @@ add_compile_options ( -std=c++11 )
 macro (compile_all testing prefix)
     # cycle through the sources
     # For the according directories, we assume that each cpp file is a separate test
-    # so, create a executable target and an associated test target
+    # and create a executable target and an associated test target for that file
     foreach (source ${ARGN})
         get_filename_component (test ${source} NAME_WE)
         string(REPLACE " " ";" new_source ${source})
@@ -70,3 +70,4 @@ add_subdirectory("fma")
 add_subdirectory("L1")
 add_subdirectory("L2")
 add_subdirectory("L3")
+add_subdirectory("tools/perfbench")
