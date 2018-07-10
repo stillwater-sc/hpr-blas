@@ -3,6 +3,9 @@
 // Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
+
+// warning C4996: 'std::copy::_Unchecked_iterators::_Deprecate': Call to 'std::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct.
+#pragma warning( disable : 4996)
 #include "common.hpp"
 #include <hprblas>
 
@@ -62,15 +65,15 @@ try {
 		mtl::dense2D<IEEEType> A(dim, dim), B(dim, dim);
 		morton_dense<double, doppled_64_row_mask>  C(dim, dim);
 		steady_clock::time_point t2 = steady_clock::now();
-		duration<float> time_span = duration_cast< duration<float> >(t2 - t1);
-		float elapsed = time_span.count();
+		duration<double> time_span = duration_cast< duration<double> >(t2 - t1);
+		double elapsed = time_span.count();
 		cout << "  Construction     " << elapsed << " seconds.\n";
 
 		t1 = steady_clock::now();
 		rand(A);
 		rand(B);
 		t2 = steady_clock::now();
-		time_span = duration_cast< duration<float> >(t2 - t1);
+		time_span = duration_cast< duration<double> >(t2 - t1);
 		elapsed = time_span.count();
 		cout << "  Random fill      " << elapsed << " seconds.\n";
 
@@ -80,10 +83,10 @@ try {
 			C = A * B;
 		}
 		t2 = steady_clock::now();
-		time_span = duration_cast<duration<float>> (t2 - t1);
+		time_span = duration_cast<duration<double>> (t2 - t1);
 		elapsed = time_span.count();
 		cout << "  Matmul iteration " << elapsed << " seconds.\n";
-		float flops = float(N)*dim*dim*dim / elapsed * 1.0e-9;
+		double flops = double(N)*dim*dim*dim / elapsed * 1.0e-9;
 		cout << "  Performance:     " << flops << " GFLOPS Single Precision\n";
 	}
 
