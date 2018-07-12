@@ -1,6 +1,7 @@
+# Hyper-BLAS: high-performance reproducible linear algebra
 project (hpr-blas)
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 
 option(HPR_BLAS_CMAKE_TRACE "Tracing CMake results, i.e. printing variable settings." OFF)
 option(HPR_BLAS_ENABLE_TESTS "Enable the build and run of tests." ON)
@@ -66,8 +67,6 @@ macro (compile_all testing prefix)
     endforeach (source)
 endmacro (compile_all)
 
-add_subdirectory("fma")
-add_subdirectory("L1")
-add_subdirectory("L2")
-add_subdirectory("L3")
 add_subdirectory("tools/benchmark")
+add_subdirectory("blas")
+add_subdirectory("applications")

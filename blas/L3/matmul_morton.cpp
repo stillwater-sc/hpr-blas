@@ -1,4 +1,4 @@
-// matmul.cpp example program comparing float vs posit matrix multiply algorithms
+// mm.cpp example program comparing float vs posit matrix multiply algorithms
 //
 // Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
 //
@@ -8,6 +8,31 @@
 #pragma warning( disable : 4996)
 #include "common.hpp"
 #include <hprblas>
+
+int morton_recursion()
+{
+	using namespace mtl; 
+	using namespace mtl::mat;
+
+	const unsigned n = 20;
+	dense2D<double>                            A(n, n), B(n, n);
+	morton_dense<double, doppled_64_row_mask>  C(n, n);
+
+	hessian_setup(A, 3.0); hessian_setup(B, 1.0);
+	hessian_setup(C, 2.0);
+
+	// Corresponds to A= B * B;
+	mult(B, B, A);
+
+	A = B * B;   // use BLAS
+	A = B * C;   // use recursion + tiling from MTL4
+
+	A += B * C;  // Increment A by the product of B and C
+	A -= B * C;  // Likewise with decrement
+
+	return 0;
+}
+
 
 int main(int argc, char** argv)
 try {
@@ -32,13 +57,13 @@ try {
 	float min_fexp = std::numeric_limits<IEEEType>::min_exponent;
 	cout << "IEEE float: epsilon " << eps << " min exp " << min_fexp << " max exp " << max_fexp << endl;
 
-	constexpr int dim = 50;
 	using namespace std::chrono;
 	for (int dim = 16; dim < 1025; dim *= 2) {
 		cout << "Matrix dimensions are: " << dim << " x " << dim << endl;
 
 		steady_clock::time_point t1 = steady_clock::now();
-		mtl::dense2D<IEEEType> A(dim, dim), B(dim, dim), C(dim, dim);
+		mtl::dense2D<IEEEType> A(dim, dim), B(dim, dim);
+		morton_dense<double, doppled_64_row_mask>  C(dim, dim);
 		steady_clock::time_point t2 = steady_clock::now();
 		duration<double> time_span = duration_cast< duration<double> >(t2 - t1);
 		double elapsed = time_span.count();
@@ -69,6 +94,10 @@ try {
 }
 catch (char const* msg) {
 	std::cerr << msg << std::endl;
+	return EXIT_FAILURE;
+}
+catch (std::runtime_error& err) {
+	std::cerr << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
 catch (...) {
