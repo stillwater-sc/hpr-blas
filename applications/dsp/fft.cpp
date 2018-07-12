@@ -1,13 +1,10 @@
-// fir_filter.cpp example program showing a FIR filter using error-free custom posit configurations
+// fft.cpp example program showing a fast fourier transform using error-free custom posit configurations
 //
-// Copyright (C) 2017 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
 //
-// This file is part of the universal numbers project, which is released under an MIT Open Source license.
+// This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
 #include "common.hpp"
-
-using namespace std;
-using namespace sw::unum;
 
 /*
 
@@ -29,10 +26,13 @@ log_e(10)		M_LN10		2.30258509299404568402
 
 */
 
-const double pi = 3.14159265358979323846;  // best practice for C++
+constexpr double pi = 3.14159265358979323846;  // best practice for C++
 
 int main(int argc, char** argv)
 try {
+	using namespace std;
+	using namespace sw::unum;
+
 	const size_t nbits = 16;
 	const size_t es = 1;
 	const size_t vecSize = 32;
@@ -47,13 +47,6 @@ try {
 		weights[i] = 0.5f;
 	}
 
-	// dot product
-	posit<nbits, es> fir;
-	fir = 0.0f;
-	for (int i = 0; i < vecSize; i++) {
-		fir += sinusoid[i] * weights[i];
-	}
-	cout << "Value is " << fir << endl;
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
