@@ -56,6 +56,10 @@ catch (char const* msg) {
 	std::cerr << msg << std::endl;
 	return EXIT_FAILURE;
 }
+catch (std::runtime_error& err) {
+	std::cerr << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
 catch (...) {
 	std::cerr << "Caught unknown exception" << std::endl;
 	return EXIT_FAILURE;

@@ -1,4 +1,4 @@
-// fma.cpp: example program contrasting fused multiply-accumulate functionality between IEEE and POSIT
+// fam.cpp: example program contrasting fused accumulate-multiply functionality between IEEE and POSIT
 //
 // Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
 //
@@ -10,25 +10,25 @@
  // generate specific test case that you can trace with the trace conditions in posit.h
  // for most bugs they are traceable with _trace_conversion and _trace_sub
 template<size_t nbits, size_t es, typename Ty>
-void GenerateFMATestCase(Ty a, Ty b, Ty c) {
-	Ty with_fma, without_fma;
-	sw::unum::posit<nbits, es> pa(a), pb(b), pc(c), pref, pfma;
+void GenerateFAMTestCase(Ty a, Ty b, Ty c) {
+	Ty with_fam, without_fam;
+	sw::unum::posit<nbits, es> pa(a), pb(b), pc(c), pref, pfam;
 
 	++pa;         // perturb a by adding 1 machine epsilon
 	a = Ty(pa);   // and update the input to reflect the new value
 	pb = b;
 	pc = c;
-	with_fma = std::fma(a, b, c);
-	without_fma = a*b + c;
-	pref = with_fma;
-	pfma = sw::unum::fma(pa, pb, pc);
+	with_fam = std::fma(b, c, a);
+	without_fam = a + b * c;
+	pref = with_fam;
+	pfam = sw::unum::fam(pa, pb, pc);
 	std::cout << "posit<" << nbits << "," << es << ">" << std::endl;
 	std::cout << std::setprecision(nbits - 2);
-	std::cout << std::setw(nbits) << a << " * " << std::setw(nbits) << b << " + " << std::setw(nbits) << c << " = " << std::setw(nbits) << without_fma << " not fused" << std::endl;
-	std::cout << std::setw(nbits) << a << " * " << std::setw(nbits) << b << " + " << std::setw(nbits) << c << " = " << std::setw(nbits) << with_fma    << "     fused" << std::endl;
-	std::cout << std::setw(nbits) << pa << " * " << std::setw(nbits) << pb << " + " << std::setw(nbits) << pc << " = " << std::setw(nbits) << pfma << std::endl;
-	std::cout << pa.get() << " * " << pb.get() << " + " << pc.get() << " = " << pfma.get() << " (reference: " << pref.get() << ")  ";
-	std::cout << (pref == pfma ? "PASS" : "FAIL") << std::endl << std::endl;
+	std::cout << std::setw(nbits) << a << " * " << std::setw(nbits) << b << " + " << std::setw(nbits) << c << " = " << std::setw(nbits) << without_fam << " not fused" << std::endl;
+	std::cout << std::setw(nbits) << a << " * " << std::setw(nbits) << b << " + " << std::setw(nbits) << c << " = " << std::setw(nbits) << with_fam    << "     fused" << std::endl;
+	std::cout << std::setw(nbits) << pa << " * " << std::setw(nbits) << pb << " + " << std::setw(nbits) << pc << " = " << std::setw(nbits) << pfam << std::endl;
+	std::cout << pa.get() << " * " << pb.get() << " + " << pc.get() << " = " << pfam.get() << " (reference: " << pref.get() << ")  ";
+	std::cout << (pref == pfam ? "PASS" : "FAIL") << std::endl << std::endl;
 	std::cout << std::setprecision(5);
 }
 
@@ -42,9 +42,9 @@ try {
 	// NOTE: pick values that have an exact binary representation
 	// otherwise you will be fighting round-off error getting into the calculation
 	// which muddles the actual round-off you are trying to quantify
-	GenerateFMATestCase<32 ,2, double>(0.125, 10.0, -1.25);
-	GenerateFMATestCase<48, 2, double>(0.125, 10.0, -1.25);
-	GenerateFMATestCase<56, 2, double>(0.125, 10.0, -1.25);
+	GenerateFAMTestCase<32 ,2, double>(0.125, 10.0, -1.25);
+	GenerateFAMTestCase<48, 2, double>(0.125, 10.0, -1.25);
+	GenerateFAMTestCase<56, 2, double>(0.125, 10.0, -1.25);
 
 	constexpr size_t nbits = 32;
 	constexpr size_t es = 2;
@@ -53,6 +53,10 @@ try {
 }
 catch (char const* msg) {
 	std::cerr << msg << std::endl;
+	return EXIT_FAILURE;
+}
+catch (std::runtime_error& err) {
+	std::cerr << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
 catch (...) {
