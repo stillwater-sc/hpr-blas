@@ -9,8 +9,10 @@
 
  // generate specific test case that you can trace with the trace conditions in posit.h
  // for most bugs they are traceable with _trace_conversion and _trace_sub
+// Fused Add-Multiply = (a + b)*c
 template<size_t nbits, size_t es, typename Ty>
 void GenerateFAMTestCase(Ty a, Ty b, Ty c) {
+#if 0
 	Ty with_fam, without_fam;
 	sw::unum::posit<nbits, es> pa(a), pb(b), pc(c), pref, pfam;
 
@@ -18,8 +20,9 @@ void GenerateFAMTestCase(Ty a, Ty b, Ty c) {
 	a = Ty(pa);   // and update the input to reflect the new value
 	pb = b;
 	pc = c;
-	with_fam = std::fma(b, c, a);
-	without_fam = a + b * c;
+	// (a + b)*c = a*c + b*c = fma(b,c,a*c)
+	with_fam = std::fmal(b, c, long double(a)*long double(c));
+	without_fam = (a + b) * c;
 	pref = with_fam;
 	pfam = sw::unum::fam(pa, pb, pc);
 	std::cout << "posit<" << nbits << "," << es << ">" << std::endl;
@@ -30,6 +33,8 @@ void GenerateFAMTestCase(Ty a, Ty b, Ty c) {
 	std::cout << pa.get() << " * " << pb.get() << " + " << pc.get() << " = " << pfam.get() << " (reference: " << pref.get() << ")  ";
 	std::cout << (pref == pfam ? "PASS" : "FAIL") << std::endl << std::endl;
 	std::cout << std::setprecision(5);
+#endif
+
 }
 
 int main(int argc, char** argv)
