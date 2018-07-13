@@ -12,5 +12,7 @@
 #include <iomanip>
 #include <string>
 
-#include <vector>
+#include <complex>
 #include <posit>
+#define MTL_INITIALIZER_LISTS
+#include <boost/numeric/mtl/mtl.hpp>
