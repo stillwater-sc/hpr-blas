@@ -28,8 +28,9 @@ log_e(10)		M_LN10		2.30258509299404568402
 
 constexpr double PI = 3.141592653589793238460;  // best practice for C++
 
-using Complex = std::complex<double>;
-using Samples = mtl::dense_vector<double>;
+using value_type = double;
+using Complex = std::complex<value_type>;
+using Samples = mtl::dense_vector<Complex>;
 
 #include <valarray>
 // Cooley–Tukey FFT (in-place, divide-and-conquer)
@@ -64,8 +65,7 @@ void fft(Samples &x)
 	size_t N = size(x), k = N, n;
 	double thetaT = 3.14159265358979323846264338328L / N;
 	Complex phiT = Complex(cos(thetaT), -sin(thetaT)), T;
-	while (k > 1)
-	{
+	while (k > 1) {
 		n = k;
 		k >>= 1;
 		phiT = phiT * phiT;
@@ -108,16 +108,17 @@ void fft(Samples &x)
 void ifft(Samples& x)
 {
 	// conjugate the complex numbers
-	x = x.apply(std::conj);
+	x = mtl::conj(x);
 
 	// forward fft
 	fft(x);
 
 	// conjugate the complex numbers again
-	x = x.apply(std::conj);
+	x = mtl::conj(x);
 
 	// scale the numbers
-	x /= x.size();
+	Complex scale = size(x);
+	x /= scale;
 }
 
 int main(int argc, char** argv)
@@ -134,12 +135,13 @@ try {
 	vector< posit<nbits, es> > sinusoid(vecSize), weights(vecSize);
 
 	for (int i = 0; i < vecSize; i++) {
-		sinusoid[i] = sin((float(i) / float(vecSize)) *2.0 * pi);
+		sinusoid[i] = sin((float(i) / float(vecSize)) *2.0 * PI);
 
 		weights[i] = 0.5f;
 	}
 
-	Samples data(8) = { 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0 };
+	value_type initial_value[] = { 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0 };
+	Samples data(initial_value);
 
 	// forward fft
 	fft(data);
