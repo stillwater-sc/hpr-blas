@@ -26,8 +26,8 @@ try {
 	const size_t vecSize = 32;
 
 #ifdef USE_POSIT
-	using Matrix = mtl::dense2D< posit<8, 0> >;
-	using Vector = mtl::dense_vector< posit<8, 0> >;
+	using Matrix = mtl::dense2D< posit<nbits, es> >;
+	using Vector = mtl::dense_vector< posit<nbits, es> >;
 #else
 	using Matrix = mtl::dense2D<float>;
 	using Vector = mtl::dense_vector<float>;
@@ -82,7 +82,15 @@ try {
 	int nrOfFailedTestCases = 0;
 	return nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
-catch (char* msg) {
+catch (char const* msg) {
 	cerr << msg << endl;
+	return EXIT_FAILURE;
+}
+catch (const std::runtime_error& err) {
+	cerr << err.what() << endl;
+	return EXIT_FAILURE;
+}
+catch (...) {
+	cerr << "caught unknown exception" << endl;
 	return EXIT_FAILURE;
 }

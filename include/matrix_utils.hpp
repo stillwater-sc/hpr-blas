@@ -10,9 +10,9 @@ namespace sw {
 
 
 
-	}; // namespace blas
+	} // namespace blas
 
-}; // namespace sw
+} // namespace sw
 
 namespace mtl {
 
@@ -51,5 +51,5 @@ namespace mtl {
 				// Destructor of ins sets final state of m
 			}
 		}
-	};
-};
+	}
+}
