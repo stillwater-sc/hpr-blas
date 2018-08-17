@@ -18,18 +18,18 @@ namespace mtl {
 
 	namespace mat {
 
-		// fill a dense MTL matrix with random values between (0, 1)
+		// fill a dense MTL matrix with random values between [lowerbound, upperbound]
 		template <typename Matrix>
-		void rand(Matrix& A)
+		void uniform_rand(Matrix& A, double lowerbound = 0.0, double upperbound = 1.0)
 		{
 			// Use random_device to generate a seed for Mersenne twister engine.
 			std::random_device rd{};
 			// Use Mersenne twister engine to generate pseudo-random numbers.
 			std::mt19937 engine{ rd() };
 			// "Filter" MT engine's output to generate pseudo-random double values,
-			// **uniformly distributed** on the closed interval [0, 1].
+			// **uniformly distributed** on the closed interval [lowerbound, upperbound].
 			// (Note that the range is [inclusive, inclusive].)
-			std::uniform_real_distribution<double> dist{ 0.0, 1.0 };
+			std::uniform_real_distribution<double> dist{ lowerbound, upperbound };
 			// Pattern to generate pseudo-random number.
 			// double rnd_value = dist(engine);
 
@@ -37,7 +37,7 @@ namespace mtl {
 			typedef typename Collection<Matrix>::size_type     size_type;
 
 			// inserters add to the elements, so we need to set the value to 0 before we begin
-			// A = 0.0;
+			A = 0.0;
 			{ // extra block unfortunately needed for VS2013
 				// Create inserter for matrix m
 				inserter<Matrix> ins(A, num_cols(A));

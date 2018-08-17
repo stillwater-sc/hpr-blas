@@ -9,6 +9,42 @@
 #include "common.hpp"
 #include <hprblas>
 
+template<typename Ty>
+void MeasureMatrixMultiplyPerformance(const std::string& metric) {
+	using namespace std::chrono;
+	unsigned dim = 32;
+	for (unsigned i = 5; i < 8; ++i, dim *= 2) {
+		std::cout << "Matrix dimensions are: " << dim << " x " << dim << std::endl;
+
+		steady_clock::time_point t1 = steady_clock::now();
+		mtl::dense2D<Ty> A(dim, dim), B(dim, dim), C(dim, dim);
+		steady_clock::time_point t2 = steady_clock::now();
+		duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+		double elapsed = time_span.count();
+		std::cout << "  Construction     " << elapsed << " seconds.\n";
+
+		t1 = steady_clock::now();
+		mtl::mat::uniform_rand(A, -1.0, 1.0);
+		mtl::mat::uniform_rand(B, -1.0, 1.0);
+		t2 = steady_clock::now();
+		time_span = duration_cast<duration<double>>(t2 - t1);
+		elapsed = time_span.count();
+		std::cout << "  Random fill      " << elapsed << " seconds.\n";
+
+		t1 = steady_clock::now();
+		int N = 10;
+		for (int i = 0; i < N; ++i) {
+			C = A * B;
+		}
+		t2 = steady_clock::now();
+		time_span = duration_cast<duration<double>> (t2 - t1);
+		elapsed = time_span.count();
+		std::cout << "  Matmul iteration " << elapsed << " seconds.\n";
+		double flops = double(N)*dim*dim*dim / elapsed * 1.0e-9;
+		std::cout << "  Performance:     " << flops << " G" << metric << std::endl;
+	}
+}
+
 int main(int argc, char** argv)
 try {
 	using namespace std;
@@ -32,38 +68,11 @@ try {
 	float min_fexp = std::numeric_limits<IEEEType>::min_exponent;
 	cout << "IEEE float: epsilon " << eps << " min exp " << min_fexp << " max exp " << max_fexp << endl;
 
-	constexpr int dim = 50;
-	using namespace std::chrono;
-	for (int dim = 16; dim < 1025; dim *= 2) {
-		cout << "Matrix dimensions are: " << dim << " x " << dim << endl;
 
-		steady_clock::time_point t1 = steady_clock::now();
-		mtl::dense2D<IEEEType> A(dim, dim), B(dim, dim), C(dim, dim);
-		steady_clock::time_point t2 = steady_clock::now();
-		duration<double> time_span = duration_cast< duration<double> >(t2 - t1);
-		double elapsed = time_span.count();
-		cout << "  Construction     " << elapsed << " seconds.\n";
+		MeasureMatrixMultiplyPerformance<float>("spFLOPS");
+		MeasureMatrixMultiplyPerformance<double>("dpFLOPS");
+		MeasureMatrixMultiplyPerformance<PositType>("p27.2POPS");
 
-		t1 = steady_clock::now();
-		rand(A);
-		rand(B);
-		t2 = steady_clock::now();
-		time_span = duration_cast< duration<double> >(t2 - t1);
-		elapsed = time_span.count();
-		cout << "  Random fill      " << elapsed << " seconds.\n";
-
-		t1 = steady_clock::now();
-		int N = 10;
-		for (int i = 0; i < N; ++i) {
-			C = A * B;
-		}
-		t2 = steady_clock::now();
-		time_span = duration_cast<duration<double>> (t2 - t1);
-		elapsed = time_span.count();
-		cout << "  Matmul iteration " << elapsed << " seconds.\n";
-		double flops = double(N)*dim*dim*dim / elapsed * 1.0e-9;
-		cout << "  Performance:     " << flops << " GFLOPS Single Precision\n";
-	}
 
 	return EXIT_SUCCESS;
 }

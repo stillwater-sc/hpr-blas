@@ -49,6 +49,7 @@ void Crout(std::vector<Ty>& S, std::vector<Ty>& D) {
 	}
 }
 
+
 // SolveCrout takes an LU decomposition, LU, and a right hand side vector, b, and produces a result, x.
 template<typename Ty>
 void SolveCrout(const std::vector<Ty>& LU, const std::vector<Ty>& b, std::vector<Ty>& x) {
@@ -65,6 +66,51 @@ void SolveCrout(const std::vector<Ty>& LU, const std::vector<Ty>& b, std::vector
 		for (int k = i + 1; k < d; ++k) {
 			//cout << "lu[] = " << LU[i*d+k] << " x[" << k << "] = " << x[k] << endl;
 			sum += LU[i*d + k] * x[k];
+		}
+		//cout << "sum " << sum << endl;
+		x[i] = (y[i] - sum); // not dividing by diagonals
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Crout using MTL data structures
+
+// Crout method using MTL data structures
+template<typename Ty>
+void Crout(const mtl::dense2D<Ty>& S, mtl::dense2D<Ty>& D) {
+	assert(size(S) == size(D));
+	size_t d = num_rows(S);
+	for (size_t k = 0; k < d; ++k) {
+		for (size_t i = k; i<d; ++i) {
+			Ty sum = 0.;
+			for (size_t p = 0; p<k; ++p) sum += D[i][p] * D[p][k];
+			D[i][k] = S[i][k] - sum; // not dividing by diagonals
+		}
+		for (size_t j = k + 1; j < d; ++j) {
+			Ty sum = 0.;
+			for (int p = 0; p<k; ++p) sum += D[k][p] * D[p][j];
+			D[k][j] = (S[k][j] - sum) / D[k][k];
+		}
+	}
+}
+
+
+// SolveCrout takes an LU decomposition, LU, and a right hand side vector, b, and produces a result, x.
+template<typename Ty>
+void SolveCrout(const mtl::dense2D<Ty>& LU, const mtl::dense_vector<Ty>& b, mtl::dense_vector<Ty>& x) {
+	size_t d = size(b);
+	mtl::dense_vector<Ty> y(d);
+	for (int i = 0; i < d; ++i) {
+		Ty sum = 0.0;
+		for (int k = 0; k < i; ++k) sum += LU[i][k] * y[k];
+		y[i] = (b[i] - sum) / LU[i][i];
+
+	}
+	for (long i = long(d) - 1; i >= 0; --i) {
+		Ty sum = 0.0;
+		for (int k = i + 1; k < d; ++k) {
+			//cout << "lu[] = " << LU[i][k] << " x[" << k << "] = " << x[k] << endl;
+			sum += LU[i][k] * x[k];
 		}
 		//cout << "sum " << sum << endl;
 		x[i] = (y[i] - sum); // not dividing by diagonals
