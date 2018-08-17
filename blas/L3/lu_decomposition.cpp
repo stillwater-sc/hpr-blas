@@ -8,6 +8,27 @@
 #include <hprblas>
 
 template<size_t nbits, size_t es, size_t capacity = 10>
+void CroutCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector< sw::unum::posit<nbits, es> >& x, mtl::dense_vector< sw::unum::posit<nbits, es> >& b)
+{
+	using namespace sw::hprblas;
+
+	size_t d = size(b);
+	assert(size(A) == d*d);
+	mtl::dense2D< sw::unum::posit<nbits, es> > LU(d,d);
+	using namespace std::chrono;
+	steady_clock::time_point t1 = steady_clock::now();
+	Crout(A, LU);
+	steady_clock::time_point t2 = steady_clock::now();
+	duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+	double elapsed = time_span.count();
+	std::cout << "Crout took " << elapsed << " seconds." << std::endl;
+	std::cout << "Performance " << (uint32_t)(d*d*d / (1000 * elapsed)) << " KOPS/s" << std::endl;
+	SolveCrout(LU, b, x);
+	printMatrix(std::cout, "Crout LU", LU);
+	printVector(std::cout, "Solution", x);
+}
+
+template<size_t nbits, size_t es, size_t capacity = 10>
 void ComparePositDecompositions(std::vector< sw::unum::posit<nbits, es> >& A, std::vector< sw::unum::posit<nbits, es> >& x, std::vector< sw::unum::posit<nbits, es> >& b) {
 	size_t d = b.size();
 	assert(A.size() == d*d);
@@ -40,10 +61,6 @@ void ComparePositDecompositions(std::vector< sw::unum::posit<nbits, es> >& A, st
 		double elapsed = time_span.count();
 		std::cout << "Doolittle took " << elapsed << " seconds." << std::endl;
 		std::cout << "Performance " << (uint32_t)(d*d*d / (1000 * elapsed)) << " KOPS/s" << std::endl;
-		SolveCrout(LU, b, x);
-		printMatrix(std::cout, "Doolittle LU", LU);
-		printVector(std::cout, "Solution", x);
-
 		SolveDoolittle(LU, b, x);
 		printMatrix(std::cout, "Doolittle LU", LU);
 		printVector(std::cout, "Solution", x);
@@ -61,10 +78,6 @@ void ComparePositDecompositions(std::vector< sw::unum::posit<nbits, es> >& A, st
 		double elapsed = time_span.count();
 		std::cout << "Cholesky took " << elapsed << " seconds." << std::endl;
 		std::cout << "Performance " << (uint32_t)(d*d*d / (1000 * elapsed)) << " KOPS/s" << std::endl;
-		SolveCrout(LU, b, x);
-		printMatrix(std::cout, "Cholesky LU", LU);
-		printVector(std::cout, "Solution", x);
-
 		SolveCholesky(LU, b, x);
 		printMatrix(std::cout, "Cholesky LU", LU);
 		printVector(std::cout, "Solution", x);
@@ -154,6 +167,7 @@ try {
 	typedef posit<nbits, es> PositType;
 	cout << "Using " << spec_to_string(posit<nbits, es>()) << endl;
 
+#if 0
 	float eps = std::numeric_limits<float>::epsilon();
 	float epsminus = 1.0f - eps;
 	float epsplus = 1.0f + eps;
@@ -219,6 +233,22 @@ try {
 	cout << endl << ">>>>>>>>>>>>>>>>" << endl;
 	cout << "LinearSolve fused-dot product" << endl;
 	ComparePositDecompositions(Aposit, xposit, bposit);
+#endif
+	mtl::dense_vector<PositType> x(5), b(5), xprime(5);
+	mtl::dense2D<PositType> A(5, 5);
+	mtl::mat::uniform_rand(A, -1.0, 1.0);
+
+	x = 1.0;
+	b = A * x;
+	cout << endl; 
+	printMatrix(cout, "Matrix A(5x5):\n", A); 
+	cout << endl;
+	cout << endl;
+	printVector(cout, "RHS    b(5)  :\n", b);
+	cout << endl;
+	CroutCycle<nbits,es,capacity>(A, xprime, b);
+	printVector(cout, "RHS    x(5)  :\n", xprime);
+	cout << endl;
 
 	return EXIT_SUCCESS;
 }
@@ -226,8 +256,12 @@ catch (char const* msg) {
 	std::cerr << msg << std::endl;
 	return EXIT_FAILURE;
 }
+catch (const posit_arithmetic_exception& err) {
+	std::cerr << "Uncaught posit arithmetic exception: " << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
 catch (std::runtime_error& err) {
-	std::cerr << err.what() << std::endl;
+	std::cerr << "Uncaught run-time exception: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
 catch (...) {
