@@ -171,6 +171,69 @@ void SolveCroutFDP(const std::vector< sw::unum::posit<nbits, es> >& LU, const st
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////////
+/// CroutFDP with MTL data structures
+
+template<size_t nbits, size_t es, size_t capacity = 10>
+void CroutFDP(mtl::dense2D< sw::unum::posit<nbits, es> >& S, mtl::dense2D< sw::unum::posit<nbits, es> >& D) {
+	size_t d = num_rows(S);
+	assert(size(S) == size(D));
+	using namespace sw::unum;
+	for (int k = 0; k < d; ++k) {
+		for (int i = k; i < d; ++i) {
+			quire<nbits, es, capacity> q;
+			q.reset();
+			//for (int p = 0; p < k; ++p) q += D[i][p] * D[p][k];   if we had expression templates for the quire
+			for (int p = 0; p < k; ++p) q += quire_mul(D[i][p], D[p][k]);
+			posit<nbits, es> sum;
+			convert(q.to_value(), sum);     // one and only rounding step of the fused-dot product
+			D[i][k] = S[i][k] - sum; // not dividing by diagonals
+		}
+		for (int j = k + 1; j < d; ++j) {
+			quire<nbits, es, capacity> q;
+			q.reset();
+			//for (int p = 0; p < k; ++p) q += D[k][p] * D[p][j];   if we had expression templates for the quire
+			for (int p = 0; p < k; ++p) q += quire_mul(D[k][p], D[p][j]);
+			posit<nbits, es> sum;
+			convert(q.to_value(), sum);   // one and only rounding step of the fused-dot product
+			D[k][j] = (S[k][j] - sum) / D[k][k];
+		}
+	}
+}
+
+// SolveCrout takes an LU decomposition, LU, and a right hand side vector, b, and produces a result, x.
+template<size_t nbits, size_t es, size_t capacity = 10>
+void SolveCroutFDP(const mtl::dense2D< sw::unum::posit<nbits, es> >& LU, const mtl::dense_vector< sw::unum::posit<nbits, es> >& b, mtl::dense_vector< sw::unum::posit<nbits, es> >& x) 
+{
+	using namespace sw::unum;
+
+	size_t d = size(b);
+	std::vector< posit<nbits, es> > y(d);
+	for (long i = 0; i < d; ++i) {
+		quire<nbits, es, capacity> q;
+		// for (int k = 0; k < i; ++k) q += LU[i][k] * y[k];   if we had expression templates for the quire
+		for (int k = 0; k < i; ++k) q += quire_mul(LU[i][k], y[k]);
+		posit<nbits, es> sum;
+		convert(q.to_value(), sum);   // one and only rounding step of the fused-dot product
+		y[i] = (b[i] - sum) / LU[i][i];
+	}
+	for (long i = long(d) - 1; i >= 0; --i) {
+		quire<nbits, es, capacity> q;
+		// for (int k = i + 1; k < d; ++k) q += LU[i][k] * x[k];   if we had expression templates for the quire
+		for (int k = i + 1; k < d; ++k) {
+			//cout << "lu[] = " << LU[i][k] << " x[" << k << "] = " << x[k] << endl;
+			q += quire_mul(LU[i][k], x[k]);
+		}
+		posit<nbits, es> sum;
+		convert(q.to_value(), sum);  // one and only rounding step of the fused-dot product
+									 //cout << "sum " << sum << endl;
+		x[i] = (y[i] - sum); // not dividing by diagonals
+	}
+}
+
+
+
+
 // Doolittle uses unit diagonals for the lower triangle
 template<typename Ty>
 void Doolittle(std::vector<Ty>& S, std::vector<Ty>& D) {
