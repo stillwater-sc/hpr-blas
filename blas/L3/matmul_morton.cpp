@@ -70,8 +70,8 @@ try {
 		cout << "  Construction     " << elapsed << " seconds.\n";
 
 		t1 = steady_clock::now();
-		rand(A);
-		rand(B);
+		mtl::mat::uniform_rand(A);
+		mtl::mat::uniform_rand(B);
 		t2 = steady_clock::now();
 		time_span = duration_cast< duration<double> >(t2 - t1);
 		elapsed = time_span.count();

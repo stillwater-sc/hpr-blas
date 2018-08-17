@@ -780,7 +780,7 @@ namespace sw {
 					execute(opcode, da, db, pa, pb, preference, presult);
 				}
 				catch (const posit_arithmetic_exception& err) {
-					if (pa.isNaR() || pb.isNaR() || (opcode == OPCODE_DIV && pb.isZero())) {
+					if (pa.isnar() || pb.isnar() || (opcode == OPCODE_DIV && pb.iszero())) {
 						std::cerr << "Correctly caught arithmetic exception: " << err.what() << std::endl;
 					}
 					else {

@@ -25,7 +25,7 @@ void CroutCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector
 	std::cout << "Performance " << (uint32_t)(d*d*d / (1000 * elapsed)) << " KOPS/s" << std::endl;
 	SolveCrout(LU, b, x);
 	printMatrix(std::cout, "Crout LU", LU);
-	printVector(std::cout, "Solution", x);
+	printVector(std::cout, "Crout Solution", x);
 }
 
 template<size_t nbits, size_t es, size_t capacity = 10>
@@ -42,11 +42,11 @@ void CroutFDPCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vec
 	steady_clock::time_point t2 = steady_clock::now();
 	duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
 	double elapsed = time_span.count();
-	std::cout << "Crout took " << elapsed << " seconds." << std::endl;
+	std::cout << "Crout with FDP took " << elapsed << " seconds." << std::endl;
 	std::cout << "Performance " << (uint32_t)(d*d*d / (1000 * elapsed)) << " KOPS/s" << std::endl;
 	SolveCroutFDP(LU, b, x);
-	printMatrix(std::cout, "Crout LU", LU);
-	printVector(std::cout, "Solution", x);
+	printMatrix(std::cout, "Crout FDP LU", LU);
+	printVector(std::cout, "Crout FDP Solution", x);
 }
 
 template<size_t nbits, size_t es, size_t capacity = 10>
