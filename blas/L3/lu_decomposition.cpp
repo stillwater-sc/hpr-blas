@@ -29,6 +29,27 @@ void CroutCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector
 }
 
 template<size_t nbits, size_t es, size_t capacity = 10>
+void CroutFDPCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector< sw::unum::posit<nbits, es> >& x, mtl::dense_vector< sw::unum::posit<nbits, es> >& b)
+{
+	using namespace sw::hprblas;
+
+	size_t d = size(b);
+	assert(size(A) == d*d);
+	mtl::dense2D< sw::unum::posit<nbits, es> > LU(d, d);
+	using namespace std::chrono;
+	steady_clock::time_point t1 = steady_clock::now();
+	CroutFDP(A, LU);
+	steady_clock::time_point t2 = steady_clock::now();
+	duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+	double elapsed = time_span.count();
+	std::cout << "Crout took " << elapsed << " seconds." << std::endl;
+	std::cout << "Performance " << (uint32_t)(d*d*d / (1000 * elapsed)) << " KOPS/s" << std::endl;
+	SolveCroutFDP(LU, b, x);
+	printMatrix(std::cout, "Crout LU", LU);
+	printVector(std::cout, "Solution", x);
+}
+
+template<size_t nbits, size_t es, size_t capacity = 10>
 void ComparePositDecompositions(std::vector< sw::unum::posit<nbits, es> >& A, std::vector< sw::unum::posit<nbits, es> >& x, std::vector< sw::unum::posit<nbits, es> >& b) {
 	size_t d = b.size();
 	assert(A.size() == d*d);
@@ -249,7 +270,8 @@ try {
 	CroutCycle<nbits,es,capacity>(A, xprime, b);
 	printVector(cout, "RHS    x(5)  :\n", xprime);
 	cout << endl;
-
+	CroutFDPCycle<nbits, es, capacity>(A, xprime, b);
+	printVector(cout, "RHS    x(5)  :\n", xprime);
 	return EXIT_SUCCESS;
 }
 catch (char const* msg) {
