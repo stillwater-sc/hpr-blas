@@ -4,7 +4,6 @@
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 
-// enable the mathematical constants in cmath: old-style preprocessor magic which isn't best practice anymore
 #include "common.hpp"
 
 #include <iostream>
@@ -35,8 +34,8 @@ try {
 
 
 	Matrix  A(4, 4), L(4, 4), U(4, 4), AA(4, 4);
-	Vector	 v(4);
-	double 	 c = 1.0;
+	Vector	v(4);
+	double 	c = 1.0;
 	
 	for (unsigned i = 0; i < 4; i++)
 		for (unsigned j = 0; j < 4; j++) {
