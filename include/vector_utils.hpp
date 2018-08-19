@@ -7,7 +7,6 @@
 namespace sw {
 	namespace hprblas {
 
-
 		// generate random data vector
 		template<typename element_T>
 		void randomVectorFill(size_t n, std::vector<element_T>& vec) {
