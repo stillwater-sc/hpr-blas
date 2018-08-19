@@ -29,19 +29,13 @@ try {
 	const size_t es = 1;
 	const size_t vecSize = 32;
 
-#ifdef USE_POSIT
-	using Matrix = mtl::dense2D< posit<nbits, es> >;
-	using Vector = mtl::dense_vector< posit<nbits, es> >;
-#else
-	using Matrix = mtl::dense2D<float>;
-	using Vector = mtl::dense_vector<float>;
-#endif
-	
-	Matrix  A(4, 4), L(4, 4), U(4, 4), LU(4, 4);
-	Vector	x(4), b(4), xx(4);
-	double 	c = 1.0;
-	
 	{
+		using Matrix = mtl::dense2D< posit<nbits, es> >;
+		using Vector = mtl::dense_vector< posit<nbits, es> >;
+		Matrix  A(4, 4), L(4, 4), U(4, 4), LU(4, 4);
+		Vector	x(4), b(4), xx(4);
+		double 	c = 1.0;
+
 		sw::hprblas::uniform_rand_sorted(A);
 		cout << A << endl;
 		sw::hprblas::printMatrix(cout, "Ordered matrix", A);
@@ -54,11 +48,39 @@ try {
 		sw::hprblas::printVector(cout, "b", b);
 		xx = lu_solve(A, b);
 		sw::hprblas::printVector(cout, "x", xx);
+
+		if (b != x) {
+
+			typedef typename mtl::Collection<Matrix>::size_type     size_type;
+			posit<nbits, es> p, one(1);
+			for (size_type r = 0; r < num_rows(A); ++r) {
+				sw::unum::quire<nbits, es> q, qt;
+				for (size_type c = 0; c < num_cols(A); ++c) {
+					p = A[r][c];
+					q += quire_mul(one, p);
+					qt.reset();
+					qt += quire_mul(one, p);
+					cout << qt << endl;
+				}
+				cout << q << endl;
+
+				convert(q.to_value(), p);
+				qt.reset();
+				qt += quire_mul(posit<nbits, es>(1.0), p);
+				cout << qt << endl << endl;
+			}
+		}
 	}
 
 	return 0;
 
 	{
+		using Matrix = mtl::dense2D<float>;
+		using Vector = mtl::dense_vector<float>;
+		Matrix  A(4, 4), L(4, 4), U(4, 4), LU(4, 4);
+		Vector	x(4), b(4), xx(4);
+		double 	c = 1.0;
+
 		mtl::mat::uniform_rand(A);  // uniform random with values between [0,1]
 		LU = A;
 		lu(LU);
