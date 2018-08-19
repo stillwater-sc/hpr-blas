@@ -14,6 +14,7 @@
 
 #include <boost/numeric/mtl/mtl.hpp>
 #include <posit>
+#include "vector_utils.hpp"
 #include "matrix_utils.hpp"
 
 using namespace std;
@@ -37,14 +38,34 @@ try {
 #endif
 	
 	Matrix  A(4, 4), L(4, 4), U(4, 4), LU(4, 4);
-	Vector	v(4);
+	Vector	x(4), b(4), xx(4);
 	double 	c = 1.0;
 	
-	mtl::mat::uniform_rand(A);  // uniform random with values between [0,1]
-	LU = A;
-	lu(LU);
-	cout << A << endl;
-	cout << LU << endl;
+	{
+		sw::hprblas::uniform_rand_sorted(A);
+		cout << A << endl;
+		sw::hprblas::printMatrix(cout, "Ordered matrix", A);
+		LU = A;
+		lu(LU);
+		sw::hprblas::printMatrix(cout, "LU", LU);
+		x = 1.0;
+		sw::hprblas::printVector(cout, "x", x);
+		b = A * x;
+		sw::hprblas::printVector(cout, "b", b);
+		xx = lu_solve(A, b);
+		sw::hprblas::printVector(cout, "x", xx);
+	}
+
+	return 0;
+
+	{
+		mtl::mat::uniform_rand(A);  // uniform random with values between [0,1]
+		LU = A;
+		lu(LU);
+		cout << A << endl;
+		cout << LU << endl;
+	}
+
 
 	int nrOfFailedTestCases = 0;
 	return nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS;
