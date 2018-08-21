@@ -1,3 +1,4 @@
+#pragma once
 // kalman.hpp
 //
 // Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
@@ -25,10 +26,10 @@ public:
 		const mtl::dense2D<Ty>& R,
 		const mtl::dense2D<Ty>& P
 	) : A(A), C(C), Q(Q), R(R), P0(P),
-		m(C.rows()), n(A.rows()), dt(dt), initialized(false),
+		m(num_rows(C)), n(num_rows(A)), dt(dt), initialized(false),
 		I(n, n), x_hat(n)
 	{
-		I.setIdentity();
+		I = mtl::mat::identity2D(m,n); // I.setIdentity();
 	}
 	KalmanFilter() {}
 
@@ -59,10 +60,10 @@ public:
 	void update(const mtl::dense_vector<Ty>& y) {
 		mtl::dense_vector<Ty> x_hat_new(n);
 		x_hat_new = A * x_hat;
-		P = A * P * trans(A) + Q;
-		K = P * trans(C) * (C * P * trans(C) + R).inverse();
-		x_hat_new += K * (y - C * x_hat_new);
-		P = (I - K * C) * P;
+//		P = A * P * trans(A) + Q;
+//		K = P * trans(C) * (C * P * trans(C) + R).inverse();
+//		x_hat_new += K * (y - C * x_hat_new);
+//		P = (I - K * C) * P;
 		x_hat = x_hat_new;
 	}
 
@@ -83,12 +84,13 @@ public:
 	double time() { return t; };
 
 private:
+	bool initialized;
 
 	// Matrices for computation
 	mtl::dense2D<Ty> A, C, Q, R, P, K, P0;
 
 	// System dimensions
-	int m, n;
+	size_t m, n;
 
 	// Initial and current time
 	double t0, t;

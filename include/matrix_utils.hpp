@@ -1,3 +1,4 @@
+#pragma once
 // matrix_utils.hpp :  include file containing templated utilities to work with matrices
 //
 // Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
@@ -29,13 +30,37 @@ namespace sw {
 			typedef typename mtl::Collection<Matrix>::value_type    value_type;
 			typedef typename mtl::Collection<Matrix>::size_type     size_type;
 
+			// generate a good set of randoms
 			std::vector<value_type> v(size(A));
 			for (size_type r = 0; r < num_rows(A); ++r) {
 				for (size_type c = 0; c < num_cols(A); ++c) {
 					v.push_back(value_type(dist(engine)));
 				}
 			}
+			// sort them so that we have better control over the scale of each element in a row vector
 			sort(v.begin(), v.end(), greater<>());
+
+			// for each row minus the last column, calculate the sum of elements without rounding
+			posit<value_type::nbits, value_type::es> one(1), p;
+			for (size_type r = 0; r < num_rows(A); ++r) {
+				sw::unum::quire<value_type::nbits, value_type::es> q1, q2;
+				size_type lastElement = num_cols(A) - 1;
+				for (size_type c = 0; c < lastElement; ++c) {
+					q1 += sw::unum::quire_mul(one, v[r*num_cols(A) + c]);
+				}
+				// truncate the value in the quire
+				convert(q1.to_value(), p);
+				// calculate the difference between the truncated and the non-truncated quire values
+				q2 = p;
+//				std::cout << "q1 :" << q1 << std::endl;
+//				std::cout << "q2 :" << q2 << std::endl;
+				q2 -= q1;
+				convert(q2.to_value(), p);
+//				std::cout << "Residual is: " << double(p) << std::endl;
+				if (p.iszero()) p = one;
+				v[r*num_cols(A) + lastElement] = p;
+			}
+
 
 			// inserters add to the elements, so we need to set the value to 0 before we begin
 			A = 0.0;
