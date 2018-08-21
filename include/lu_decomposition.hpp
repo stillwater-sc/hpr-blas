@@ -1,6 +1,7 @@
-// lu_decomposition.cpp example program comparing float vs posit equation solver
+#pragma once
+// lu_decomposition.hpp LU decomposition algorithms and solvers
 //
-// Copyright (C) 2017 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 
@@ -8,7 +9,6 @@
 #define POSIT_VERBOSE_OUTPUT
 #define QUIRE_TRACE_ADD
 #include <posit>
-
 
 namespace sw {
 	namespace hprblas {

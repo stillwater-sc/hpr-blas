@@ -1,3 +1,4 @@
+#pragma once
 // blas.hpp :  include file containing templated C++ interfaces to BLAS routines
 //
 // Copyright (C) 2017 Stillwater Supercomputing, Inc.
@@ -71,7 +72,18 @@ namespace sw {
 				if (sw::unum::_trace_quire_add) std::cout << q << '\n';
 			}
 			sw::unum::posit<nbits, es> sum;
-			sum.convert(q.to_value());     // one and only rounding step of the fused-dot product
+			convert(q.to_value(), sum);     // one and only rounding step of the fused-dot product
+			return sum;
+		}
+		template<typename Vector, size_t nbits, size_t es, size_t capacity = 10>
+		sw::unum::posit<nbits, es> fused_dot(const Vector& x, const Vector& y) {
+			sw::unum::quire<nbits, es, capacity> q = 0;
+			size_t ix, iy, n = size(x);
+			for (ix = 0, iy = 0; ix < n && iy < n; ix = ix + 1, iy = iy + 1) {
+				q += sw::unum::quire_mul(x[ix], y[iy]);
+			}
+			sw::unum::posit<nbits, es> sum;
+			convert(q.to_value(), sum);     // one and only rounding step of the fused-dot product
 			return sum;
 		}
 

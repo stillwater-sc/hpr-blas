@@ -1,3 +1,4 @@
+#pragma once
 // vector_utils.hpp :  include file containing templated utilities to work with vectors and matrices
 //
 // Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
@@ -41,13 +42,13 @@ namespace sw {
 				for (uint32_t i = start; i < vec.size(); i += incr) {
 					if (printed < nrSamples) {
 						printed++;
-						cout << vec_name << "[" << setw(3) << i << "] = " << setprecision(15) << vec[i] << '\n';
+						std::cout << vec_name << "[" << std::setw(3) << i << "] = " << std::setprecision(15) << vec[i] << '\n';
 					}
 				}
 			}
 			else {
 				for (uint32_t i = start; i < vec.size(); i += incr) {
-					cout << vec_name << "[" << setw(3) << i << "] = " << setprecision(15) << vec[i] << '\n';
+					std::cout << vec_name << "[" << std::setw(3) << i << "] = " << std::setprecision(15) << vec[i] << '\n';
 				}
 			}
 			std::cout << std::endl;

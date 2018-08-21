@@ -41,8 +41,6 @@
 #elif defined(_MSC_VER)
 /* Microsoft Visual Studio. --------------------------------- */
 
-
-
 #elif defined(__PGI)
 /* Portland Group PGCC/PGCPP. ------------------------------- */
 
