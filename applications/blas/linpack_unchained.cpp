@@ -6,7 +6,7 @@
 // Copyright (C) 2017-18 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
-
+#pragma warning(disable : 4996)
 #include "common.hpp"
 
 #include <iostream>
@@ -45,45 +45,49 @@ using Tensor = Eigen::Tensor< fp16 >;
 
 int main(int argc, char** argv)
 try {
-	const size_t nbits = 16;
-	const size_t es = 1;
-	const size_t vecSize = 32;
+	const size_t nbits = 32;
+	const size_t es = 2;
+
 
 	{
 		using Scalar = posit<nbits, es>;
 		using Vector = mtl::dense_vector< Scalar >;
 		using Matrix = mtl::dense2D< Scalar >;
 
-		constexpr size_t N = 10;
-
-		// generate a uniform random matrix
-		Matrix  A(N, N);
-		sw::hprblas::uniform_rand_sorted(A);
+		constexpr size_t N = 100;
+		Matrix A(N, N);
 		Vector r(N), rtilde(N);
-		Vector	x(N, 1.0), b(N);
+		Vector x(N, 1.0), b(N);
+		// generate a uniform random matrix
+		//sw::hprblas::uniform_rand_sorted(A);
+		uniform_rand(A, -100.0, 100.0);
+
+#define MANUAL 0
+#if MANUAL
 		b = A * x;
-		x = 0.99;
+		x = --posit<nbits, es>(1); /// 1 - eps
 		r = b - A * x;
 		rtilde = r;
 		Scalar rho = sw::hprblas::fused_dot<Vector, nbits, es>(rtilde, r);
 		cout << "rho: " << double(rho) << endl;
 		sw::hprblas::printVector(cout, "r: ", r);
 
-		return 0;
-
-#if ITL_FIXED
+#else
 		// Create an ILU(0) preconditioner
-		itl::pc::ilu_0<Matrix>        P(A);
+		//itl::pc::ilu_0<Matrix>    P(A);   // <-- this does a LU decomposition with pivoting
+		itl::pc::identity<Matrix>	P(A);
 
 		// Set b such that x == 1 is solution; start with x == 0
-		Vector	x(N, 1.0), b(N);
 		b = A * x; x = 0;
 
 		// Termination criterion: r < 1e-6 * b or N iterations
-		itl::noisy_iteration<double>       iter(b, 500, 1.e-6);
+		itl::noisy_iteration<Scalar>       iter(b, 500, 1.e-6);
 
 		// Solve Ax == b with left preconditioner P
 		itl::bicgstab(A, x, b, P, iter);
+
+		return 0;
+
 #endif
 
 		if (b != x) {
@@ -126,20 +130,40 @@ try {
 		cout << A << endl;
 		cout << LU << endl;
 	}
-
+	
 
 	int nrOfFailedTestCases = 0;
 	return nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 catch (char const* msg) {
-	cerr << msg << endl;
+	std::cerr << "caught ad hoc exception: " << msg << std::endl;
+	return EXIT_FAILURE;
+}
+catch (const posit_arithmetic_exception& err) {
+	std::cerr << "caught posit_arithmetic_exception: " << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
+catch (const posit_internal_exception& err) {
+	std::cerr << "caught posit_internal_exception: " << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
+catch (const quire_exception& err) {
+	std::cerr << "caught quire exception: " << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
+catch (const mtl::domain_error& err) {
+	std::cerr << "caught linear algebra domain exception: " << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
+catch (const itl::search_space_exhaustion& err) {
+	std::cerr << "caught iterative solver domain exception: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
 catch (const std::runtime_error& err) {
-	cerr << err.what() << endl;
+	std::cerr << "caught runtime_error: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
 catch (...) {
-	cerr << "caught unknown exception" << endl;
+	std::cerr << "caught unknown exception" << std::endl;
 	return EXIT_FAILURE;
 }
