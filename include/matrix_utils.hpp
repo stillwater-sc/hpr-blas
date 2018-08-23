@@ -79,9 +79,42 @@ namespace sw {
 			}
 		}
 
+
 		template<typename Matrix>
-		void project_onto_number_system_accuracy(Matrix& A) {
-			
+		void uniform_rand_diagonally_dominant(Matrix& A, double lowerbound = 0.0, double upperbound = 1.0) {
+			// generate off-diagonal entries, calculate the sum, scale to upperbound, and set diagonal entry to slightly larger
+
+			// Use random_device to generate a seed for Mersenne twister engine.
+			std::random_device rd{};
+			// Use Mersenne twister engine to generate pseudo-random numbers.
+			std::mt19937 engine{ rd() };
+			// "Filter" MT engine's output to generate pseudo-random double values,
+			// **uniformly distributed** on the closed interval [lowerbound, upperbound].
+			// (Note that the range is [inclusive, inclusive].)
+			std::uniform_real_distribution<double> dist{ lowerbound, upperbound };
+			// Pattern to generate pseudo-random number.
+			// double rnd_value = dist(engine);
+
+			typedef typename mtl::Collection<Matrix>::value_type    value_type;
+			typedef typename mtl::Collection<Matrix>::size_type     size_type;
+
+			// no need to null A as each element is assigned explicitely
+			for (size_type r = 0; r < num_rows(A); ++r) {
+				// generate a random vector of N
+				size_type N = num_cols(A);
+				mtl::dense_vector<value_type> v(N);
+				for (size_type c = 0; c < N; ++c) {
+					v[c] = value_type(dist(engine));
+				}
+				// add the sum of the other row elements to the diagonal
+				for (size_type c = 0; c < N; ++c) {
+					if (r != c) v[r] += v[c];
+				}
+				value_type factor = v[r] / upperbound;
+				for (size_type c = 0; c < N; ++c) {
+					A[r][c] = v[c] / factor;
+				}
+			}
 		}
 
 
