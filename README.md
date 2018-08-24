@@ -1,4 +1,4 @@
-# HPR-BLAS
+# HPR-BLAS (pronounced hyper-blas)
 High-Performance Reproducible BLAS using posit arithmetic
 
 # Introduction
