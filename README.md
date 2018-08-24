@@ -1,5 +1,5 @@
 # HPR-BLAS (pronounced hyper-blas)
-High-Performance Reproducible BLAS using posit arithmetic
+Hyper-BLAS: High-Performance Reproducible BLAS using posit arithmetic and user controlled rounding
 
 # Introduction
 
