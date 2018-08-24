@@ -61,11 +61,11 @@ int main() {
     using namespace std;
     using namespace sw::hprblas;
 
-    tutorial_example();
+    //tutorial_example();
 
-    constexpr size_t N = 10;
-    Matrix A(N,N);
-
-    uniform_rand_diagonally_dominant(A);
-    cout << eigenvalues(A) << endl;
+    for (size_t N = 5; N < 51; N = N + 5) {
+	    Matrix A(N,N);
+	    uniform_rand_diagonally_dominant(A);
+	    cout << eigenvalues(A) << endl;
+    }
 }
