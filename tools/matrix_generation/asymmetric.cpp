@@ -25,6 +25,9 @@ try {
 	uniform_rand_diagonally_dominant(A);
 	cout << A << endl;
 
+	cout << "minpos<32,2> = " << minpos<32, 2>() << endl;
+	cout << "minpos<32,2> = " << setw(52) << setprecision(52) << std::fixed << minpos<32, 2>() << endl;
+
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 catch (char const* msg) {
