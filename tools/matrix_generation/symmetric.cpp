@@ -17,9 +17,18 @@ try {
 
 	int nrOfFailedTestCases = 0;
 
-	constexpr size_t nbits = 32;
-	constexpr size_t es = 2;
+	constexpr size_t nbits = 16;
+	constexpr size_t es = 1;
 
+	using Matrix = mtl::mat::dense2D< posit<nbits, es> >;
+
+	constexpr size_t N = 10;
+	Matrix A(N, N);
+
+	// How do I make that matrix symmetric as type?
+	uniform_rand_diagonally_dominant(A);
+
+	cout << A << endl;
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
