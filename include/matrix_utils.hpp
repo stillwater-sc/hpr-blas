@@ -38,10 +38,10 @@ namespace sw {
 				}
 			}
 			// sort them so that we have better control over the scale of each element in a row vector
-			sort(v.begin(), v.end(), greater<>());
+			sort(v.begin(), v.end(), std::greater<value_type>());
 
 			// for each row minus the last column, calculate the sum of elements without rounding
-			posit<value_type::nbits, value_type::es> one(1), p;
+			sw::unum::posit<value_type::nbits, value_type::es> one(1), p;
 			for (size_type r = 0; r < num_rows(A); ++r) {
 				sw::unum::quire<value_type::nbits, value_type::es> q1, q2;
 				size_type lastElement = num_cols(A) - 1;

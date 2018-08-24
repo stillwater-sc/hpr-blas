@@ -46,7 +46,7 @@ message(STATUS "UNUM INCLUDE DIR " ${UNUM_INCLUDE_DIRS})
 include_directories("./include")
 
 # Possibly not under Windows
-add_compile_options ( -std=c++11 )
+add_compile_options ( -std=c++11 -fext-numeric-literals )
 
 macro (compile_all testing prefix)
     # cycle through the sources

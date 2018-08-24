@@ -174,9 +174,7 @@
 
 	//print a square real matrix A of size n with caption s
 	//(n items per line).
-	void MatPrint(char *s, int n, MAT A) {
-          int i,j;
-          printf("\n %s\n", s);
+	void MatPrint(const char *s, int n, MAT A) { int i,j; printf("\n %s\n", s);
 	  for (i=0; i<n; i++) {
 	    for (j=0; j<n; j++) 
 	      printf(" %10.6f",A[i][j]);
@@ -233,7 +231,7 @@ void MatCopy(int n, MAT A, MAT A1) {
 }
 
 // main program to demonstrate the use of function cholsl()
-void main() {
+int main(int argc, char* argv[]) {
   MAT A, A1, B, C; int i,j, n; char answer;
   printf(" Inversion of a square real symetric matrix by Cholesky method\n");
   printf(" (The matrix must positive def.).\n");

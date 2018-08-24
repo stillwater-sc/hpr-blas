@@ -16,7 +16,7 @@
 template<size_t nbits, size_t es>
 sw::unum::posit<nbits, es> Sigmoid(sw::unum::posit<nbits, es>& x, bool derivative = false) {
 	if (derivative) return x*(1-x);
-	return (1)
+	return (1);
 }
 
 int main(int argc, char** argv)
