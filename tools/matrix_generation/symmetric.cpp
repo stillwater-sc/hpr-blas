@@ -4,7 +4,7 @@
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 #include <hprblas>
-
+#include "matrix_utils.hpp"
 
 
 
