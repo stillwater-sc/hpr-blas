@@ -117,6 +117,56 @@ namespace sw {
 			}
 		}
 
+/*
+C.3: Generating a Random Matrix with Specified Eigenvalues
+Generate random orthogonal matrix G. W. Stewart (1980).
+
+		start RandOrthog(n);
+		A = I(n); // identity matrix 
+		d = j(n, 1, 0);
+		d[n] = sgn(RndNormal(1, 1)); // +/- 1 
+		do k = n - 1 to 1 by - 1;
+			// generate random Householder transformation 
+			x = RndNormal(n - k + 1, 1); // column vector from N(0,1) 
+			s = sqrt(x[##]); // norm(x) 
+			sgn = sgn(x[1]);
+			s = sgn*s;
+			d[k] = -sgn;
+			x[1] = x[1] + s;
+			beta = s*x[1];
+			// apply the Householder transformation to A 
+			y = x`*A[k:n, ];
+			A[k:n, ] = A[k:n, ] - x*(y / beta);
+		end;
+		A = d # A; // change signs of i_th row when d[i]=-1 
+		return(A);
+		finish;
+
+		// helper functions 
+		// return matrix of same size as A with
+		// m[i,j]= { 1 if A[i,j]>=0
+		//         { -1 if A[i,j]< 0
+		// Similar to the SIGN function, except SIGN(0)=0 
+		start sgn(A);
+			return(choose(A >= 0, 1, -1));
+		finish;
+
+		// return (r x c) matrix of standard normal variates 
+		start RndNormal(r, c);
+			x = j(r, c);
+			call randgen(x, "Normal");
+			return(x);
+		finish;
+
+		// The following statements call the RANDORTHOG function to generate a random 4x4 orthogonal matrix.
+		call randseed(1);
+		Q = RandOrthog(4);
+		print(Q);
+*/
+		template<typename Matrix>
+		void random_orthogonal(Matrix& A) {
+
+		}
 
 	} // namespace blas
 
