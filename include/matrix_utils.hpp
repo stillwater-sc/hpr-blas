@@ -117,6 +117,53 @@ namespace sw {
 			}
 		}
 
+		// Random Orthogonal Matrices
+
+		/*
+		Standard methods for generating random orthogonal matrices with Haar distribution 
+		are based on the method of Heiberger (1978). With this method, an (n x n) matrix A is
+		first generated with entries xij ~ Normal(0; 1). Then a QR factorization (X = QR) is computed. 
+		This method provides a random Q with correct distribution.
+		*/
+		template<typename Matrix>
+		void uniform_random_orthogonal_Heiberger(Matrix& Q) {
+			// Use random_device to generate a seed for Mersenne twister engine.
+			std::random_device rd{};
+			// Use Mersenne twister engine to generate pseudo-random numbers.
+			std::mt19937 engine{ rd() };
+			// "Filter" MT engine's output to generate pseudo-random double values,
+			// **uniformly distributed** on the closed interval [lowerbound, upperbound].
+			// (Note that the range is [inclusive, inclusive].)
+			std::uniform_real_distribution<double> dist{ 0.0, 1.0 };
+			// Pattern to generate pseudo-random number.
+			// double rnd_value = dist(engine);
+
+			typedef typename mtl::Collection<Matrix>::value_type    value_type;
+			typedef typename mtl::Collection<Matrix>::size_type     size_type;
+			Matrix A(mtl::mat::num_rows(Q), mtl::mat::num_cols(Q));
+			Matrix R(mtl::mat::num_rows(Q), mtl::mat::num_cols(Q));
+
+			// fill X with elements from Normal(0,1)
+			// inserters add to the elements, so we need to set the value to 0 before we begin
+			A = 0.0;
+			{ // extra block unfortunately needed for VS2013
+			  // Create inserter for matrix A
+				mtl::mat::inserter<Matrix> ins(A, num_cols(A));
+
+				// insert random values in A
+				for (size_type r = 0; r < num_rows(A); r++) {
+					for (size_type c = 0; c < num_cols(A); c++) {
+						ins[r][c] << value_type(dist(engine));
+					}
+				}
+				// Destructor of ins sets final state of A
+			}
+			// QR method to generate orthonormal matrix Q
+			mtl::mat::qr(A, Q, R);
+			std::cout << A << std::endl;
+			std::cout << Q << std::endl;
+			std::cout << R << std::endl;
+		}
 /*
 C.3: Generating a Random Matrix with Specified Eigenvalues
 Generate random orthogonal matrix G. W. Stewart (1980).
@@ -144,7 +191,7 @@ Generate random orthogonal matrix G. W. Stewart (1980).
 
 		// helper functions 
 		// return matrix of same size as A with
-		// m[i,j]= { 1 if A[i,j]>=0
+		// m[i,j]= {  1 if A[i,j]>=0
 		//         { -1 if A[i,j]< 0
 		// Similar to the SIGN function, except SIGN(0)=0 
 		start sgn(A);
@@ -164,7 +211,7 @@ Generate random orthogonal matrix G. W. Stewart (1980).
 		print(Q);
 */
 		template<typename Matrix>
-		void random_orthogonal(Matrix& A) {
+		void uniform_rand_orthogonal(Matrix& A) {
 
 		}
 

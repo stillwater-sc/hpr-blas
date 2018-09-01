@@ -13,20 +13,28 @@ try {
 	using namespace sw::hprblas;
 
 	int nrOfFailedTestCases = 0;
+	std::streamsize prec = std::cout.precision();
 
-	constexpr size_t nbits = 16;
+	constexpr size_t nbits = 32;
 	constexpr size_t es = 1;
 
-	using Matrix = mtl::mat::dense2D< posit<nbits, es> >;
+	using Scalar = posit<nbits, es>;
+//	using Scalar = float;
+	using Matrix = mtl::mat::dense2D< Scalar >;
 
 	constexpr size_t N = 10;
-	Matrix A(N,N);
+	Matrix Q(N,N);
 
-	uniform_rand_diagonally_dominant(A);
-	cout << A << endl;
+	uniform_random_orthogonal_Heiberger(Q);
+	cout << Q << endl;
 
 	cout << "minpos<32,2> = " << minpos<32, 2>() << endl;
 	cout << "minpos<32,2> = " << setw(52) << setprecision(52) << std::fixed << minpos<32, 2>() << endl;
+
+	cout << Q[0][0] << endl;
+	cout << Q[0][1] << endl;
+	cout << Q[1][0] << endl;
+	cout << Q[1][1] << endl;
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
