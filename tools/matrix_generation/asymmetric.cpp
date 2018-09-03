@@ -16,13 +16,13 @@ try {
 	std::streamsize prec = std::cout.precision();
 
 	constexpr size_t nbits = 32;
-	constexpr size_t es = 1;
+	constexpr size_t es = 2;
 
 	using Scalar = posit<nbits, es>;
-//	using Scalar = float;
+//	using Scalar = double;
 	using Matrix = mtl::mat::dense2D< Scalar >;
 
-	constexpr size_t N = 10;
+	constexpr size_t N = 5;
 	Matrix Q(N,N);
 
 	uniform_random_orthogonal_Heiberger(Q);
