@@ -3,6 +3,7 @@
 // Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
+#define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #include <hprblas>
 
 int main(int argc, char** argv)
@@ -40,6 +41,10 @@ try {
 }
 catch (char const* msg) {
 	std::cerr << "caught ad hoc exception: " << msg << std::endl;
+	return EXIT_FAILURE;
+}
+catch (posit_arithmetic_exception& err) {
+	std::cerr << "uncaught posit arithmetic exception: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
 catch (mtl::runtime_error& err) {
