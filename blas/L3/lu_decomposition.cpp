@@ -186,7 +186,7 @@ try {
 
 	typedef float            IEEEType;
 	typedef posit<nbits, es> PositType;
-	cout << "Using " << spec_to_string(posit<nbits, es>()) << endl;
+	cout << "Using " << dynamic_range(posit<nbits, es>()) << endl;
 
 #if 0
 	float eps = std::numeric_limits<float>::epsilon();
