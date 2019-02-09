@@ -189,9 +189,35 @@ Scalar HeronFormulaKahanRewrite(const Scalar& a, const Scalar& b, const Scalar& 
 	return A;
 }
 
+/*
+Let's assume the default behavior of a program is to run as quickly as possible.
+However, with a significant comment, you can specify that certain values are to be computed "safely,"
+using the XSC methods and the quire. For example, suppose a line of code is
+
+x = a * b * c;
+
+With both floats and posits, multiplication does not follow the associative law.
+Floats can overflow from one of the multiply operations even if the mathematical value of x
+is perfectly representable; posits can get very inaccurate if one of the products lands
+in the large-magnitude or small-magnitude regions. Without knowing any numerical analysis or
+how it works, a programmer could precede this with something like
+
+//$ safe(x)
+
+x = a * b * c;
+
+indicating that the next evaluation of x is to be performed as if there is infinite precision,
+then rounded to the nearest posit. The compiler sets up the sparse lower-triangular linear system
+
+| 1         | | t1 |   | a |
+|           | |    |   |   |
+| b  -1     |•| t2 | = | 0 |
+|           | |    |   |   |
+|     c  -1 | | t3 |   | 0 |
+*/
 template<typename Scalar>
 Scalar HeronFormulaKarlsruheAccurateArithmetic(const Scalar& a, const Scalar& b, const Scalar& c, bool verbose = false) {
-	return HeronFormulaKahanRewrite(a, b, c, verbose);
+	return HeronFormulaKahanRewrite(a, b, c, verbose);  // TODO
 }
 
 template<typename Scalar>
