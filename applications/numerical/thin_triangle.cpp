@@ -203,7 +203,6 @@ in the large-magnitude or small-magnitude regions. Without knowing any numerical
 how it works, a programmer could precede this with something like
 
 //$ safe(x)
-
 x = a * b * c;
 
 indicating that the next evaluation of x is to be performed as if there is infinite precision,
@@ -328,6 +327,18 @@ try {
 }
 catch (char const* msg) {
 	std::cerr << msg << std::endl;
+	return EXIT_FAILURE;
+}
+catch (const posit_arithmetic_exception& err) {
+	std::cerr << "Uncaught posit arithmetic exception: " << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
+catch (const quire_exception& err) {
+	std::cerr << "Uncaught quire exception: " << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
+catch (const posit_internal_exception& err) {
+	std::cerr << "Uncaught posit internal exception: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
 catch (std::runtime_error& err) {
