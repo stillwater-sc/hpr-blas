@@ -39,16 +39,26 @@ try {
 	cout << "Catastrophic Cancellation Experiment" << endl;
 
 	cout << "IEEE Float single precision  : " << GenerateTestCase(0.00000006f, 0.5f, 1.0f) << endl;
-	cout << "IEEE Float double precision  : " << GenerateTestCase(0.00000006, 0.5, 1.0) << endl;
+	cout << "IEEE Float double precision  : " << GenerateTestCase<double>(0.00000006f, 0.5, 1.0) << endl;
 	if (sizeof(long double) == 16) {
 		cout << "IEEE Float quad precision  : " << GenerateTestCase(0.00000006l, 0.5l, 1.0l) << endl;
+	}
+
+	{
+		constexpr size_t nbits = 56;
+		constexpr size_t es = 2;
+		posit<nbits, es> peps, px, porigin;
+		peps = 0.00000006f;
+		px = 0.5;
+		porigin = 1.0;
+		cout << "posit<56,2>                  : " << GenerateTestCase(peps, px, porigin) << endl;
 	}
 
 	{
 		constexpr size_t nbits = 64;
 		constexpr size_t es = 3;
 		posit<nbits, es> peps, px, porigin;
-		peps = 0.00000006;
+		peps = 0.00000006f;
 		px = 0.5;
 		porigin = 1.0;
 		cout << "posit<64,3>                  : " << GenerateTestCase(peps, px, porigin) << endl;
@@ -58,7 +68,7 @@ try {
 		constexpr size_t nbits = 80;
 		constexpr size_t es = 3;
 		posit<nbits, es> peps, px, porigin;
-		peps = 0.00000006;
+		peps = 0.00000006f;
 		px = 0.5;
 		porigin = 1.0;
 		cout << "posit<80,3>                  : " << GenerateTestCase(peps, px, porigin) << endl;
@@ -68,7 +78,7 @@ try {
 		constexpr size_t nbits = 88;
 		constexpr size_t es = 3;
 		posit<nbits, es> peps, px, porigin;
-		peps = 0.00000006;
+		peps = 0.00000006f;
 		px = 0.5;
 		porigin = 1.0;
 		cout << "posit<88,3>                  : " << GenerateTestCase(peps, px, porigin) << endl;
