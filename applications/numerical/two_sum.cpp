@@ -17,6 +17,21 @@ a + b = s + r
 
 */
 
+namespace sw {
+	namespace unum {
+		template<typename Scalar>
+		std::pair<Scalar, Scalar> twoSum(const Scalar& a, const Scalar& b) {
+			Scalar s = a + b;
+			Scalar aApprox = s - b;
+			Scalar bApprox = s - aApprox;
+			Scalar aDiff = a - aApprox;
+			Scalar bDiff = b - bApprox;
+			Scalar r = aDiff + bDiff;
+			return std::pair<Scalar, Scalar>(s, r);
+		}
+	}
+}
+
 template<size_t nbits, size_t es>
 void ReportTwoSumError(std::string test_case, std::string op, const sw::unum::posit<nbits, es>& a, const sw::unum::posit<nbits, es>& b, const sw::unum::posit<nbits, es>& s, const sw::unum::posit<nbits, es>& r) {
 	std::cerr << test_case << " "
@@ -93,7 +108,7 @@ int ValidateTwoSum(std::string tag, bool bReportIndividualTestCases) {
 	return nrOfFailedTests;
 }
 
-#define MANUAL_TEST 1
+#define MANUAL_TEST 0
 
 int main(int argc, char** argv)
 try {
