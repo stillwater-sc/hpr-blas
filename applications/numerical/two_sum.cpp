@@ -51,7 +51,7 @@ void ReportTwoSumError(std::string test_case, std::string op, const sw::unum::po
 }
 
 template<typename Scalar>
-void GenerateTwoSumTestCase(const Scalar& a, const Scalar& b) {
+bool GenerateTwoSumTestCase(const Scalar& a, const Scalar& b) {
 	constexpr size_t nbits = a.nbits;
 
 	Scalar s = a + b;
@@ -62,14 +62,17 @@ void GenerateTwoSumTestCase(const Scalar& a, const Scalar& b) {
 	Scalar r = aDiff + bDiff;
 	std::cout << "a                      : " << std::setw(nbits) << a.get()       << " : " << a << std::endl;
 	std::cout << "b                      : " << std::setw(nbits) << b.get()       << " : " << b << std::endl;
-	std::cout << "a + b                  : " << std::setw(nbits) << (a+b).get()   << " : " << (a + b) << std::endl;
 	std::cout << "s                      : " << std::setw(nbits) << s.get()       << " : " << s << std::endl;
-	std::cout << "r                      : " << std::setw(nbits) << r.get()       << " : " << r << std::endl;
-	std::cout << "s + r                  : " << std::setw(nbits) << (s + r).get() << " : " << (s + r) << std::endl;
 	std::cout << "aApprox = s - a        : " << std::setw(nbits) << aApprox.get() << " : " << aApprox << std::endl;
 	std::cout << "bApprox = s - aApprox  : " << std::setw(nbits) << bApprox.get() << " : " << bApprox << std::endl;
 	std::cout << "aDiff = a - aApprox    : " << std::setw(nbits) << aDiff.get()   << " : " << aDiff << std::endl;
 	std::cout << "bDiff = b - bApprox    : " << std::setw(nbits) << bDiff.get()   << " : " << bDiff << std::endl;
+	std::cout << "r = aDiff + bDiff      : " << std::setw(nbits) << r.get()       << " : " << r << std::endl;
+	std::cout << "s + r                  : " << std::setw(nbits) << (s + r).get() << " : " << (s + r) << std::endl;
+	std::cout << "a + b                  : " << std::setw(nbits) << (a + b).get() << " : " << (a + b) << std::endl;
+	Scalar a_and_b = a + b;
+	Scalar s_and_r = s + r;
+	return a_and_b == s_and_r;
 }
 
 // enumerate all addition cases for a posit configuration: is within 10sec till about nbits = 14
@@ -108,7 +111,7 @@ int ValidateTwoSum(std::string tag, bool bReportIndividualTestCases) {
 	return nrOfFailedTests;
 }
 
-#define MANUAL_TEST 0
+#define MANUAL_TEST 1
 
 int main(int argc, char** argv)
 try {
@@ -128,18 +131,26 @@ try {
 
 	cout << "Posit TwoSum validation" << endl;
 
-#ifdef MANUAL_TEST
-
+#if MANUAL_TEST
 
 	constexpr size_t nbits = 8;
 	constexpr size_t es = 1;
 	using Posit = posit<nbits, es>;
 	Posit a, b;
 	a = b = minpos<nbits, es>();
-	GenerateTwoSumTestCase(a, b);
+	cout << "geometric rounding region\n";
+	cout << (GenerateTwoSumTestCase(a, b) ? "PASS\n" : "FAIL\n");
+	cout << (GenerateTwoSumTestCase(a, ++b) ? "PASS\n" : "FAIL\n");
+	cout << (GenerateTwoSumTestCase(++a, b) ? "PASS\n" : "FAIL\n");
+	cout << endl << "arithmetic rounding region\n";
+	a = 1.0;
+	b = 1.0;
+	++b;
+	cout << (GenerateTwoSumTestCase(a, b) ? "PASS\n" : "FAIL\n");
 
+	
 //	nrOfFailedTestCases += ReportTestResult(ValidateTwoSum<8, 0>(tag, bReportIndividualTestCases), "posit<8,0>", "twoSum");
-	nrOfFailedTestCases += ReportTestResult(ValidateTwoSum<8, 1>(tag, bReportIndividualTestCases), "posit<8,1>", "twoSum");
+//	nrOfFailedTestCases += ReportTestResult(ValidateTwoSum<8, 1>(tag, bReportIndividualTestCases), "posit<8,1>", "twoSum");
 //	nrOfFailedTestCases += ReportTestResult(ValidateTwoSum<8, 2>(tag, bReportIndividualTestCases), "posit<8,2>", "twoSum");
 //	nrOfFailedTestCases += ReportTestResult(ValidateTwoSum<8, 3>(tag, bReportIndividualTestCases), "posit<8,3>", "twoSum");
 //	nrOfFailedTestCases += ReportTestResult(ValidateTwoSum<8, 4>(tag, bReportIndividualTestCases), "posit<8,4>", "twoSum");

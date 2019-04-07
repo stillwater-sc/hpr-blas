@@ -36,11 +36,12 @@ endif (Boost_FOUND)
 find_package(MTL REQUIRED)
 include_directories(${MTL_INCLUDE_DIRS})
 add_definitions(${MTL_CXX_DEFINITIONS})
+message(STATUS "MTL INCLUDE DIR " ${MTL_INCLUDE_DIRS})
 
 # Set posit include directory
-find_package(UNUM REQUIRED)
-include_directories(${UNUM_INCLUDE_DIRS})
-message(STATUS "UNUM INCLUDE DIR " ${UNUM_INCLUDE_DIRS})
+find_package(UNIVERSAL REQUIRED)
+include_directories(${UNIVERSAL_INCLUDE_DIRS})
+message(STATUS "UNIVERSAL INCLUDE DIR " ${UNIVERSAL_INCLUDE_DIRS})
 
 # Set hpr-blas include directory
 include_directories("./include")
