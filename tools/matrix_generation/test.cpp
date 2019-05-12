@@ -8,7 +8,8 @@
 
 using Matrix = mtl::mat::dense2D< double >;
 
-int tutorial_example() {
+#ifdef MTL_MSVC_BUG_FIX
+int eigenvalue_example() {
 	using namespace std;
 
 	Matrix M1(3,3), M2(3,3), M3(3,3), M4(3,3);
@@ -56,16 +57,20 @@ int tutorial_example() {
 	// Creating the solver implicitly
 	cout << "M4(with defaults): " << eigenvalues(M4) << "\n";
 }
+#endif // MTL_MSVC_BUG_FIX
 
 int main() {
     using namespace std;
     using namespace sw::hprblas;
 
-    //tutorial_example();
+#ifdef MTL_MSVC_BUG_FIX
+    eigenvalue_example();
+#endif
 
     for (size_t N = 5; N < 51; N = N + 5) {
 	    Matrix A(N,N);
 	    uniform_rand_diagonally_dominant(A);
-	    cout << eigenvalues(A) << endl;
+		cout << A << endl;
+	    // cout << eigenvalues(A) << endl;
     }
 }
