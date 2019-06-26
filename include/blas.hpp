@@ -42,7 +42,8 @@ namespace sw {
 		}
 
 		// dot product: the operator vector::x[index] is limited to uint32_t, so the arguments are limited to uint32_t as well
-		// since we do not support arbitrary posit configuration conversions, the element type of the vectors x and y are declared to be the same.
+		// The library does support arbitrary posit configuration conversions, but to simplify the 
+		// behavior of the dot product, the element type of the vectors x and y are declared to be the same.
 		// TODO: investigate if the vector<> index is always a 32bit entity?
 		template<typename Ty>
 		Ty dot(size_t n, const std::vector<Ty>& x, size_t incx, const std::vector<Ty>& y, size_t incy) {
@@ -53,7 +54,9 @@ namespace sw {
 			}
 			return product;
 		}
-		// fused dot product operators
+		///
+		/// fused dot product operators
+
 		// Fused dot product with quire continuation
 		template<typename Qy, typename Ty>
 		void fused_dot(Qy& sum_of_products, size_t n, const std::vector<Ty>& x, size_t incx, const std::vector<Ty>& y, size_t incy) {
@@ -62,7 +65,7 @@ namespace sw {
 				sum_of_products += sw::unum::quire_mul(x[ix], y[iy]);
 			}
 		}
-		// Standalone fused dot product
+		// Resolved fused dot product
 		template<size_t nbits, size_t es, size_t capacity = 10>
 		sw::unum::posit<nbits, es> fused_dot(size_t n, const std::vector< sw::unum::posit<nbits, es> >& x, size_t incx, const std::vector< sw::unum::posit<nbits, es> >& y, size_t incy) {
 			sw::unum::quire<nbits, es, capacity> q = 0;
@@ -75,6 +78,7 @@ namespace sw {
 			convert(q.to_value(), sum);     // one and only rounding step of the fused-dot product
 			return sum;
 		}
+		// Specialized resolved fused dot product that assumes unit stride and a standard vector
 		template<typename Vector, size_t nbits, size_t es, size_t capacity = 10>
 		sw::unum::posit<nbits, es> fused_dot(const Vector& x, const Vector& y) {
 			sw::unum::quire<nbits, es, capacity> q = 0;

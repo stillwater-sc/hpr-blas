@@ -34,13 +34,14 @@
 *****************************************************************/
 #include <stdio.h>
 #include <math.h>
+#include <posit>
 
 #define  SIZE 25
 
 
-   typedef double MAT[SIZE][SIZE], VEC[SIZE];
+typedef double MAT[SIZE][SIZE], VEC[SIZE];
 
-   void choldc1(int,MAT,VEC); 
+void choldc1(int,MAT,VEC); 
 
 /* -----------------------------------------------
         Cholesky decomposition.
@@ -50,20 +51,20 @@
         output   a  lower deomposed matrix
         uses        choldc1(int,MAT,VEC)
    ----------------------------------------------- */
-        void choldc(int n,MAT A, MAT a) {
-	  int i,j;
-	  VEC p;
-          for (i = 0; i < n; i++) 
-	    for (j = 0; j < n; j++) 
-	      a[i][j] = A[i][j];
-	  choldc1(n, a, p);
-          for (i = 0; i < n; i++) {
-            a[i][i] = p[i];
-            for (j = i + 1; j < n; j++) {
-              a[i][j] = 0;
-	    }
-	  }
+void choldc(int n,MAT A, MAT a) {
+	int i,j;
+	VEC p;
+	for (i = 0; i < n; i++) 
+		for (j = 0; j < n; j++) 
+			a[i][j] = A[i][j];
+	choldc1(n, a, p);
+	for (i = 0; i < n; i++) {
+		a[i][i] = p[i];
+		for (j = i + 1; j < n; j++) {
+			a[i][j] = 0;
+		}
 	}
+}
  
 /* -----------------------------------------------------
          Inverse of Cholesky decomposition.
@@ -231,43 +232,65 @@ void MatCopy(int n, MAT A, MAT A1) {
 }
 
 // main program to demonstrate the use of function cholsl()
-int main(int argc, char* argv[]) {
-  MAT A, A1, B, C; int i,j, n; char answer;
-  printf(" Inversion of a square real symetric matrix by Cholesky method\n");
-  printf(" (The matrix must positive def.).\n");
+int main(int argc, char* argv[]) 
+try {
+	MAT A, A1, B, C; int i,j, n; char answer;
+	printf(" Inversion of a square real symetric matrix by Cholesky method\n");
+	printf(" (The matrix must positive def.).\n");
 
-  n = 4;
-  printf("\n Size = %d\n", n);
+	n = 4;
+	printf("\n Size = %d\n", n);
 
-  // define lower half of symmetrical matrix
-  A[0][0]= 5;
-  A[1][0]=-1; A[1][1]= 5;
-  A[2][0]=-1; A[2][1]=-1; A[2][2]= 5;
-  A[3][0]=-1; A[3][1]=-1; A[3][2]=-1; A[3][3]= 5;
+	// define lower half of symmetrical matrix
+	A[0][0]= 5;
+	A[1][0]=-1; A[1][1]= 5;
+	A[2][0]=-1; A[2][1]=-1; A[2][2]= 5;
+	A[3][0]=-1; A[3][1]=-1; A[3][2]=-1; A[3][3]= 5;
 
-  // define upper half by symmetry
-  for (i=0; i<n; i++)
-    for (j=i+1; j<n; j++)
-      A[i][j]=A[j][i];
+	// define upper half by symmetry
+	for (i=0; i<n; i++)
+	for (j=i+1; j<n; j++)
+		A[i][j]=A[j][i];
 
-  if (Check_Matrix(n,A)) {
-    MatCopy(n,A,A1);
-    printf("\n Determinant = %f\n", choldet(n,A));
-    MatPrint("Matrix A:",n,A);
-    cholsl(n,A,B);
-    MatPrint("Matrix Inv(A):",n,B);
-  }
-  else
-    printf("\n Sorry, this matrix is not positive definite !\n");
+	if (Check_Matrix(n,A)) {
+	MatCopy(n,A,A1);
+	printf("\n Determinant = %f\n", choldet(n,A));
+	MatPrint("Matrix A:",n,A);
+	cholsl(n,A,B);
+	MatPrint("Matrix Inv(A):",n,B);
+	}
+	else
+	printf("\n Sorry, this matrix is not positive definite !\n");
 
-  printf("\n Do you want a verification (y/n)?: ");
-  scanf("%c", &answer);
-  if (answer=='y') {
-    MatMult(n,A1,B,C);
-    MatPrint("Verification A * Inv(A) = I:",n,C);
-  }
-  printf("\n");
-
+	printf("\n Do you want a verification (y/n)?: ");
+	scanf("%c", &answer);
+	if (answer=='y') {
+	MatMult(n,A1,B,C);
+	MatPrint("Verification A * Inv(A) = I:",n,C);
+	}
+	printf("\n");
 }
-
-//end of file choles.cpp
+catch (char const* msg) {
+	std::cerr << msg << std::endl;
+	return EXIT_FAILURE;
+}
+catch (const posit_arithmetic_exception& err) {
+	std::cerr << "Uncaught posit arithmetic exception: " << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
+catch (const quire_exception& err) {
+	std::cerr << "Uncaught quire exception: " << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
+catch (const posit_internal_exception& err) {
+	std::cerr << "Uncaught posit internal exception: " << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
+catch (std::runtime_error& err) {
+	std::cerr << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
+catch (...) {
+	std::cerr << "Caught unknown exception" << std::endl;
+	return EXIT_FAILURE;
+}
