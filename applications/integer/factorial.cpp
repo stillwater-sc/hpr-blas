@@ -1,3 +1,5 @@
+#include "common.hpp"
+
 #include <boost/multiprecision/cpp_int.hpp>
 #include <iostream>
 
@@ -10,7 +12,8 @@ Ty factorial(unsigned fact) {
 	return v;
 }
 
-int main() {
+int main() 
+try {
 	using namespace boost::multiprecision;
 
 	int128_t v = factorial<int128_t>(20);
@@ -19,5 +22,29 @@ int main() {
 	cpp_int u = factorial<cpp_int>(100);
 	std::cout << u << std::endl;
 
-	return 0;
+	return EXIT_SUCCESS;
+}
+catch (char const* msg) {
+	std::cerr << msg << std::endl;
+	return EXIT_FAILURE;
+}
+catch (const posit_arithmetic_exception& err) {
+	std::cerr << "Uncaught posit arithmetic exception: " << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
+catch (const quire_exception& err) {
+	std::cerr << "Uncaught quire exception: " << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
+catch (const posit_internal_exception& err) {
+	std::cerr << "Uncaught posit internal exception: " << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
+catch (std::runtime_error& err) {
+	std::cerr << err.what() << std::endl;
+	return EXIT_FAILURE;
+}
+catch (...) {
+	std::cerr << "Caught unknown exception" << std::endl;
+	return EXIT_FAILURE;
 }
