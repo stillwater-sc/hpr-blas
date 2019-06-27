@@ -33,8 +33,8 @@ namespace sw {
 		}
 
 		// vector copy
-		template<typename vector_T>
-		void copy(size_t n, const vector_T& x, size_t incx, vector_T& y, size_t incy) {
+		template<typename Vector>
+		void copy(size_t n, const Vector& x, size_t incx, Vector& y, size_t incy) {
 			size_t cnt, ix, iy;
 			for (cnt = 0, ix = 0, iy = 0; cnt < n && ix < x.size() && iy < y.size(); ++cnt, ix += incx, iy += incy) {
 				y[iy] = x[ix];
@@ -45,11 +45,21 @@ namespace sw {
 		// The library does support arbitrary posit configuration conversions, but to simplify the 
 		// behavior of the dot product, the element type of the vectors x and y are declared to be the same.
 		// TODO: investigate if the vector<> index is always a 32bit entity?
-		template<typename Ty>
-		Ty dot(size_t n, const std::vector<Ty>& x, size_t incx, const std::vector<Ty>& y, size_t incy) {
-			Ty product = 0;
+		template<typename Vector>
+		typename Vector::value_type dot(size_t n, const Vector& x, size_t incx, const Vector& y, size_t incy) {
+			typename Vector::value_type product = 0;
 			size_t cnt, ix, iy;
 			for (cnt = 0, ix = 0, iy = 0; cnt < n && ix < x.size() && iy < y.size(); ++cnt, ix += incx, iy += incy) {
+				product += x[ix] * y[iy];
+			}
+			return product;
+		}
+		// specialized dot product
+		template<typename Vector>
+		typename Vector::value_type dot(const Vector& x, const Vector& y) {
+			typename Vector::value_type product = 0;
+			size_t cnt, ix, iy;
+			for (cnt = 0, ix = 0, iy = 0; cnt < size(x); ++cnt, ++ix, ++iy) {
 				product += x[ix] * y[iy];
 			}
 			return product;
@@ -58,35 +68,40 @@ namespace sw {
 		/// fused dot product operators
 
 		// Fused dot product with quire continuation
-		template<typename Qy, typename Ty>
-		void fused_dot(Qy& sum_of_products, size_t n, const std::vector<Ty>& x, size_t incx, const std::vector<Ty>& y, size_t incy) {
+		template<typename Qy, typename Vector>
+		void fused_dot(Qy& sum_of_products, size_t n, const Vector& x, size_t incx, const Vector& y, size_t incy) {
 			size_t ix, iy;
 			for (ix = 0, iy = 0; ix < n && iy < n; ix = ix + incx, iy = iy + incy) {
 				sum_of_products += sw::unum::quire_mul(x[ix], y[iy]);
 			}
 		}
-		// Resolved fused dot product
-		template<size_t nbits, size_t es, size_t capacity = 10>
-		sw::unum::posit<nbits, es> fused_dot(size_t n, const std::vector< sw::unum::posit<nbits, es> >& x, size_t incx, const std::vector< sw::unum::posit<nbits, es> >& y, size_t incy) {
+		// Resolved fused dot product, with the option to control capacity bits in the quire
+		template<typename Vector, size_t capacity = 10>
+		typename Vector::value_type fused_dot(size_t n, const Vector& x, size_t incx, const Vector& y, size_t incy) {
+			constexpr size_t nbits = typename Vector::value_type::nbits;
+			constexpr size_t es = typename Vector::value_type::es;
 			sw::unum::quire<nbits, es, capacity> q = 0;
 			size_t ix, iy;
 			for (ix = 0, iy = 0; ix < n && iy < n; ix = ix + incx, iy = iy + incy) {
 				q += sw::unum::quire_mul(x[ix], y[iy]);
 				if (sw::unum::_trace_quire_add) std::cout << q << '\n';
 			}
-			sw::unum::posit<nbits, es> sum;
+			typename Vector::value_type sum;
 			convert(q.to_value(), sum);     // one and only rounding step of the fused-dot product
 			return sum;
 		}
-		// Specialized resolved fused dot product that assumes unit stride and a standard vector
-		template<typename Vector, size_t nbits, size_t es, size_t capacity = 10>
-		sw::unum::posit<nbits, es> fused_dot(const Vector& x, const Vector& y) {
+		// Specialized resolved fused dot product that assumes unit stride and a standard vector,
+		// with the option to control capacity bits in the quire
+		template<typename Vector, size_t capacity = 10>
+		typename Vector::value_type fused_dot(const Vector& x, const Vector& y) {
+			constexpr size_t nbits = typename Vector::value_type::nbits;
+			constexpr size_t es = typename Vector::value_type::es;
 			sw::unum::quire<nbits, es, capacity> q = 0;
 			size_t ix, iy, n = size(x);
-			for (ix = 0, iy = 0; ix < n && iy < n; ix = ix + 1, iy = iy + 1) {
+			for (ix = 0, iy = 0; ix < n && iy < n; ++ix, ++iy) {
 				q += sw::unum::quire_mul(x[ix], y[iy]);
 			}
-			sw::unum::posit<nbits, es> sum;
+			typename Vector::value_type sum;
 			convert(q.to_value(), sum);     // one and only rounding step of the fused-dot product
 			return sum;
 		}

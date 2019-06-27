@@ -31,7 +31,7 @@ try {
 
 	randomVectorFillAroundOneEPS(vecSize, x);  //	sampleVector("x", x);
 	randomVectorFillAroundOneEPS(vecSize, y);  // 	sampleVector("y", y);
-	fresult = sw::hprblas::dot<float>(vecSize, x, 1, y, 1);
+	fresult = sw::hprblas::dot(vecSize, x, 1, y, 1);
 	cout << "DOT product is " << setprecision(20) << fresult << endl;
 
 	using Posit = sw::unum::posit<nbits, es>;
@@ -41,7 +41,7 @@ try {
 	randomVectorFillAroundOneEPS(vecSize, py);  // 	sampleVector("py", py);
 
 	steady_clock::time_point t1 = steady_clock::now();
-	presult = sw::hprblas::dot<Posit>(vecSize, px, 1, py, 1);
+	presult = sw::hprblas::dot(vecSize, px, 1, py, 1);
 	steady_clock::time_point t2 = steady_clock::now();
 	double ops = vecSize * 2.0; // dot product is vecSize products and vecSize adds
 	cout << "DOT product is " << setprecision(20) << presult << endl;

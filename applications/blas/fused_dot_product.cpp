@@ -7,16 +7,55 @@
 // enable the mathematical constants in cmath: old-style preprocessor magic which isn't best practice anymore
 #define _USE_MATH_DEFINES
 #include "common.hpp"
-
-#include <vector>
-#include <posit>
+#include <chrono>
+#include <hprblas>
 
 constexpr double pi = 3.14159265358979323846;  // best practice for C++
+
+/*
+ We want to show the benefits of reproducibility provided by the FDP.
+
+ When you have concurrent execution through blocked LA operators, you need control over the
+ small numbers. There are three ways of doing it:
+ 1- sort the numbers: very expensive
+ 2- Kahn two_sum accumulation
+ 3- fused-dot product using a super-accumulator (Ulrich Kulisch)
+
+ We can construct a tough test case, where we have segments of decreasing numbers along the accumulation path.
+ That will allow us to construct specific cancellation cases that yield nice predictable answers.
+
+ We would also like to collect real-world cases of dot products that go wrong when not accounting for
+ catastrophic cancellation possibilities.
+
+ */
+
+template<typename Vector>
+void FillDescending(Vector& vec, typename Vector::value_type start) {
+	size_t n = size(vec);
+	//std::cout << "Nr of samples to generate is " << n << std::endl;
+	for (size_t i = 0; i < n; ++i) {
+		vec[i] = start;
+		start *= 0.5;
+	}
+}
+
+template<typename Vector>
+void FillAscending(Vector& vec, typename Vector::value_type start) {
+	size_t n = size(vec);
+	//std::cout << "Nr of samples to generate is " << n << std::endl;
+	size_t r = n;
+	for (size_t i = 0; i < n; ++i) {
+		vec[--r] = start;
+		start *= 0.5;
+	}
+}
 
 int main(int argc, char** argv)
 try {
 	using namespace std;
+	using namespace std::chrono;
 	using namespace sw::unum;
+	using namespace sw::hprblas;
 
 	constexpr size_t nbits = 16;
 	constexpr size_t es = 1;
@@ -24,24 +63,68 @@ try {
 
 	int nrOfFailedTestCases = 0;
 
-	posit<nbits, es> p;
-	vector< posit<nbits,es> > sinusoid(vecSize), cosinusoid(vecSize);
+	{
+		using Posit = posit<nbits, es>;
+		vector<Posit> px(vecSize), py(vecSize);
 
-	for (int i = 0; i < vecSize; i++) {
-		p = sin( (float(i) / float(vecSize)) *2.0 * pi);
-		sinusoid[i] = p;
-		p = cos((float(i) / float(vecSize)) *2.0 * pi);
-		cosinusoid[i] = p;
+		FillDescending(px, 0.25*maxpos<nbits, es>());
+		FillAscending(py, 0.25*maxpos<nbits, es>());
+
+//		printVector(cout, "px", px);
+//		printVector(cout, "px", py);
+
+		steady_clock::time_point t1 = steady_clock::now();
+		Posit presult = sw::hprblas::fused_dot(px, py);
+		steady_clock::time_point t2 = steady_clock::now();
+		double ops = vecSize * 2.0; // dot product is vecSize products and vecSize adds
+		cout << "FDP product     is " << presult << endl;
+		duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+		double elapsed = time_span.count();
+		std::cout << "It took " << elapsed << " seconds." << std::endl;
+		std::cout << "Performance " << (uint32_t)(ops / (1000 * elapsed)) << " KOPS" << std::endl;
 	}
 
-	// dot product
-	posit<nbits, es> dot_product;
-	dot_product = 0.0f;
-	for (int i = 0; i < vecSize; i++) {
-		dot_product += sinusoid[i] * cosinusoid[i];
+	{
+		using Scalar = posit<2*nbits, es+1>;
+		vector<Scalar> px(vecSize), py(vecSize);
+
+		FillDescending(px, 0.25*maxpos<nbits, es>());
+		FillAscending(py, 0.25*maxpos<nbits, es>());
+
+//		printVector(cout, "px", px);
+//		printVector(cout, "px", py);
+
+		steady_clock::time_point t1 = steady_clock::now();
+		Scalar presult = sw::hprblas::dot(px, py);
+		steady_clock::time_point t2 = steady_clock::now();
+		double ops = vecSize * 2.0; // dot product is vecSize products and vecSize adds
+		cout << "DOT product     is " << presult << endl;
+		duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+		double elapsed = time_span.count();
+		std::cout << "It took " << elapsed << " seconds." << std::endl;
+		std::cout << "Performance " << (uint32_t)(ops / (1000 * elapsed)) << " KOPS" << std::endl;
 	}
 
-	cout << "Dot product is " << dot_product << endl;
+	{
+		using Scalar = float;
+		vector<Scalar> px(vecSize), py(vecSize);
+
+		FillDescending(px, float(0.25*maxpos<nbits, es>()));
+		FillAscending(py, float(0.25*maxpos<nbits, es>()));
+
+		//		printVector(cout, "px", px);
+		//		printVector(cout, "px", py);
+
+		steady_clock::time_point t1 = steady_clock::now();
+		Scalar presult = sw::hprblas::dot(px, py);
+		steady_clock::time_point t2 = steady_clock::now();
+		double ops = vecSize * 2.0; // dot product is vecSize products and vecSize adds
+		cout << "DOT product     is " << presult << endl;
+		duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+		double elapsed = time_span.count();
+		std::cout << "It took " << elapsed << " seconds." << std::endl;
+		std::cout << "Performance " << (uint32_t)(ops / (1000 * elapsed)) << " KOPS" << std::endl;
+	}
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
