@@ -215,7 +215,49 @@ Generate random orthogonal matrix G. W. Stewart (1980).
 
 		}
 
-	} // namespace blas
+		// Hilbert matrices
+
+		template<typename Scalar>
+		void GenerateHilbertMatrix(int N, std::vector<Scalar>& m) {
+			assert(N*N == m.size());
+			for (int i = 1; i <= N; ++i) {
+				for (int j = 1; j <= N; ++j) {
+					m[(i - 1)*N + (j - 1)] = Scalar(5 * 7 * 9) / Scalar(i + j - 1);
+				}
+			}
+		}
+
+		uint64_t factorial(uint64_t n) {
+			return (n == 0 || n == 1) ? 1 : factorial(n - 1) * n;
+		}
+
+		// (n over k) = n! / k!(n-k)!
+		template<typename Scalar>
+		Scalar BinomialCoefficient(uint64_t n, uint64_t k) {
+			Scalar numerator = Scalar(factorial(n));
+			Scalar denominator = Scalar(factorial(k)*factorial(n - k));
+			Scalar coef = numerator / denominator;
+			//	std::cout << numerator << " / " << denominator << " = " << coef << std::endl;
+			if (coef * denominator != numerator) std::cout << "FAIL: (" << n << " over " << k << ")" << std::endl;
+			return coef;
+		}
+
+		template<typename Scalar>
+		void GenerateHilbertMatrixInverse(int N, std::vector<Scalar>& m) {
+			assert(N*N == m.size());
+			for (int i = 1; i <= N; ++i) {
+				for (int j = 1; j <= N; ++j) {
+					Scalar sign = ((i + j) % 2) ? Scalar(-1) : Scalar(1);
+					Scalar factor1 = Scalar(i + j - 1);
+					Scalar factor2 = BinomialCoefficient<Scalar>(N + i - 1, N - j);
+					Scalar factor3 = BinomialCoefficient<Scalar>(N + j - 1, N - i);
+					Scalar factor4 = BinomialCoefficient<Scalar>(i + j - 2, i - 1);
+					m[(i - 1)*N + (j - 1)] = Scalar(sign * factor1 * factor2 * factor3 * factor4 * factor4);
+				}
+			}
+		}
+
+	} // namespace hprblas
 
 } // namespace sw
 
@@ -258,3 +300,90 @@ namespace mtl {
 		}
 	}
 }
+
+
+#ifdef BLAS_L2
+// LEVEL 2 BLAS operators
+template<typename Ty>
+void matvec(const std::vector<Ty>& A, const std::vector<Ty>& x, std::vector<Ty>& b) {
+	// preconditions
+	size_t d = x.size();
+	assert(A.size() == d*d);
+	assert(b.size() == d);
+	for (size_t i = 0; i < d; ++i) {
+		b[i] = 0;
+		for (size_t j = 0; j < d; ++j) {
+			//std::cout << "b[" << i << "] = " << b[i] << std::endl;
+			//std::cout << "A[" << i << "][" << j << "] = " << A[i*d + j] << std::endl;
+			//std::cout << "x[" << j << "] = " << x[j] << std::endl;
+			b[i] = b[i] + A[i*d + j] * x[j];
+		}
+		//std::cout << "b[" << i << "] = " << b[i] << std::endl;
+	}
+}
+
+// leverage template parameter inference to specialize matvec to use the quire when the inputs are posit vectors
+template<size_t nbits, size_t es, size_t capacity = 10>
+void matvec(const std::vector< posit<nbits, es> >& A, const std::vector< posit<nbits, es> >& x, std::vector< posit<nbits, es> >& b) {
+	// preconditions
+	size_t d = x.size();
+	assert(A.size() == d*d);
+	assert(b.size() == d);
+	for (size_t i = 0; i < d; ++i) {
+		b[i] = 0;
+		quire<nbits, es, capacity> q;   // initialized to 0 by constructor
+		for (size_t j = 0; j < d; ++j) {
+			q += quire_mul(A[i*d + j], x[j]);
+			if (sw::unum::_trace_quire_add) std::cout << q << '\n';
+		}
+		convert(q.to_value(), b[i]);  // one and only rounding step of the fused-dot product
+									  //std::cout << "b[" << i << "] = " << b[i] << std::endl;
+	}
+}
+#endif  // BLAS_L2
+
+#ifdef BLAS_L3
+// LEVEL 3 BLAS operators
+
+// matrix-matrix multiplication
+template<typename Ty>
+void matmul(const std::vector<Ty>& A, const std::vector<Ty>& B, std::vector<Ty>& C) {
+	// preconditions
+	size_t d = size_t(std::sqrt(A.size()));
+	assert(A.size() == d*d);
+	assert(B.size() == d*d);
+	assert(C.size() == d*d);
+	for (size_t i = 0; i < d; ++i) {
+		for (size_t j = 0; j < d; ++j) {
+			C[i*d + j] = Ty(0);
+			for (size_t k = 0; k < d; ++k) {
+				C[i*d + j] = C[i*d + j] + A[i*d + k] * B[k*d + j];
+			}
+		}
+	}
+}
+
+// leverage template parameter inference to specialize matmul to use the quire when the inputs are posit vectors
+template<size_t nbits, size_t es, size_t capacity = 10>
+void matmul(const std::vector<posit<nbits, es> >& A, const std::vector< posit<nbits, es> >& B, std::vector< posit<nbits, es> >& C) {
+	// preconditions
+	size_t d = size_t(std::sqrt(A.size()));
+	assert(A.size() == d*d);
+	assert(B.size() == d*d);
+	assert(C.size() == d*d);
+	for (size_t i = 0; i < d; ++i) {
+		for (size_t j = 0; j < d; ++j) {
+			C[i*d + j] = 0;
+			quire<nbits, es, capacity> q;   // initialized to 0 by constructor
+			for (size_t k = 0; k < d; ++k) {
+				// C[i*d + j] = C[i*d + j] + A[i*d + k] * B[k*d + j];
+				q += quire_mul(A[i*d + k], B[k*d + j]);
+				if (sw::unum::_trace_quire_add) std::cout << q << '\n';
+			}
+			convert(q.to_value(), C[i*d + j]);  // one and only rounding step of the fused-dot product
+		}
+	}
+}
+
+#endif  // BLAS_L3
+
