@@ -17,7 +17,7 @@ bool isRepresentable(int a, int b) {
 	return a % b == 0;
 }
 
-
+#ifdef LOCAL
 // The following compact LU factorization schemes are described
 // in Dahlquist, Bjorck, Anderson 1974 "Numerical Methods".
 //
@@ -216,6 +216,7 @@ void SolveCholesky(const std::vector<Ty>& LU, const std::vector<Ty>& b, std::vec
 		x[i] = (y[i] - sum) / LU[i*d + i];
 	}
 }
+#endif
 
 void GenerateTestCase(int a, int b) {
 	std::cout << std::setw(3) << a << "/" << std::setw(3) << b << (isRepresentable(a, b) ? " is    " : " is not") << " representable " << (a / double(b)) << std::endl;

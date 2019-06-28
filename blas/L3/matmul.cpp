@@ -7,6 +7,7 @@
 // warning C4996: 'std::copy::_Unchecked_iterators::_Deprecate': Call to 'std::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct.
 #pragma warning( disable : 4996)
 #include "common.hpp"
+#include <vector>
 #include <hprblas>
 
 template<typename Ty>
@@ -57,8 +58,8 @@ try {
 	constexpr size_t es = 2;
 	constexpr size_t capacity = 10;
 
-	typedef float            IEEEType;
-	typedef posit<nbits, es> PositType;
+	using IEEEType=float;
+	using PositType=posit<nbits, es>;
 	cout << dynamic_range(posit<nbits, es>()) << endl;
 
 	float eps = std::numeric_limits<IEEEType>::epsilon();
@@ -69,9 +70,15 @@ try {
 	cout << "IEEE float: epsilon " << eps << " min exp " << min_fexp << " max exp " << max_fexp << endl;
 
 
-		MeasureMatrixMultiplyPerformance<float>("spFLOPS");
-		MeasureMatrixMultiplyPerformance<double>("dpFLOPS");
-		MeasureMatrixMultiplyPerformance<PositType>("p27.2POPS");
+	MeasureMatrixMultiplyPerformance<float>("spFLOPS");
+	MeasureMatrixMultiplyPerformance<double>("dpFLOPS");
+	MeasureMatrixMultiplyPerformance<PositType>("p27.2POPS");
+
+	dense_vector<PositType> p_sixteen(16);
+	cout << "size of p_sixteen is " << size(p_sixteen) << endl;
+
+	std::vector<IEEEType> f_sixteen(16);
+	cout << "size of f_sixteen is " << std::size(f_sixteen) << endl;
 
 
 	return EXIT_SUCCESS;
