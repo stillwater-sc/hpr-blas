@@ -19,6 +19,19 @@ namespace sw {
 			}
 		}
 
+		// generate a vector of random permutations around 0.0
+		// contraction is a right shift of the random variable causing smaller fluctuations
+		// RAND_MAX is typically a 16bit number so can't contract more than 15 bits
+		template<typename element_T>
+		void randomVectorFillAroundZeroEPS(size_t n, std::vector<element_T>& vec, size_t contraction = 6) {
+			for (size_t i = 0; i < n; i++) {
+				int rnd1 = (rand() - (RAND_MAX >> 1)) >> contraction;
+				double eps = rnd1 / (double)RAND_MAX;
+				double v = eps;
+				vec[i] = (element_T)v;
+			}
+		}
+
 		// generate a vector of random permutations around 1.0
 		// contraction is a right shift of the random variable causing smaller fluctuations
 		// RAND_MAX is typically a 16bit number so can't contract more than 15 bits

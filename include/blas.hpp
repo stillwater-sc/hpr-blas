@@ -69,7 +69,7 @@ namespace sw {
 
 		// Fused dot product with quire continuation
 		template<typename Qy, typename Vector>
-		void fused_dot(Qy& sum_of_products, size_t n, const Vector& x, size_t incx, const Vector& y, size_t incy) {
+		void fdp_qr(Qy& sum_of_products, size_t n, const Vector& x, size_t incx, const Vector& y, size_t incy) {
 			size_t ix, iy;
 			for (ix = 0, iy = 0; ix < n && iy < n; ix = ix + incx, iy = iy + incy) {
 				sum_of_products += sw::unum::quire_mul(x[ix], y[iy]);
@@ -77,7 +77,7 @@ namespace sw {
 		}
 		// Resolved fused dot product, with the option to control capacity bits in the quire
 		template<typename Vector, size_t capacity = 10>
-		typename Vector::value_type fused_dot(size_t n, const Vector& x, size_t incx, const Vector& y, size_t incy) {
+		typename Vector::value_type fdp_stride(size_t n, const Vector& x, size_t incx, const Vector& y, size_t incy) {
 			constexpr size_t nbits = typename Vector::value_type::nbits;
 			constexpr size_t es = typename Vector::value_type::es;
 			sw::unum::quire<nbits, es, capacity> q = 0;
@@ -93,7 +93,7 @@ namespace sw {
 		// Specialized resolved fused dot product that assumes unit stride and a standard vector,
 		// with the option to control capacity bits in the quire
 		template<typename Vector, size_t capacity = 10>
-		typename Vector::value_type fused_dot(const Vector& x, const Vector& y) {
+		typename Vector::value_type fdp(const Vector& x, const Vector& y) {
 			constexpr size_t nbits = typename Vector::value_type::nbits;
 			constexpr size_t es = typename Vector::value_type::es;
 			sw::unum::quire<nbits, es, capacity> q = 0;

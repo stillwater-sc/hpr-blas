@@ -1,6 +1,6 @@
 // fused-dot-product.cpp example program showing a fused-dot product for error free linear algebra
 //
-// Copyright (C) 2017 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 
@@ -74,7 +74,7 @@ try {
 //		printVector(cout, "px", py);
 
 		steady_clock::time_point t1 = steady_clock::now();
-		Posit presult = sw::hprblas::fused_dot(px, py);
+		Posit presult = sw::hprblas::fdp(px, py);
 		steady_clock::time_point t2 = steady_clock::now();
 		double ops = vecSize * 2.0; // dot product is vecSize products and vecSize adds
 		cout << "FDP product     is " << presult << endl;
