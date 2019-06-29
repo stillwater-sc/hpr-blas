@@ -215,33 +215,30 @@ namespace sw {
 			}
 		}
 
-		template<typename Ty>
-		void eye(std::vector<Ty>& I) {
-			// preconditions
-			int d = int(std::sqrt(I.size()));
-			assert(I.size() == d*d);
-			for (int i = 0; i < d; ++i) {
-				for (int j = 0; j < d; ++j) {
-					I[i*d + j] = (i == j ? Ty(1) : Ty(0));
-				}
-			}
-		}
-
 		// LEVEL 3 BLAS operators
 
-		template<typename Ty>
-		void matmul(const std::vector<Ty>& A, const std::vector<Ty>& B, std::vector<Ty>& C) {
-			// preconditions
-			int d = int(std::sqrt(A.size()));
-			assert(A.size() == d*d);
-			assert(B.size() == d*d);
-			assert(C.size() == d*d);
-			for (int i = 0; i < d; ++i) {
-				for (int j = 0; j < d; ++j) {
-					C[i*d + j] = Ty(0);
-					for (int k = 0; k < d; ++k) {
-						C[i*d + j] = C[i*d + j] + A[i*d + k] * B[k*d + j];
+		template<typename Matrix>
+		void matmul(Matrix& C, const Matrix& A, const Matrix& B) {
+			C = A * B;
+		}
+
+		// C = A * B fused matrix-matrix product when posits are used
+		template<size_t nbits, size_t es>
+		void matmul(mtl::mat::dense2D< sw::unum::posit<nbits, es> >& C, const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& B) {
+			// precondition
+			assert(A.num_cols() == B.num_rows());
+			assert(C.num_rows() == A.num_rows());
+			assert(C.num_cols() == B.num_cols());
+			size_t nr = C.num_rows();
+			size_t nc = C.num_cols();
+			size_t nk = A.num_cols();
+			for (size_t i = 0; i < nr; ++i) {
+				for (size_t j = 0; j < nc; ++j) {
+					sw::unum::quire<nbits, es> q = 0;
+					for (size_t k = 0; k < nk; ++k) {
+						q += sw::unum::quire_mul(A[i][k], B[k][j]);
 					}
+					convert(q.to_value(), C[i][j]);     // one and only rounding step of the fused-dot product
 				}
 			}
 		}
