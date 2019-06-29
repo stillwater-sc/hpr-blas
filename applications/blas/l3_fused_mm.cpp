@@ -15,15 +15,17 @@
 #include "vector_utils.hpp"
 #include "matrix_utils.hpp"
 
-template<typename Scalar, size_t N>
-void GenerateHilbertMatrixTest() {
+template<typename Scalar>
+void GenerateHilbertMatrixTest(size_t N) {
 	using namespace std;
+	using namespace mtl;
 	using namespace sw::hprblas;
-	vector<Scalar> A(N*N), B(N*N), C(N*N);
-	GenerateHilbertMatrix(N, A);
-	GenerateHilbertMatrixInverse(N, B);
-	init(C, Scalar(0.0));
-	matmul(A, B, C);
+	cout << "Value type is " << typeid(Scalar).name() << endl;
+	mtl::mat::dense2D<Scalar> A(N, N), B(N, N), C(N, N);
+	GenerateHilbertMatrix(A, Scalar(3*5*7*11*13*17));
+	GenerateHilbertMatrixInverse(B);
+	C = 0;
+	matmul(C, A, B);
 	printMatrix(cout, "A matrix", A);
 	printMatrix(cout, "B matrix", B);
 	printMatrix(cout, "C matrix", C);
@@ -37,14 +39,16 @@ try {
 
 	int nrOfFailedTestCases = 0;
 
-	constexpr size_t N = 5;
-	GenerateHilbertMatrixTest<posit<32, 2>, N>();
-	GenerateHilbertMatrixTest<posit<64, 3>, N>();
-	GenerateHilbertMatrixTest<posit<128, 4>, N>();
+	constexpr size_t N = 10;
+	cout << "posits\n";
+	GenerateHilbertMatrixTest< posit< 32, 2> >(N);
+	GenerateHilbertMatrixTest< posit< 64, 3> >(N);
+//	GenerateHilbertMatrixTest< posit<128, 4> >(N);
 
-	GenerateHilbertMatrixTest<float, N>();
-	GenerateHilbertMatrixTest<double, N>();
-	GenerateHilbertMatrixTest<long double, N>();
+	cout << "IEEE floating point\n";
+	GenerateHilbertMatrixTest<      float>(N);
+	GenerateHilbertMatrixTest<     double>(N);
+//	GenerateHilbertMatrixTest<long double>(N);
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }

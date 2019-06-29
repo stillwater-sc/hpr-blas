@@ -240,13 +240,14 @@ Generate random orthogonal matrix G. W. Stewart (1980).
 			Scalar denominator = Scalar(factorial(k)*factorial(n - k));
 			Scalar coef = numerator / denominator;
 			//	std::cout << numerator << " / " << denominator << " = " << coef << std::endl;
-			if (coef * denominator != numerator) std::cout << "FAIL: (" << n << " over " << k << ")" << std::endl;
+			if (coef * denominator != numerator) std::cout << "FAIL: (" << n << " over " << k << ")  coef = " << coef << " ( " << numerator << "/" << denominator << ") error = " << numerator - (coef * denominator) << std::endl;
 			return coef;
 		}
 
 		template<typename Scalar>
-		void GenerateHilbertMatrixInverse(int N, std::vector<Scalar>& m) {
-			assert(N*N == m.size());
+		void GenerateHilbertMatrixInverse(mtl::mat::dense2D<Scalar>& m, Scalar scale = 1.0) {
+			assert(m.num_rows() == m.num_cols());
+			size_t N = m.num_rows();
 			for (int i = 1; i <= N; ++i) {
 				for (int j = 1; j <= N; ++j) {
 					Scalar sign = ((i + j) % 2) ? Scalar(-1) : Scalar(1);
@@ -254,7 +255,7 @@ Generate random orthogonal matrix G. W. Stewart (1980).
 					Scalar factor2 = BinomialCoefficient<Scalar>(N + i - 1, N - j);
 					Scalar factor3 = BinomialCoefficient<Scalar>(N + j - 1, N - i);
 					Scalar factor4 = BinomialCoefficient<Scalar>(i + j - 2, i - 1);
-					m[(i - 1)*N + (j - 1)] = Scalar(sign * factor1 * factor2 * factor3 * factor4 * factor4);
+					m[i - 1][j - 1] = Scalar(sign * factor1 * factor2 * factor3 * factor4 * factor4);
 				}
 			}
 		}
