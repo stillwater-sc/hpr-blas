@@ -6,62 +6,38 @@
 #include "common.hpp"
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
+#define MTL_WITH_INITLIST
 #include <hprblas>
 #include "blas_utils.hpp"
 #include "vector_utils.hpp"
 
+
 int main(int argc, char** argv)
 try {
 	using namespace std;
+	using namespace mtl;
+	using namespace sw::unum;
 	using namespace sw::hprblas;
 
 	int nrOfFailedTestCases = 0;
 
 	{
-		vector<double> A = {
-			1.0, 0.0, 0.0,
-			0.0, 1.0, 0.0,
-			0.0, 0.0, 1.0
+		using Posit64 = posit<64, 3>;
+		Posit64 array[3][3] = {
+			{ 1.0, 0.0, 0.0 },
+		    { 0.0, 1.0, 0.0 },
+		    { 0.0, 0.0, 1.0 }
 		};
-		vector<double> x = { DBL_EPSILON, DBL_EPSILON, DBL_EPSILON };
-		vector<double> b(3);
+		size_t N = 5;
+		dense2D<Posit64> A(N,N);
+		dense_vector<Posit64> x(N);
+		dense_vector<Posit64> b(N);
+		x = 1.0;
+		Posit64 scale = 5 * 7 * 9;
+		GenerateHilbertMatrix(A, scale);
+		printMatrix(cout, "Hilbert Matrix", A);
 		matvec(A, x, b);
-		cout << setprecision(21);
 		printVector(cout, "b", b);
-		cout << setprecision(5) << endl;
-	}
-
-	{
-		// we can represent DBL_EPSILON with a 32-bit posit
-		using posit_32_2 = sw::unum::posit<32, 2>;
-
-		vector< posit_32_2 > A = {
-			1.0, 0.0, 0.0,
-			0.0, 1.0, 0.0,
-			0.0, 0.0, 1.0
-		};
-		vector<posit_32_2> x = { DBL_EPSILON, DBL_EPSILON, DBL_EPSILON };
-		vector<posit_32_2> b(3);
-		matvec(A, x, b);
-		cout << setprecision(21);
-		print(cout, 3, b, 1);
-		cout << setprecision(5) << endl;
-	}
-
-	{
-		using posit_32_2 = sw::unum::posit<32, 2>;
-		constexpr int n = 5;
-		vector< posit_32_2 > A(n*n);
-		randomVectorFillAroundOneEPS(n*n, A, 18);
-		vector< posit_32_2 > x(n), b(n);
-		randomVectorFillAroundZeroEPS(n, x, 0);
-		matvec(A, x, b);		// use template inference to match to a fused dot product version when you use posits
-		printMatrix(cout, "random matrix", A);
-		cout << endl;
-		print(cout, n, x, 1);
-		cout << endl;
-		print(cout, n, b, 1);
-		cout << setprecision(5) << endl;
 	}
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);

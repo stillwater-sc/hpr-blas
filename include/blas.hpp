@@ -13,9 +13,9 @@ namespace sw {
 		// LEVEL 1 BLAS operators
 
 		// sum of magnitudes of the vector elements
-		template<typename vector_T>
-		typename vector_T::value_type asum(size_t n, const vector_T& x, size_t incx) {
-			typename vector_T::value_type sum = 0;
+		template<typename Vector>
+		typename Vector::value_type asum(size_t n, const Vector& x, size_t incx) {
+			typename Vector::value_type sum = 0;
 			size_t ix;
 			for (ix = 0; ix < n; ix += incx) {
 				sum += x[ix];
@@ -24,8 +24,8 @@ namespace sw {
 		}
 
 		// a time x plus y
-		template<typename scale_T, typename vector_T>
-		void axpy(size_t n, scale_T a, const vector_T& x, size_t incx, vector_T& y, size_t incy) {
+		template<typename Scalar, typename Vector>
+		void axpy(size_t n, Scalar a, const Vector& x, size_t incx, Vector& y, size_t incy) {
 			size_t cnt, ix, iy;
 			for (cnt = 0, ix = 0, iy = 0; cnt < n && ix < x.size() && iy < y.size(); ++cnt, ix += incx, iy += incy) {
 				y[iy] += a * x[ix];
@@ -68,8 +68,8 @@ namespace sw {
 		/// fused dot product operators
 
 		// Fused dot product with quire continuation
-		template<typename Qy, typename Vector>
-		void fdp_qr(Qy& sum_of_products, size_t n, const Vector& x, size_t incx, const Vector& y, size_t incy) {
+		template<typename Quire, typename Vector>
+		void fdp_qr(Quire& sum_of_products, size_t n, const Vector& x, size_t incx, const Vector& y, size_t incy) {
 			size_t ix, iy;
 			for (ix = 0, iy = 0; ix < n && iy < n; ix = ix + incx, iy = iy + incy) {
 				sum_of_products += sw::unum::quire_mul(x[ix], y[iy]);
@@ -107,14 +107,14 @@ namespace sw {
 		}
 
 		// rotation of points in the plane
-		template<typename rotation_T, typename vector_T>
-		void rot(size_t n, vector_T& x, size_t incx, vector_T& y, size_t incy, rotation_T c, rotation_T s) {
+		template<typename Rotation, typename Vector>
+		void rot(size_t n, Vector& x, size_t incx, Vector& y, size_t incy, Rotation c, Rotation s) {
 			// x_i = c*x_i + s*y_i
 			// y_i = c*y_i - s*x_i
 			size_t cnt, ix, iy;
 			for (cnt = 0, ix = 0, iy = 0; cnt < n && ix < x.size() && iy < y.size(); ++cnt, ix += incx, iy += incy) {
-				rotation_T x_i = c*x[ix] + s*y[iy];
-				rotation_T y_i = c*y[iy] - s*x[ix];
+				Rotation x_i = c*x[ix] + s*y[iy];
+				Rotation y_i = c*y[iy] - s*x[ix];
 				y[iy] = y_i;
 				x[ix] = x_i;
 			}
@@ -127,8 +127,8 @@ namespace sw {
 		}
 
 		// scale a vector
-		template<typename scale_T, typename vector_T>
-		void scale(size_t n, scale_T a, vector_T& x, size_t incx) {
+		template<typename Scalar, typename Vector>
+		void scale(size_t n, Scalar a, Vector& x, size_t incx) {
 			size_t cnt, ix;
 			for (cnt = 0, ix = 0; cnt < n && ix < x.size(); ix += incx) {
 				x[ix] *= a;
@@ -136,20 +136,20 @@ namespace sw {
 		}
 
 		// swap two vectors
-		template<typename vector_T>
-		void swap(size_t n, vector_T& x, size_t incx, vector_T& y, size_t incy) {
+		template<typename Vector>
+		void swap(size_t n, Vector& x, size_t incx, Vector& y, size_t incy) {
 			size_t cnt, ix, iy;
 			for (cnt = 0, ix = 0, iy = 0; cnt < n && ix < x.size() && iy < y.size(); ++cnt, ix += incx, iy += incy) {
-				typename vector_T::value_type tmp = x[ix];
+				typename Vector::value_type tmp = x[ix];
 				x[ix] = y[iy];
 				y[iy] = tmp;
 			}
 		}
 
 		// find the index of the element with maximum absolute value
-		template<typename vector_T>
-		size_t amax(size_t n, const vector_T& x, size_t incx) {
-			typename vector_T::value_type running_max = -INFINITY;
+		template<typename Vector>
+		size_t amax(size_t n, const Vector& x, size_t incx) {
+			typename Vector::value_type running_max = -INFINITY;
 			size_t ix, index;
 			for (ix = 0; ix < x.size(); ix += incx) {
 				if (x[ix] > running_max) {
@@ -161,9 +161,9 @@ namespace sw {
 		}
 
 		// find the index of the element with minimum absolute value
-		template<typename vector_T>
-		size_t amin(size_t n, const vector_T& x, size_t incx) {
-			typename vector_T::value_type running_min = INFINITY;
+		template<typename Vector>
+		size_t amin(size_t n, const Vector& x, size_t incx) {
+			typename Vector::value_type running_min = INFINITY;
 			size_t ix, index;
 			for (ix = 0; ix < x.size(); ix += incx) {
 				if (x[ix] < running_min) {
@@ -180,8 +180,8 @@ namespace sw {
 		}
 
 		// print a vector
-		template<typename vector_T>
-		void print(std::ostream& ostr, size_t n, vector_T& x, size_t incx = 1) {
+		template<typename Vector>
+		void print(std::ostream& ostr, size_t n, Vector& x, size_t incx = 1) {
 			size_t cnt, ix;
 			for (cnt = 0, ix = 0; cnt < n && ix < x.size(); ++cnt, ix += incx) {
 				cnt == 0 ? ostr << "[" << x[ix] : ostr << ", " << x[ix];
@@ -191,39 +191,27 @@ namespace sw {
 
 
 		// LEVEL 2 BLAS operators
-		template<typename Ty>
-		void matvec(const std::vector<Ty>& A, const std::vector<Ty>& x, std::vector<Ty>& b) {
-			// preconditions
-			size_t d = x.size();
-			assert(A.size() == d*d);
-			assert(b.size() == d);
-			for (size_t i = 0; i < d; ++i) {
-				b[i] = 0;
-				for (size_t j = 0; j < d; ++j) {
-					//std::cout << "b[" << i << "] = " << b[i] << std::endl;
-					//std::cout << "A[" << i << "][" << j << "] = " << A[i*d + j] << std::endl;
-					//std::cout << "x[" << j << "] = " << x[j] << std::endl;
-					b[i] = b[i] + A[i*d + j] * x[j];
-				}
-				//std::cout << "b[" << i << "] = " << b[i] << std::endl;
-			}
+
+		// A times x = b matrix-vector product
+		template<typename Matrix, typename Vector>
+		void matvec(const Matrix& A, const Vector& x, Vector& b) {
+			b = A * x;
 		}
 
+		// A times x = b fused matrix-vector product
 		template<size_t nbits, size_t es>
-		void matvec(const std::vector< sw::unum::posit<nbits, es> >& A, const std::vector< sw::unum::posit<nbits, es> >& x, std::vector< sw::unum::posit<nbits, es> >& b) {
+		void matvec(const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& x, mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& b) {
 			// preconditions
-			size_t d = x.size();
-			assert(A.size() == d*d);
-			assert(b.size() == d);
-			for (size_t i = 0; i < d; ++i) {
-				b[i] = 0;
-				for (size_t j = 0; j < d; ++j) {
-					//std::cout << "b[" << i << "] = " << b[i] << std::endl;
-					//std::cout << "A[" << i << "][" << j << "] = " << A[i*d + j] << std::endl;
-					//std::cout << "x[" << j << "] = " << x[j] << std::endl;
-					b[i] = b[i] + A[i*d + j] * x[j];
+			assert(A.num_cols() == size(x));
+			assert(size(b) == A.num_rows());
+			size_t nr = size(b);
+			size_t nc = size(x);
+			for (size_t i = 0; i < nr; ++i) {
+				sw::unum::quire<nbits, es> q = 0;
+				for (size_t j = 0; j < nc; ++j) {
+					q += sw::unum::quire_mul(A[i][j], x[j]);
 				}
-				//std::cout << "b[" << i << "] = " << b[i] << std::endl;
+				convert(q.to_value(), b[i]);     // one and only rounding step of the fused-dot product
 			}
 		}
 
