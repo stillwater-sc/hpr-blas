@@ -218,11 +218,13 @@ Generate random orthogonal matrix G. W. Stewart (1980).
 		// Hilbert matrices
 
 		template<typename Scalar>
-		void GenerateHilbertMatrix(int N, std::vector<Scalar>& m) {
-			assert(N*N == m.size());
+		void GenerateHilbertMatrix(mtl::mat::dense2D<Scalar>& m, Scalar scale = 1.0) {
+			assert(m.num_rows() == m.num_cols());
+			size_t N = m.num_rows();
 			for (int i = 1; i <= N; ++i) {
 				for (int j = 1; j <= N; ++j) {
-					m[(i - 1)*N + (j - 1)] = Scalar(5 * 7 * 9) / Scalar(i + j - 1);
+//					m[i - 1][j - 1] = Scalar(5 * 7 * 9) / Scalar(i + j - 1);
+					m[i - 1][j - 1] = scale / Scalar(i + j - 1);
 				}
 			}
 		}
