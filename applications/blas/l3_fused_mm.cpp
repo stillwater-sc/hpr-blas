@@ -14,20 +14,26 @@
 #include "blas_utils.hpp"
 #include "vector_utils.hpp"
 #include "matrix_utils.hpp"
+#include <boost/multiprecision/cpp_bin_float.hpp>
+
+constexpr size_t bits_in_octand = 113 + 128;
+typedef boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<bits_in_octand, boost::multiprecision::backends::digit_base_2, void, boost::int16_t, -16382, 16383>, boost::multiprecision::expression_template_option::et_off> cpp_bin_float_octand;
 
 template<typename Scalar>
-void GenerateHilbertMatrixTest(size_t N) {
+void GenerateHilbertMatrixTest(size_t N, bool printA = false, bool printB = false) {
 	using namespace std;
 	using namespace mtl;
 	using namespace sw::hprblas;
 	cout << "Value type is " << typeid(Scalar).name() << endl;
 	mtl::mat::dense2D<Scalar> A(N, N), B(N, N), C(N, N);
-	GenerateHilbertMatrix(A, Scalar(3*5*7*11*13*17));
+	Scalar scalingFactor = Scalar( 11.0 * 12 * 13 * 14 * 15 * 16 * 17 * 18 * 19);
+	//scalingFactor = Scalar(1.0);
+	GenerateHilbertMatrix(A, scalingFactor);
 	GenerateHilbertMatrixInverse(B);
 	C = 0;
 	matmul(C, A, B);
-	printMatrix(cout, "A matrix", A);
-	printMatrix(cout, "B matrix", B);
+	if (printA) printMatrix(cout, "A matrix", A);
+	if (printB) printMatrix(cout, "B matrix", B);
 	printMatrix(cout, "C matrix", C);
 }
 
@@ -41,14 +47,19 @@ try {
 
 	constexpr size_t N = 10;
 	cout << "posits\n";
-	GenerateHilbertMatrixTest< posit< 32, 2> >(N);
+	GenerateHilbertMatrixTest< posit< 56, 3> >(N);
 	GenerateHilbertMatrixTest< posit< 64, 3> >(N);
 //	GenerateHilbertMatrixTest< posit<128, 4> >(N);
 
 	cout << "IEEE floating point\n";
-	GenerateHilbertMatrixTest<      float>(N);
-	GenerateHilbertMatrixTest<     double>(N);
-//	GenerateHilbertMatrixTest<long double>(N);
+	using sp = boost::multiprecision::cpp_bin_float_single;
+	using dp = boost::multiprecision::cpp_bin_float_double;
+	using qp = boost::multiprecision::cpp_bin_float_quad;
+	using op = cpp_bin_float_octand;
+	GenerateHilbertMatrixTest<sp>(N, true, true);
+	GenerateHilbertMatrixTest<dp>(N);
+	GenerateHilbertMatrixTest<qp>(N);
+	GenerateHilbertMatrixTest<op>(N);
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }

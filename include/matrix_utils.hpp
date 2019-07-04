@@ -218,7 +218,7 @@ Generate random orthogonal matrix G. W. Stewart (1980).
 		// Hilbert matrices
 
 		template<typename Scalar>
-		void GenerateHilbertMatrix(mtl::mat::dense2D<Scalar>& m, Scalar scale = 1.0) {
+		void GenerateHilbertMatrix(mtl::mat::dense2D<Scalar>& m, Scalar scale = Scalar(1.0)) {
 			assert(m.num_rows() == m.num_cols());
 			size_t N = m.num_rows();
 			for (int i = 1; i <= N; ++i) {
@@ -245,7 +245,7 @@ Generate random orthogonal matrix G. W. Stewart (1980).
 		}
 
 		template<typename Scalar>
-		void GenerateHilbertMatrixInverse(mtl::mat::dense2D<Scalar>& m, Scalar scale = 1.0) {
+		void GenerateHilbertMatrixInverse(mtl::mat::dense2D<Scalar>& m, Scalar scale = Scalar(1.0)) {
 			assert(m.num_rows() == m.num_cols());
 			size_t N = m.num_rows();
 			for (int i = 1; i <= N; ++i) {
