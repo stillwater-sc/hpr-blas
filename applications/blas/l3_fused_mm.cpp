@@ -26,9 +26,7 @@ void GenerateHilbertMatrixTest(size_t N, bool printA = false, bool printB = fals
 	using namespace sw::hprblas;
 	cout << "Value type is " << typeid(Scalar).name() << endl;
 	mtl::mat::dense2D<Scalar> A(N, N), B(N, N), C(N, N);
-	Scalar scalingFactor = Scalar( 11.0 * 12 * 13 * 14 * 15 * 16 * 17 * 18 * 19);
-	//scalingFactor = Scalar(1.0);
-	GenerateHilbertMatrix(A, scalingFactor);
+	GenerateHilbertMatrix(A);
 	GenerateHilbertMatrixInverse(B);
 	C = 0;
 	matmul(C, A, B);
@@ -37,25 +35,58 @@ void GenerateHilbertMatrixTest(size_t N, bool printA = false, bool printB = fals
 	printMatrix(cout, "C matrix", C);
 }
 
+
+/*
+Hilbert matrices have very large condition numbers and are a compact
+test case for linear algebra algorithms and number systems. 
+The Hilbert matrix and its inverse are known analytically and thus
+provide a perfect verification mechanism to test the computational
+dynamics of the algorithm and the arithmetic used.
+
+The condition number of a matrix is the ratio between the largest
+eigenvalue and the smallest eigenvalue. Any algorithms that need
+all the information in the matrix will need to be mindful of the
+interplay between precision and dynamic range.
+
+As posits are tapered floating point systems, precision at large
+and small scale is limited. But the quire enables deferred rounding
+removing any rounding noise. For Hilbert matrices this makes all 
+the difference.
+
+The first step to work with Hilbert matrices is to scale the input
+values to numbers that the number system can represent. The Hilbert
+matrix coefficient are all rational, but 'difficult' for floating
+point systems. Ratios such as 1/3, 1/6, 1/7, 1/9, 1/11, 1/13, etc.
+induce rounding error trying to represent them. Scaling the elements
+with the least common multiple resolves this problem.
+*/
 int main(int argc, char** argv)
 try {
 	using namespace std;
 	using namespace sw::unum;
 	using namespace sw::hprblas;
+	using sp = boost::multiprecision::cpp_bin_float_single;
+	using dp = boost::multiprecision::cpp_bin_float_double;
+	using qp = boost::multiprecision::cpp_bin_float_quad;
+	using op = cpp_bin_float_octand;
 
 	int nrOfFailedTestCases = 0;
 
+	for (size_t i = 8; i < 15; ++i) {
+		HilbertScalingFactor(i);
+	}
+
+	// TBD: N = 10 works, but N = 11 and up fails 
+	// What is the reason?
 	constexpr size_t N = 10;
+
 	cout << "posits\n";
 	GenerateHilbertMatrixTest< posit< 56, 3> >(N);
 	GenerateHilbertMatrixTest< posit< 64, 3> >(N);
 //	GenerateHilbertMatrixTest< posit<128, 4> >(N);
 
 	cout << "IEEE floating point\n";
-	using sp = boost::multiprecision::cpp_bin_float_single;
-	using dp = boost::multiprecision::cpp_bin_float_double;
-	using qp = boost::multiprecision::cpp_bin_float_quad;
-	using op = cpp_bin_float_octand;
+
 	GenerateHilbertMatrixTest<sp>(N, true, true);
 	GenerateHilbertMatrixTest<dp>(N);
 	GenerateHilbertMatrixTest<qp>(N);
