@@ -1,10 +1,10 @@
 #pragma once
 // matrix_utils.hpp :  include file containing templated utilities to work with matrices
 //
-// Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
-
+#include <cstdint>
 #include <random>
 #include <algorithm>
 #include "blas_utils.hpp"
@@ -217,14 +217,40 @@ Generate random orthogonal matrix G. W. Stewart (1980).
 
 		// Hilbert matrices
 
+
+		// Greatest Common Divisor of two numbers, a and b
+		size_t gcd(size_t a, size_t b)
+		{
+			if (b == 0)	return a;
+			return gcd(b, a % b);
+		}
+
+		// Least Common Multiple of n numbers
+		size_t findlcm(const std::vector<size_t>& v)
+		{
+			size_t lcm = v[0];
+			for (size_t i = 1; i < v.size(); i++) {
+				lcm = (v[i] * lcm) / gcd(v[i], lcm);
+			}
+			return lcm;
+		}
+
+		size_t HilbertScalingFactor(size_t N) {
+			std::vector<size_t> coef;
+			for (size_t i = 2; i <= N; ++i) coef.push_back(i);
+			for (size_t j = 2; j <= N; ++j) coef.push_back(N + j - 1);
+			std::cout << "LCM for Hilbert Matrix[" << N << "] = " << findlcm(coef) << std::endl;
+			return findlcm(coef);
+		}
+
 		template<typename Scalar>
-		void GenerateHilbertMatrix(mtl::mat::dense2D<Scalar>& m, Scalar scale = Scalar(1.0)) {
+		void GenerateHilbertMatrix(mtl::mat::dense2D<Scalar>& m, bool bScale = true) {
 			assert(m.num_rows() == m.num_cols());
 			size_t N = m.num_rows();
+			size_t lcm = HilbertScalingFactor(N);
 			for (int i = 1; i <= N; ++i) {
 				for (int j = 1; j <= N; ++j) {
-//					m[i - 1][j - 1] = Scalar(5 * 7 * 9) / Scalar(i + j - 1);
-					m[i - 1][j - 1] = scale / Scalar(i + j - 1);
+					m[i - 1][j - 1] = bScale ? Scalar(lcm) / Scalar(i + j - 1) : Scalar(i + j - 1);
 				}
 			}
 		}
