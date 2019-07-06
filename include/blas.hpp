@@ -5,7 +5,7 @@
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 
-#include <vector>
+#include <boost/numeric/mtl/mtl.hpp>
 
 namespace sw {
 	namespace hprblas {
@@ -217,6 +217,7 @@ namespace sw {
 
 		// LEVEL 3 BLAS operators
 
+		// C = A * B without deferred rounding
 		template<typename Matrix>
 		void matmul(Matrix& C, const Matrix& A, const Matrix& B) {
 			C = A * B;
@@ -224,7 +225,7 @@ namespace sw {
 
 		// C = A * B fused matrix-matrix product when posits are used
 		template<size_t nbits, size_t es>
-		void matmul(mtl::mat::dense2D< sw::unum::posit<nbits, es> >& C, const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& B) {
+		void matmul(mtl::mat::dense2D< sw::unum::posit<nbits, es> >& C, const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& B, bool fdp = true) {
 			// precondition
 			assert(A.num_cols() == B.num_rows());
 			assert(C.num_rows() == A.num_rows());
@@ -232,14 +233,19 @@ namespace sw {
 			size_t nr = C.num_rows();
 			size_t nc = C.num_cols();
 			size_t nk = A.num_cols();
-			for (size_t i = 0; i < nr; ++i) {
-				for (size_t j = 0; j < nc; ++j) {
-					sw::unum::quire<nbits, es> q = 0;
-					for (size_t k = 0; k < nk; ++k) {
-						q += sw::unum::quire_mul(A[i][k], B[k][j]);
+			if (fdp) {
+				for (size_t i = 0; i < nr; ++i) {
+					for (size_t j = 0; j < nc; ++j) {
+						sw::unum::quire<nbits, es> q = 0;
+						for (size_t k = 0; k < nk; ++k) {
+							q += sw::unum::quire_mul(A[i][k], B[k][j]);
+						}
+						convert(q.to_value(), C[i][j]);     // one and only rounding step of the fused-dot product
 					}
-					convert(q.to_value(), C[i][j]);     // one and only rounding step of the fused-dot product
 				}
+			}
+			else {
+				C = A * B;
 			}
 		}
 
