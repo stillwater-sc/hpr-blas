@@ -82,7 +82,10 @@ try {
 	// 1- the scaling factor still fits within a uint64, but is representable by the target number system
 	// 2- does the calculation path itself not able to deal with the dynamic range
 	// 3- are the binomial constants getting truncated  (the binomials fail under quad and oct precision)
-	constexpr size_t N = 10;
+	// 
+	// ETLO: July 6th, 2019: The source turned out to be the calculation of the Binomial coefficients.
+	// I was using a naive implementation for (n over k) = n!/(k!(n-k)!), and that was clipping
+	constexpr size_t N = 11;
 
 	cout << "posits\n";
 	GenerateHilbertMatrixTest< posit< 56, 3> >(N);
