@@ -72,23 +72,28 @@ try {
 
 	int nrOfFailedTestCases = 0;
 
-	for (size_t i = 8; i < 15; ++i) {
+	cout << "Scaling factors for a collection of Hilbert matrices\n";
+	for (size_t i = 2; i < 21; ++i) {
 		HilbertScalingFactor(i);
 	}
 
-	// TBD: N = 10 works, but N = 11 and up fails 
-	// What is the reason?
+	// TBD: N = 10 works, but N = 11 and up fails catastrophically... 
+	// don't know where the source of the failure is
+	// 1- the scaling factor still fits within a uint64, but is representable by the target number system
+	// 2- does the calculation path itself not able to deal with the dynamic range
+	// 3- are the binomial constants getting truncated  (the binomials fail under quad and oct precision)
 	constexpr size_t N = 10;
 
 	cout << "posits\n";
 	GenerateHilbertMatrixTest< posit< 56, 3> >(N);
 	GenerateHilbertMatrixTest< posit< 64, 3> >(N);
+//	GenerateHilbertMatrixTest< posit< 80, 3> >(N);
 //	GenerateHilbertMatrixTest< posit<128, 4> >(N);
 
 	cout << "IEEE floating point\n";
 
-	GenerateHilbertMatrixTest<sp>(N, true, true);
-	GenerateHilbertMatrixTest<dp>(N);
+//	GenerateHilbertMatrixTest<sp>(N, true, true);
+//	GenerateHilbertMatrixTest<dp>(N);
 	GenerateHilbertMatrixTest<qp>(N);
 	GenerateHilbertMatrixTest<op>(N);
 
