@@ -33,8 +33,7 @@ try {
 		dense_vector<Posit64> x(N);
 		dense_vector<Posit64> b(N);
 		x = 1.0;
-		Posit64 scale = 5 * 7 * 9;
-		GenerateHilbertMatrix(A, scale);
+		GenerateHilbertMatrix(A);
 		printMatrix(cout, "Hilbert Matrix", A);
 		matvec(A, x, b);
 		printVector(cout, "b", b);
