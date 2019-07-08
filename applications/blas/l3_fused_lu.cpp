@@ -6,6 +6,7 @@
 #include "common.hpp"
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
+#define MTL_WITH_INITLIST
 #include <hprblas>
 #include "blas_utils.hpp"
 
@@ -231,11 +232,11 @@ void EnumerateTestCases() {
 }
 
 template<size_t nbits, size_t es, size_t capacity = 10>
-void ComparePositDecompositions(std::vector< sw::unum::posit<nbits, es> >& A, std::vector< sw::unum::posit<nbits, es> >& x, std::vector< sw::unum::posit<nbits, es> >& b) {
+void ComparePositDecompositions(mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& x, mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& b) {
 	using namespace sw::hprblas;
-	size_t d = b.size();
+	size_t d =A.num_cols();
 	assert(A.size() == d*d);
-	std::vector< sw::unum::posit<nbits, es> > LU(d*d);
+	mtl::mat::dense2D< sw::unum::posit<nbits, es> > LU(d*d);
 
 	{
 		using namespace std::chrono;
@@ -296,12 +297,12 @@ void ComparePositDecompositions(std::vector< sw::unum::posit<nbits, es> >& A, st
 }
 
 
-template<typename Ty>
-void CompareIEEEDecompositions(std::vector<Ty>& A, std::vector<Ty>& x, std::vector<Ty>& b) {
+template<typename Matrix, typename Vector>
+void CompareIEEEDecompositions(Matrix& A, Vector& x, Vector& b) {
 	using namespace sw::hprblas;
-	size_t d = b.size();
+	size_t d = A.num_cols();
 	assert(A.size() == d*d);
-	std::vector<Ty> LU(d*d);
+	Matrix LU(d*d);
 
 	{
 		using namespace std::chrono;
@@ -320,7 +321,7 @@ void CompareIEEEDecompositions(std::vector<Ty>& A, std::vector<Ty>& x, std::vect
 
 
 	std::cout << std::endl;
-
+#if 0
 	{
 		using namespace std::chrono;
 		steady_clock::time_point t1 = steady_clock::now();
@@ -359,6 +360,7 @@ void CompareIEEEDecompositions(std::vector<Ty>& A, std::vector<Ty>& x, std::vect
 		printMatrix(std::cout, "Cholesky LU", LU);
 		printVector(std::cout, "Solution", x);
 	}
+#endif
 }
 
 /* TBD
@@ -436,8 +438,8 @@ try {
 	constexpr size_t es       =  1;
 	//constexpr size_t capacity = 10;
 
-	typedef float            IEEEType;
-	typedef posit<nbits, es> PositType;
+	using IEEEType = float;
+	using PositType = posit<nbits, es>;
 	cout << "Using " << dynamic_range(posit<nbits, es>()) << endl;
 
 	float eps = std::numeric_limits<float>::epsilon();
@@ -445,62 +447,75 @@ try {
 	float epsplus = 1.0f + eps;
 	// We want to solve the system Ax=b
 	int d = 5;
-	vector<IEEEType> Uieee = {     // define the upper triangular matrix
-		1.0, 2.0, 3.0, 4.0, 5.0,
-		0.0, 1.0, 2.0, 3.0, 4.0,
-		0.0, 0.0, 1.0, 2.0, 3.0,
-		0.0, 0.0, 0.0, 1.0, 2.0,
-		0.0, 0.0, 0.0, 0.0, 1.0,
+
+	// IEEE input data set up
+	cout << "IEEE inputs\n";
+	mtl::mat::dense2D<IEEEType> Uieee = {     // define the upper triangular matrix
+		{ 1.0, 2.0, 3.0, 4.0, 5.0 },
+		{ 0.0, 1.0, 2.0, 3.0, 4.0 },
+		{ 0.0, 0.0, 1.0, 2.0, 3.0 },
+		{ 0.0, 0.0, 0.0, 1.0, 2.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 1.0 },
 	};
-	vector<IEEEType> Lieee = {     // define the lower triangular matrix
-		1.0, 0.0, 0.0, 0.0, 0.0,
-		2.0, 1.0, 0.0, 0.0, 0.0,
-		3.0, 2.0, 1.0, 0.0, 0.0,
-		4.0, 3.0, 2.0, 1.0, 0.0,
-		5.0, 4.0, 3.0, 2.0, 1.0,
+	mtl::mat::dense2D<IEEEType> Lieee = {     // define the lower triangular matrix
+		{ 1.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 2.0, 1.0, 0.0, 0.0, 0.0 },
+		{ 3.0, 2.0, 1.0, 0.0, 0.0 },
+		{ 4.0, 3.0, 2.0, 1.0, 0.0 },
+		{ 5.0, 4.0, 3.0, 2.0, 1.0 },
 	};
-	vector<IEEEType> Aieee(d*d);
-	matmul(Lieee, Uieee, Aieee);   // construct the A matrix to solve
+	mtl::mat::dense2D<IEEEType> Aieee(d*d);
+	matmul(Aieee, Lieee, Uieee);   // construct the A matrix to solve
+	printMatrix(cout, "L", Lieee);
+	printMatrix(cout, "U", Uieee);
+	printMatrix(cout, "A", Aieee);
+
 	// define a difficult solution
-	vector<IEEEType> xieee = {
+	mtl::vec::dense_vector<IEEEType> xieee = {
 		epsplus,
 		epsplus,
 		epsplus,
 		epsplus,
 		epsplus
 	};
-	vector<IEEEType> bieee(d);
+	mtl::vec::dense_vector<IEEEType> bieee(d);
 	matvec(Aieee, xieee, bieee);   // construct the right hand side
+	printVector(cout, "b", bieee);
 
-	vector<PositType> Uposit = {   // define the upper triangular matrix
-		1.0, 2.0, 3.0, 4.0, 5.0,
-		0.0, 1.0, 2.0, 3.0, 4.0,
-		0.0, 0.0, 1.0, 2.0, 3.0,
-		0.0, 0.0, 0.0, 1.0, 2.0,
-		0.0, 0.0, 0.0, 0.0, 1.0,
+
+	// repeat set up for posits
+	cout << "Posit inputs\n";
+	mtl::mat::dense2D<PositType> Uposit = {     // define the upper triangular matrix
+		{ 1.0, 2.0, 3.0, 4.0, 5.0 },
+		{ 0.0, 1.0, 2.0, 3.0, 4.0 },
+		{ 0.0, 0.0, 1.0, 2.0, 3.0 },
+		{ 0.0, 0.0, 0.0, 1.0, 2.0 },
+		{ 0.0, 0.0, 0.0, 0.0, 1.0 },
 	};
-	vector<PositType> Lposit = {   // define the lower triangular matrix
-		1.0, 0.0, 0.0, 0.0, 0.0,
-		2.0, 1.0, 0.0, 0.0, 0.0,
-		3.0, 2.0, 1.0, 0.0, 0.0,
-		4.0, 3.0, 2.0, 1.0, 0.0,
-		5.0, 4.0, 3.0, 2.0, 1.0,
+	mtl::mat::dense2D<PositType> Lposit = {     // define the lower triangular matrix
+		{ 1.0, 0.0, 0.0, 0.0, 0.0 },
+		{ 2.0, 1.0, 0.0, 0.0, 0.0 },
+		{ 3.0, 2.0, 1.0, 0.0, 0.0 },
+		{ 4.0, 3.0, 2.0, 1.0, 0.0 },
+		{ 5.0, 4.0, 3.0, 2.0, 1.0 },
 	};
-	vector<PositType> Aposit(d*d);
-	matmul(Lposit, Uposit, Aposit);   // construct the A matrix to solve
+	mtl::mat::dense2D<PositType> Aposit(d*d);
+
+	matmul(Aposit, Lposit, Uposit);   // construct the A matrix to solve
+	printMatrix(cout, "L", Lposit);
+	printMatrix(cout, "U", Uposit); 
 	printMatrix(cout, "A", Aposit);
 	// define a difficult solution
-	vector<PositType> xposit = {
+	mtl::vec::dense_vector<PositType> xposit = {
 		epsplus,
 		epsplus,
 		epsplus,
 		epsplus,
 		epsplus
 	};
-	vector<PositType> bposit(d);
+	mtl::vec::dense_vector<PositType> bposit(d);
 	matvec<nbits, es>(Aposit, xposit, bposit);   // construct the right hand side
-
-
+	printVector(cout, "b", bposit);
 
 #if 0
 	cout << "posit<25,1>\n";

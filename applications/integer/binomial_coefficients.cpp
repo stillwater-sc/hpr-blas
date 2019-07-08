@@ -1,45 +1,35 @@
-// l2_fused_mv.cpp example program to demonstrate BLAS L2 Reproducible Matrix-Vector product
+// binomial_coefficients.cpp example program to test binomial coefficients for Hilbert matrix generation
 //
 // Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include "common.hpp"
+#include <boost/multiprecision/cpp_int.hpp>
+#include <iostream>
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
-#define MTL_WITH_INITLIST
 #include <hprblas>
-#include "blas_utils.hpp"
-#include "vector_utils.hpp"
 
-
-int main(int argc, char** argv)
+int main() 
 try {
 	using namespace std;
-	using namespace mtl;
-	using namespace sw::unum;
+	using namespace boost::multiprecision;
 	using namespace sw::hprblas;
 
-	int nrOfFailedTestCases = 0;
+	/*
+	int128_t v = factorial<int128_t>(20);
+	std::cout << v << std::endl;
 
-	{
-		using Posit64 = posit<64, 3>;
-		Posit64 array[3][3] = {
-			{ 1.0, 0.0, 0.0 },
-		    { 0.0, 1.0, 0.0 },
-		    { 0.0, 0.0, 1.0 }
-		};
-		size_t N = 5;
-		dense2D<Posit64> A(N,N);
-		dense_vector<Posit64> x(N);
-		dense_vector<Posit64> b(N);
-		x = 1.0;
-		GenerateHilbertMatrix(A);
-		printMatrix(cout, "Hilbert Matrix", A);
-		matvec(A, x, b);
-		printVector(cout, "b", b);
+	cpp_int u = factorial<cpp_int>(100);
+	std::cout << u << std::endl;
+	*/
+
+	for (uint64_t n = 1; n < 10; ++n) {
+		for (uint64_t k = 0; k <= n; ++k) {
+			cout << "Binomial(" << n << "," << k << ") = " << BinomialCoefficient(n, k) << endl;
+		}
 	}
-
-	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
+	return EXIT_SUCCESS;
 }
 catch (char const* msg) {
 	std::cerr << msg << std::endl;
@@ -57,8 +47,8 @@ catch (const posit_internal_exception& err) {
 	std::cerr << "Uncaught posit internal exception: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
-catch (const std::runtime_error& err) {
-	std::cerr << "Uncaught runtime exception: " << err.what() << std::endl;
+catch (std::runtime_error& err) {
+	std::cerr << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
 catch (...) {

@@ -77,7 +77,7 @@ void SolveCrout(const std::vector<Ty>& LU, const std::vector<Ty>& b, std::vector
 
 // Crout method using MTL data structures
 template<typename Ty>
-void Crout(const mtl::dense2D<Ty>& S, mtl::dense2D<Ty>& D) {
+void Crout(const mtl::mat::dense2D<Ty>& S, mtl::mat::dense2D<Ty>& D) {
 	assert(size(S) == size(D));
 	size_t d = num_rows(S);
 	for (size_t k = 0; k < d; ++k) {
