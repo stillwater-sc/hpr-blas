@@ -46,10 +46,15 @@ include_directories(${UNIVERSAL_INCLUDE_DIRS})
 message(STATUS "UNIVERSAL INCLUDE DIR " ${UNIVERSAL_INCLUDE_DIRS})
 
 # Set hpr-blas include directory
-include_directories("./include")
+include_directories("include")
+message(STATUS "HPR-BLAS INCLUDE DIR " "include")
 
-# Possibly not under Windows
-add_compile_options ( -std=c++11 -fext-numeric-literals )
+if(WIN)
+add_compile_options ( -std=c++11 )
+endif(WIN)
+if(UNIX)
+add_compile_options ( -std=gnu++11 -fext-numeric-literals )
+endif(UNIX)
 
 macro (compile_all testing prefix)
     # cycle through the sources
