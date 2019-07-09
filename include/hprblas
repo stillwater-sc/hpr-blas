@@ -61,12 +61,10 @@
 /// math functions
 #include "math_functions.hpp"
 
-// other stuff: TODO needs to be reorganized
+// the underlying matrix/vector machinery
 #include <boost/numeric/mtl/mtl.hpp>
-#include "vector_utils.hpp"
-#include "matrix_utils.hpp"
 #include "blas.hpp"
-#include "blas_utils.hpp"
+
 #include "lu_decomposition.hpp"
 #include "cholesky.hpp"
 

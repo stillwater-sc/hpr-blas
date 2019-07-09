@@ -1,6 +1,6 @@
 // dot.cpp: example program contrasting a BLAS L1 ?dot routine between FLOAT and POSIT
 //
-// Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
@@ -9,14 +9,16 @@
 #include <iostream>
 #include <ctime>
 
-#include <vector>
 #include <hprblas>
-
-using namespace std;
-using namespace sw::hprblas;
+#include <vector_utils.hpp>
+#include <matrix_utils.hpp>
+#include <print_utils.hpp>
 
 int main(int argc, char** argv)
 try {
+	using namespace std;
+	using namespace sw::hprblas;
+	// configure the posit environment
 	const size_t nbits = 32;
 	const size_t es = 2;
 	const size_t vecSize = 1024;

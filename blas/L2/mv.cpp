@@ -1,10 +1,12 @@
 // mv.cpp example program to demonstrate BLAS L2 Matrix-Vector product
 //
-// Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 #include <vector>
 #include <hprblas>
+#include <vector_utils.hpp>
+#include <print_utils.hpp>
 
 int main(int argc, char** argv)
 try {

@@ -8,7 +8,7 @@
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #define MTL_WITH_INITLIST
 #include <hprblas>
-#include "blas_utils.hpp"
+#include <print_utils.hpp>  // printing vectors and matrices
 
 // can the ratio a/b be represented exactly
 bool isRepresentable(int a, int b) {

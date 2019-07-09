@@ -8,8 +8,9 @@
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #define MTL_WITH_INITLIST
 #include <hprblas>
-#include "blas_utils.hpp"
-#include "vector_utils.hpp"
+#include <vector_utils.hpp>
+#include <matrix_utils.hpp>
+#include <print_utils.hpp>
 
 
 int main(int argc, char** argv)
@@ -33,9 +34,17 @@ try {
 		dense_vector<Posit64> x(N);
 		dense_vector<Posit64> b(N);
 		x = 1.0;
-		GenerateHilbertMatrix(A);
+		GenerateHilbertMatrix(A, false);
 		printMatrix(cout, "Hilbert Matrix", A);
 		matvec(A, x, b);
+		printVector(cout, "b", b);
+		size_t lcm = GenerateHilbertMatrix(A);
+		cout << endl;
+		cout << "Scaling factor for Hilbert matrix order " << N << " is " << lcm << endl;
+		printMatrix(cout, "Hilbert Matrix", A);
+		matvec(A, x, b);
+		printVector(cout, "b", b);
+		b /= lcm;
 		printVector(cout, "b", b);
 	}
 

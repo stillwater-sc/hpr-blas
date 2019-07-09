@@ -1,11 +1,13 @@
 // lu_decomposition.cpp example program comparing float vs posit LU decomposition algorithms
 //
-// Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
 #include "common.hpp"
 #include <hprblas>
+#include <mtl_extensions.hpp>
+#include <print_utils.hpp>
 
 template<size_t nbits, size_t es, size_t capacity = 10>
 void CroutCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector< sw::unum::posit<nbits, es> >& x, mtl::dense_vector< sw::unum::posit<nbits, es> >& b)

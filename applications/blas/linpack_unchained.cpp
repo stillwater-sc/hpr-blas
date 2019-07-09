@@ -3,7 +3,7 @@
 // create an idealized problem where both the input values and the correct answer 
 // are expressible in the numerical vocabulary of the computing environment.
 //
-// Copyright (C) 2017-18 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-19 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #pragma warning(disable : 4996)
@@ -14,10 +14,13 @@
 
 #include <boost/numeric/mtl/mtl.hpp>
 #include <boost/numeric/itl/itl.hpp>
-#include <posit>
-#include "blas.hpp"
+
+// if you need to configure the posit number system, do it before including <hprblas>
+#include <hprblas>
+// utilities to generate and print vectors and matrices
 #include "vector_utils.hpp"
 #include "matrix_utils.hpp"
+#include "print_utils.hpp"
 
 using namespace std;
 using namespace sw::unum;
@@ -60,7 +63,7 @@ try {
 		Vector x(N, 1.0), b(N);
 		// generate a uniform random matrix
 		//sw::hprblas::uniform_rand_sorted(A);
-		uniform_rand(A, -100.0, 100.0);
+		sw::hprblas::uniform_rand(A, -100.0, 100.0);
 
 #define MANUAL 0
 #if MANUAL
@@ -124,7 +127,7 @@ try {
 		Vector	x(4), b(4), xx(4);
 		double 	c = 1.0;
 
-		mtl::mat::uniform_rand(A);  // uniform random with values between [0,1]
+		sw::hprblas::uniform_rand(A);  // uniform random with values between [0,1]
 		LU = A;
 		lu(LU);
 		cout << A << endl;

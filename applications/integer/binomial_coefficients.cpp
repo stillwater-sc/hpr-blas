@@ -9,6 +9,7 @@
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #include <hprblas>
+#include <matrix_utils.hpp>
 
 int main() 
 try {

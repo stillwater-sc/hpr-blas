@@ -9,6 +9,7 @@
 #include "common.hpp"
 #include <vector>
 #include <hprblas>
+#include <matrix_utils.hpp>
 
 template<typename Ty>
 void MeasureMatrixMultiplyPerformance(const std::string& metric) {
@@ -25,8 +26,8 @@ void MeasureMatrixMultiplyPerformance(const std::string& metric) {
 		std::cout << "  Construction     " << elapsed << " seconds.\n";
 
 		t1 = steady_clock::now();
-		mtl::mat::uniform_rand(A, -1.0, 1.0);
-		mtl::mat::uniform_rand(B, -1.0, 1.0);
+		sw::hprblas::uniform_rand(A, -1.0, 1.0);
+		sw::hprblas::uniform_rand(B, -1.0, 1.0);
 		t2 = steady_clock::now();
 		time_span = duration_cast<duration<double>>(t2 - t1);
 		elapsed = time_span.count();

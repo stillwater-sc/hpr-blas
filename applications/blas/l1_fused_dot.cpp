@@ -9,6 +9,7 @@
 #include "common.hpp"
 #include <chrono>
 #include <hprblas>
+#include "print_utils.hpp"
 
 constexpr double pi = 3.14159265358979323846;  // best practice for C++
 
@@ -70,8 +71,8 @@ try {
 		FillDescending(px, 0.25*maxpos<nbits, es>());
 		FillAscending(py, 0.25*maxpos<nbits, es>());
 
-//		printVector(cout, "px", px);
-//		printVector(cout, "px", py);
+		printVector(cout, "px", px);
+		printVector(cout, "px", py);
 
 		steady_clock::time_point t1 = steady_clock::now();
 		Posit presult = sw::hprblas::fdp(px, py);
