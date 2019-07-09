@@ -1,12 +1,12 @@
 #pragma once
-// blas_utils.hpp :  include file containing templated utilities to work with vectors and matrices
+// print_utils.hpp :  include file containing templated utilities to work with vectors and matrices
 //
-// Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 
 namespace sw {
-	namespace hprblas {
+    namespace hprblas {
 
 		// These functions print matrices and vectors in a nice format
 		template<typename Matrix>
@@ -42,7 +42,7 @@ namespace sw {
 			ostr << "Vector: " << name << " is of size " << d << " elements" << std::endl;
 			std::streamsize old_prec = ostr.precision();
 			ostr << std::setprecision(17);
-			for (size_t j = 0; j<d; ++j) std::cout << std::setw(20) << double(v[j]) << " ";
+			for (auto&& element: v) std::cout << std::setw(20) << element << " ";
 			ostr << std::setprecision(old_prec) << std::endl;
 		}
 

@@ -1,10 +1,11 @@
 // test structure to collaborate with Simunova
 //
-// Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // Filename: eigenvalue_example.cpp (part of MTL4)
 
 #include <hprblas>
+#include <matrix_utils.hpp>
 
 using Matrix = mtl::mat::dense2D< double >;
 

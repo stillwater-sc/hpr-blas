@@ -1,6 +1,6 @@
 // mm.cpp example program comparing float vs posit matrix multiply algorithms
 //
-// Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
@@ -8,6 +8,7 @@
 #pragma warning( disable : 4996)
 #include "common.hpp"
 #include <hprblas>
+#include <matrix_utils.hpp>
 
 int morton_recursion()
 {
@@ -70,8 +71,8 @@ try {
 		cout << "  Construction     " << elapsed << " seconds.\n";
 
 		t1 = steady_clock::now();
-		mtl::mat::uniform_rand(A);
-		mtl::mat::uniform_rand(B);
+		sw::hprblas::uniform_rand(A);
+		sw::hprblas::uniform_rand(B);
 		t2 = steady_clock::now();
 		time_span = duration_cast< duration<double> >(t2 - t1);
 		elapsed = time_span.count();

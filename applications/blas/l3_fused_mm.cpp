@@ -11,7 +11,7 @@
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #include <hprblas>
-#include "blas_utils.hpp"
+#include "print_utils.hpp"
 #include "vector_utils.hpp"
 #include "matrix_utils.hpp"
 #include <boost/multiprecision/cpp_bin_float.hpp>
