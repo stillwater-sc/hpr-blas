@@ -329,13 +329,15 @@ void GenerateHilbertMatrixInverse(mtl::mat::dense2D<Scalar>& m, Scalar scale = S
 			Scalar factor2 = BinomialCoefficient<uint64_t>(N + i - 1, N - j);
 			Scalar factor3 = BinomialCoefficient<uint64_t>(N + j - 1, N - i);
 			Scalar factor4 = BinomialCoefficient<uint64_t>(i + j - 2, i - 1);
+			m[i - 1][j - 1] = Scalar(sign * factor1 * factor2 * factor3 * factor4 * factor4);
+			/* for tracing dynamic range failures
 			std::cout << "element " << i << "," << j << std::endl;
 			std::cout << "sign    " << sign << std::endl;
 			std::cout << "factor1 " << factor1 << std::endl;
 			std::cout << "factor2 " << factor2 << std::endl;
 			std::cout << "factor3 " << factor3 << std::endl;
 			std::cout << "factor4 " << factor4 << std::endl;
-			m[i - 1][j - 1] = Scalar(sign * factor1 * factor2 * factor3 * factor4 * factor4);
+			*/
 		}
 	}
 }

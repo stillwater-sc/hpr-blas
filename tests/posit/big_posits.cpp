@@ -57,11 +57,15 @@ try {
 	bool bReportIndividualTestCases = false;
 	std::string tag = " big posit conversion experiments";
 
-	Sample<unsigned long>((unsigned long)1);
-	Sample<unsigned long>((unsigned long)2);
-	Sample<unsigned long long>((unsigned long long)1);
-	Sample<unsigned long long>((unsigned long long)2);
-	Sample<unsigned long long>((unsigned long long)4);
+	posit<80, 3> p;
+	p = 1ull;
+	p = 2ull;
+
+	Sample(1);
+	Sample(2);
+	Sample(1ull);
+	Sample(2ull);
+	Sample(1.0f);
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
