@@ -1,5 +1,4 @@
 #pragma once
-
 //  posit_test_helpers.hpp : functions to aid in testing and test reporting on posit types.
 // Needs to be included after posit type is declared.
 //
@@ -11,6 +10,9 @@
 #include <typeinfo>
 #include <random>
 #include <limits>
+
+// bring in arbitrary precision floats
+#include <boost/multiprecision/cpp_bin_float.hpp>
 
 namespace sw {
 	namespace unum {
@@ -720,7 +722,7 @@ namespace sw {
 		// Basic design is that we generate nrOfRandom posit values and store them in an operand array.
 		// We will then execute the binary operator nrOfRandom combinations.
 		template<size_t nbits, size_t es>
-		int ValidateThroughRandoms(std::string tag, bool bReportIndividualTestCases, int opcode, uint32_t nrOfRandoms) {
+		int VerifyThroughRandoms(std::string tag, bool bReportIndividualTestCases, int opcode, uint32_t nrOfRandoms) {
 			const size_t SIZE_STATE_SPACE = nrOfRandoms;
 			int nrOfFailedTests = 0;
 			posit<nbits, es> pa, pb, presult, preference;
@@ -749,21 +751,18 @@ namespace sw {
 			std::mt19937_64 eng(rd()); //Use the 64-bit Mersenne Twister 19937 generator and seed it with entropy.
 									   //Define the distribution, by default it goes from 0 to MAX(unsigned long long)
 			std::uniform_int_distribution<unsigned long long> distr;
-#ifdef POSIT_USE_LONG_DOUBLE
-			std::vector<long double> operand_values(SIZE_STATE_SPACE);
+
+			// set the reference arithmetic
+			using namespace boost::multiprecision;
+			typedef number<backends::cpp_bin_float<3*nbits, backends::digit_base_2, void, boost::int16_t, -16382, 16383>, et_off> reffloat;
+			
+			std::vector<reffloat> operand_values(SIZE_STATE_SPACE);
 			for (uint32_t i = 0; i < SIZE_STATE_SPACE; i++) {
 				presult.set_raw_bits(distr(eng));  // take the bottom nbits bits as posit encoding
-				operand_values[i] = (long double)(presult);
+				operand_values[i] = reffloat(presult);
 			}
-			long double da, db;
-#else // USE DOUBLE
-			std::vector<double> operand_values(SIZE_STATE_SPACE);
-			for (uint32_t i = 0; i < SIZE_STATE_SPACE; i++) {
-				presult.set_raw_bits(distr(eng));  // take the bottom nbits bits as posit encoding
-				operand_values[i] = double(presult);
-			}
-			double da, db;
-#endif // POSIT_USE_LONG_DOUBLE
+			reffloat da, db;
+
 			unsigned ia, ib;  // random indices for picking operands to test
 			for (unsigned i = 1; i < nrOfRandoms; i++) {
 				ia = std::rand() % SIZE_STATE_SPACE;

@@ -16,7 +16,7 @@ namespace sw {
 			std::streamsize old_prec = ostr.precision();
 			ostr << std::setprecision(17);
 			for (size_t i = 0; i<d; ++i) {
-				for (size_t j = 0; j<d; ++j) std::cout << std::setw(20) << double(M[i][j]) << " ";
+				for (size_t j = 0; j<d; ++j) std::cout << std::setw(20) << M[i][j] << " ";
 				ostr << std::endl;
 			}
 			ostr << std::setprecision(old_prec);
@@ -30,7 +30,7 @@ namespace sw {
 			std::streamsize old_prec = ostr.precision();
 			ostr << std::setprecision(17);
 			for (size_t i = 0; i<d; ++i) {
-				for (size_t j = 0; j<d; ++j) std::cout << std::setw(20) << double(M[i*d + j]) << " ";
+				for (size_t j = 0; j<d; ++j) std::cout << std::setw(20) << M[i*d + j] << " ";
 				ostr << std::endl;
 			}
 			ostr << std::setprecision(old_prec);

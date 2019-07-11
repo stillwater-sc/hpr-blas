@@ -10,6 +10,8 @@
 #define QUIRE_TRACE_ADD
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
+// to capture all the possible bits, use 
+#define POSIT_ROUNDING_ERROR_FREE_IO_FORMAT 1
 #include <hprblas>
 #include "print_utils.hpp"
 #include "vector_utils.hpp"
@@ -84,21 +86,22 @@ try {
 	// 3- are the binomial constants getting truncated  (the binomials fail under quad and oct precision)
 	// 
 	// ETLO: July 6th, 2019: The source turned out to be the calculation of the Binomial coefficients.
-	// I was using a naive implementation for (n over k) = n!/(k!(n-k)!), and that was clipping
-	constexpr size_t N = 11;
+	// I was using a naive implementation for (n over k) = n!/(k!(n-k)!), and that was surpassing the
+	// maximum value of the number system.
+	constexpr size_t N = 2;
 
 	cout << "posits\n";
-	GenerateHilbertMatrixTest< posit< 56, 3> >(N);
-	GenerateHilbertMatrixTest< posit< 64, 3> >(N);
-//	GenerateHilbertMatrixTest< posit< 80, 3> >(N);
+//	GenerateHilbertMatrixTest< posit< 56, 3> >(N);
+	GenerateHilbertMatrixTest< posit< 64, 3> >(N, true, true);
+	GenerateHilbertMatrixTest< posit< 80, 3> >(N, true, true);
 //	GenerateHilbertMatrixTest< posit<128, 4> >(N);
 
 	cout << "IEEE floating point\n";
 
 //	GenerateHilbertMatrixTest<sp>(N, true, true);
 //	GenerateHilbertMatrixTest<dp>(N);
-	GenerateHilbertMatrixTest<qp>(N);
-	GenerateHilbertMatrixTest<op>(N);
+//	GenerateHilbertMatrixTest<qp>(N);
+//	GenerateHilbertMatrixTest<op>(N);
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
