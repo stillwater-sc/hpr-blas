@@ -1,0 +1,44 @@
+
+
+tomtz@SW-LAPTOP-250 MINGW64 /C/Users/tomtz/Documents/dev/clones/hpr-blas/build/applications/blas/Release (master)
+$ time ./blas_l3_fused_mm.exe > ../../../../applications/blas/Hilbert-10x10.log
+
+real    0m0.723s
+user    0m0.015s
+sys     0m0.015s
+
+tomtz@SW-LAPTOP-250 MINGW64 /C/Users/tomtz/Documents/dev/clones/hpr-blas/build/applications/blas/Release (master)
+$ time ./blas_l3_fused_mm.exe > ../../../../applications/blas/Hilbert-11x11.log
+
+real    0m0.945s
+user    0m0.000s
+sys     0m0.015s
+
+tomtz@SW-LAPTOP-250 MINGW64 /C/Users/tomtz/Documents/dev/clones/hpr-blas/build/applications/blas/Release (master)
+$ time ./blas_l3_fused_mm.exe > ../../../../applications/blas/Hilbert-12x12.log
+
+real    0m1.562s
+user    0m0.000s
+sys     0m0.015s
+
+tomtz@SW-LAPTOP-250 MINGW64 /C/Users/tomtz/Documents/dev/clones/hpr-blas/build/applications/blas/Release (master)
+$ time ./blas_l3_fused_mm.exe > ../../../../applications/blas/Hilbert-13x13.log
+
+real    0m3.022s
+user    0m0.000s
+sys     0m0.046s
+
+tomtz@SW-LAPTOP-250 MINGW64 /C/Users/tomtz/Documents/dev/clones/hpr-blas/build/applications/blas/Release (master)
+$ time ./blas_l3_fused_mm.exe > ../../../../applications/blas/Hilbert-14x14.log
+
+real    0m8.195s
+user    0m0.000s
+sys     0m0.031s
+
+tomtz@SW-LAPTOP-250 MINGW64 /C/Users/tomtz/Documents/dev/clones/hpr-blas/build/applications/blas/Release (master)
+$ time ./blas_l3_fused_mm.exe > ../../../../applications/blas/Hilbert-18x18.log
+
+real    27m58.734s
+user    0m0.000s
+sys     0m0.015s
+

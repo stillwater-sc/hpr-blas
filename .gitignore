@@ -13,4 +13,5 @@ cmake-build-debug
 *.kdev4
 
 # Log files
-*.log
+# we are using logs for reporting application results
+#*.log
