@@ -42,3 +42,18 @@ real    27m58.734s
 user    0m0.000s
 sys     0m0.015s
 
+tomtz@sw-desktop-300 MINGW64 /F/Users/tomtz/dev/clones/hpr-blas/build/applications/blas/Release (master)
+time ./h19x19.exe > ../../../../applications/blas/Hilbert/Hilbert-19x19.log
+
+real    115m43.204s
+user    0m0.000s
+sys     0m0.000s
+
+tomtz@sw-desktop-300 MINGW64 /F/Users/tomtz/dev/clones/hpr-blas/build/applications/blas/Release (master)
+$ time ./h20x20.exe > ../../../../applications/blas/Hilbert/Hilbert-20x20.log
+
+real    457m14.671s
+user    0m0.000s
+sys     0m0.031s
+
+
