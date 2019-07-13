@@ -1,12 +1,8 @@
-// fused-dot-product.cpp example program showing a fused-dot product for error free linear algebra
+// fused_dot.cpp example program showing a fused-dot product for error free linear algebra
 //
 // Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
-
-// enable the mathematical constants in cmath: old-style preprocessor magic which isn't best practice anymore
-#define _USE_MATH_DEFINES
-#include "common.hpp"
 #include <chrono>
 #include <hprblas>
 #include "print_utils.hpp"
