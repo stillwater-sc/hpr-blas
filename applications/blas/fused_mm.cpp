@@ -13,6 +13,17 @@
 #include <matrix_utils.hpp>
 #include <print_utils.hpp>
 
+template<typename Matrix>
+bool isEqual(const Matrix& lhs, const Matrix& rhs) {
+	size_t r = lhs.num_rows();
+	size_t c = lhs.num_cols();
+	for (size_t i = 0; i < r; ++i) {
+		for (size_t j = 0; j < c; ++j) {
+			if (lhs[i][j] != rhs[i][j]) return false;
+		}
+	}
+	return true;
+}
 
 int main(int argc, char** argv)
 try {
@@ -42,6 +53,13 @@ try {
 	I = I / lcm;
 
 	printMatrix(cout, "H * H^-1", I);
+
+	mtl::mat::dense2D<Scalar> eye(N, N);
+	eye = Scalar(1);
+
+	if (!isEqual(I, eye)) ++nrOfFailedTestCases;
+
+	if (nrOfFailedTestCases) cout << "FAIL" << endl; else cout << "PASS" << endl;
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
