@@ -1,4 +1,4 @@
-// l3_fused_mv.cpp example program to demonstrate BLAS L3 Reproducible Matrix-Matrix product
+// factorial.cpp example program to demonstrate factorials with arbitrary precision number systems
 //
 // Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
