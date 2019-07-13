@@ -88,7 +88,7 @@ try {
 	// ETLO: July 6th, 2019: The source turned out to be the calculation of the Binomial coefficients.
 	// I was using a naive implementation for (n over k) = n!/(k!(n-k)!), and that was surpassing the
 	// maximum value of the number system.
-	constexpr size_t N = 10;
+	constexpr size_t N = 12;
 
 	cout << "posits\n";
 //	GenerateHilbertMatrixTest< posit< 56, 3> >(N);
