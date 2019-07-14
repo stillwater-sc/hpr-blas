@@ -249,7 +249,7 @@ void uniform_rand_orthogonal(Matrix& A) {
 }
 
 //
-// fill a dense upper-triangular matrix with elements: [i][j] = 1 + j - i
+// fill a dense upper-triangular matrix with elements: [i][j] = 0.5 + (1 + j - i)*0.5
 template <typename Matrix>
 void fill_U(Matrix& A, double lowerbound = 0.0, double upperbound = 1.0)
 {
@@ -266,14 +266,15 @@ void fill_U(Matrix& A, double lowerbound = 0.0, double upperbound = 1.0)
 		// generate and insert random values in A
 		for (size_type r = 0; r < num_rows(A); r++) {
 			for (size_type c = r; c < num_cols(A); c++) {
-				ins[r][c] << value_type(1 + c - r);
+				ins[r][c] << value_type(0.5) + value_type(1 + c - r)*value_type(0.5);
+				ins[r][c] << value_type(1.0);
 			}
 		}
 		// Destructor of ins sets final state of m
 	}
 }
 
-// fill a dense lower-triangular matrix with elements: [i][j] = 1 + i - j
+// fill a dense lower-triangular matrix with elements: [i][j] = 0.5 + (1 + i - j)*0.5
 template <typename Matrix>
 void fill_L(Matrix& A, double lowerbound = 0.0, double upperbound = 1.0)
 {
@@ -290,7 +291,9 @@ void fill_L(Matrix& A, double lowerbound = 0.0, double upperbound = 1.0)
 		// generate and insert random values in A
 		for (size_type r = 0; r < num_rows(A); r++) {
 			for (size_type c = 0; c <= r; c++) {
-				ins[r][c] << value_type(1 + r - c);
+				ins[r][c] << value_type(0.5) + value_type(1 + r - c)*value_type(0.5);
+				ins[r][c] << value_type(1.0);
+
 			}
 		}
 		// Destructor of ins sets final state of m

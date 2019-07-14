@@ -98,7 +98,18 @@ void CroutFDP(mtl::dense2D< sw::unum::posit<nbits, es> >& S, mtl::dense2D< sw::u
 			for (int p = 0; p < k; ++p) q += quire_mul(D[i][p], D[p][k]);
 			posit<nbits, es> sum;
 			convert(q.to_value(), sum);     // one and only rounding step of the fused-dot product
+			// TODO: can we add the difference to the quire operation?
 			D[i][k] = S[i][k] - sum; // not dividing by diagonals
+
+#if HPRBLAS_TRACE_ROUNDING_EVENTS
+			quire<nbits, es, capacity> qsum = sum;
+			q -= qsum;
+			if (!q.iszero()) {
+				sw::unum::posit<nbits, es> roundingError;
+				convert(q.to_value(), roundingError);
+				std::cout << "D[" << i << "," << k << "] rounding error: " << roundingError << std::endl;
+			}
+#endif
 		}
 		for (int j = k + 1; j < d; ++j) {
 			quire<nbits, es, capacity> q;
@@ -108,6 +119,17 @@ void CroutFDP(mtl::dense2D< sw::unum::posit<nbits, es> >& S, mtl::dense2D< sw::u
 			posit<nbits, es> sum;
 			convert(q.to_value(), sum);   // one and only rounding step of the fused-dot product
 			D[k][j] = (S[k][j] - sum) / D[k][k];
+
+#if HPRBLAS_TRACE_ROUNDING_EVENTS
+			quire<nbits, es, capacity> qsum = sum;
+			q -= qsum;
+			if (!q.iszero()) {
+				sw::unum::posit<nbits, es> roundingError;
+				convert(q.to_value(), roundingError);
+				std::cout << "D[" << k << "," << j << "] rounding error: " << roundingError << std::endl;
+			}
+#endif
+
 		}
 	}
 }
