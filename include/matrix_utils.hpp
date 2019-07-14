@@ -248,6 +248,55 @@ void uniform_rand_orthogonal(Matrix& A) {
 
 }
 
+//
+// fill a dense upper-triangular matrix with elements: [i][j] = 1 + j - i
+template <typename Matrix>
+void fill_U(Matrix& A, double lowerbound = 0.0, double upperbound = 1.0)
+{
+	using namespace mtl;
+	typedef typename Collection<Matrix>::value_type    value_type;
+	typedef typename Collection<Matrix>::size_type     size_type;
+
+	// inserters add to the elements, so we need to set the value to 0 before we begin
+	A = 0.0;
+	{ // extra block unfortunately needed for VS2013
+		// Create inserter for matrix m
+		mat::inserter<Matrix> ins(A, num_cols(A));
+
+		// generate and insert random values in A
+		for (size_type r = 0; r < num_rows(A); r++) {
+			for (size_type c = r; c < num_cols(A); c++) {
+				ins[r][c] << value_type(1 + c - r);
+			}
+		}
+		// Destructor of ins sets final state of m
+	}
+}
+
+// fill a dense lower-triangular matrix with elements: [i][j] = 1 + i - j
+template <typename Matrix>
+void fill_L(Matrix& A, double lowerbound = 0.0, double upperbound = 1.0)
+{
+	using namespace mtl;
+	typedef typename Collection<Matrix>::value_type    value_type;
+	typedef typename Collection<Matrix>::size_type     size_type;
+
+	// inserters add to the elements, so we need to set the value to 0 before we begin
+	A = 0.0;
+	{ // extra block unfortunately needed for VS2013
+		// Create inserter for matrix m
+		mat::inserter<Matrix> ins(A, num_cols(A));
+
+		// generate and insert random values in A
+		for (size_type r = 0; r < num_rows(A); r++) {
+			for (size_type c = 0; c <= r; c++) {
+				ins[r][c] << value_type(1 + r - c);
+			}
+		}
+		// Destructor of ins sets final state of m
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 /// Hilbert matrices
 
