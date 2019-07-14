@@ -1,6 +1,6 @@
 // lu_decomposition.cpp example program comparing float vs posit equation solver
 //
-// Copyright (C) 2017-18 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 

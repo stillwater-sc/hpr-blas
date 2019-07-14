@@ -1,5 +1,5 @@
 #pragma once
-// matrix_utils.hpp :  include file containing templated utilities to work with matrices
+// mtl_extensions.hpp :  include file containing templated utilities to work with matrices
 //
 // Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //

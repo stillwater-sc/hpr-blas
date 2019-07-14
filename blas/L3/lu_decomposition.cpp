@@ -4,9 +4,12 @@
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
-#include "common.hpp"
+#include <chrono>
+// configure the posit number system behavior
+#define POSIT_ROUNDING_ERROR_FREE_IO_FORMAT 1
 #include <hprblas>
 #include <mtl_extensions.hpp>
+#include <matrix_utils.hpp>
 #include <print_utils.hpp>
 
 template<size_t nbits, size_t es, size_t capacity = 10>
@@ -14,9 +17,11 @@ void CroutCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector
 {
 	using namespace sw::hprblas;
 
-	size_t d = size(b);
-	assert(size(A) == d*d);
-	mtl::dense2D< sw::unum::posit<nbits, es> > LU(d,d);
+	assert(num_cols(A) == size(x));
+	size_t N = size(x);
+	mtl::dense2D< sw::unum::posit<nbits, es> > LU(N, N);
+
+	std::cout << "----------------- Crout cycle ------------------------\n";
 	using namespace std::chrono;
 	steady_clock::time_point t1 = steady_clock::now();
 	Crout(A, LU);
@@ -24,7 +29,7 @@ void CroutCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector
 	duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
 	double elapsed = time_span.count();
 	std::cout << "Crout took " << elapsed << " seconds." << std::endl;
-	std::cout << "Performance " << (uint32_t)(d*d*d / (1000 * elapsed)) << " KOPS/s" << std::endl;
+	std::cout << "Performance " << (uint32_t)(N*N*N / (1000 * elapsed)) << " KOPS/s" << std::endl;
 	SolveCrout(LU, b, x);
 	printMatrix(std::cout, "Crout LU", LU);
 	printVector(std::cout, "Crout Solution", x);
@@ -38,6 +43,8 @@ void CroutFDPCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vec
 	size_t d = size(b);
 	assert(size(A) == d*d);
 	mtl::dense2D< sw::unum::posit<nbits, es> > LU(d, d);
+
+	std::cout << "----------------- Crout FDP cycle --------------------\n";
 	using namespace std::chrono;
 	steady_clock::time_point t1 = steady_clock::now();
 	CroutFDP(A, LU);
@@ -108,6 +115,26 @@ void ComparePositDecompositions(std::vector< sw::unum::posit<nbits, es> >& A, st
 #endif
 }
 
+template<typename Scalar>
+void RandomMatrix() {
+	mtl::dense_vector<Scalar> x(5), b(5), xprime(5);
+	mtl::dense2D<Scalar> A(5, 5);
+	mtl::mat::uniform_rand(A, -1.0, 1.0);
+
+	x = 1.0;
+	b = A * x;
+	cout << endl;
+	printMatrix(cout, "Matrix A(5x5):\n", A);
+	cout << endl;
+	cout << endl;
+	printVector(cout, "RHS    b(5)  :\n", b);
+	cout << endl;
+	CroutCycle<nbits, es, capacity>(A, xprime, b);
+	printVector(cout, "RHS    x(5)  :\n", xprime);
+	cout << endl;
+	CroutFDPCycle<nbits, es, capacity>(A, xprime, b);
+	printVector(cout, "RHS    x(5)  :\n", xprime);
+}
 
 template<typename Ty>
 void CompareIEEEDecompositions(std::vector<Ty>& A, std::vector<Ty>& x, std::vector<Ty>& b) {
@@ -178,102 +205,54 @@ void CompareIEEEDecompositions(std::vector<Ty>& A, std::vector<Ty>& x, std::vect
 int main(int argc, char** argv)
 try {
 	using namespace std;
+	using namespace mtl;
 	using namespace sw::unum;
 	using namespace sw::hprblas;
 
 	// a 32-bit float and a <27,1> posit have the same number of significand bits around 1.0
-	constexpr size_t nbits = 27;
+	constexpr size_t nbits = 16;
 	constexpr size_t es = 1;
 	constexpr size_t capacity = 10;
 
-	typedef float            IEEEType;
-	typedef posit<nbits, es> PositType;
-	cout << "Using " << dynamic_range(posit<nbits, es>()) << endl;
+	{
+		using Scalar = posit<nbits, es>;
+		size_t N = 5;
+		dense2D<Scalar> U(N, N), L(N, N), A(N, N);
+		fill_U(U);
+		fill_L(L);
+
+		// We want to solve the system Ax=b
+		matmul(A, L, U);   // construct the A matrix to solve
+		printMatrix(cout, "A = LU", A);
+		cout << endl;
+
+		// define a difficult solution
+		Scalar eps = std::numeric_limits<Scalar>::epsilon();
+		Scalar epsminus = Scalar(1.0) - eps;
+		Scalar epsplus = Scalar(1.0) + eps;
+		dense_vector<Scalar> x(N), b(N);
+		x = epsplus;
+		matvec(A, x, b);   // construct the right hand side
+		printVector(cout, "x", x);
+		printVector(cout, "b", b);
+		cout << endl;
+		dense_vector<Scalar> xprime(N);
+		CroutCycle(A, xprime, b);
+		printVector(cout, "xprime", xprime);
+		cout << endl;
+		CroutFDPCycle(A, xprime, b);
+		printVector(cout, "xprime", xprime);
+	}
 
 #if 0
-	float eps = std::numeric_limits<float>::epsilon();
-	float epsminus = 1.0f - eps;
-	float epsplus = 1.0f + eps;
-	// We want to solve the system Ax=b
-	int d = 5;
-	vector<IEEEType> Uieee = {     // define the upper triangular matrix
-		1.0, 2.0, 3.0, 4.0, 5.0,
-		0.0, 1.0, 2.0, 3.0, 4.0,
-		0.0, 0.0, 1.0, 2.0, 3.0,
-		0.0, 0.0, 0.0, 1.0, 2.0,
-		0.0, 0.0, 0.0, 0.0, 1.0,
-	};
-	vector<IEEEType> Lieee = {     // define the lower triangular matrix
-		1.0, 0.0, 0.0, 0.0, 0.0,
-		2.0, 1.0, 0.0, 0.0, 0.0,
-		3.0, 2.0, 1.0, 0.0, 0.0,
-		4.0, 3.0, 2.0, 1.0, 0.0,
-		5.0, 4.0, 3.0, 2.0, 1.0,
-	};
-	vector<IEEEType> Aieee(d*d);
-	matmul(Lieee, Uieee, Aieee);   // construct the A matrix to solve
-								   // define a difficult solution
-	vector<IEEEType> xieee = {
-		epsplus,
-		epsplus,
-		epsplus,
-		epsplus,
-		epsplus
-	};
-	vector<IEEEType> bieee(d);
-	matvec(Aieee, xieee, bieee);   // construct the right hand side
-
-	vector<PositType> Uposit = {   // define the upper triangular matrix
-		1.0, 2.0, 3.0, 4.0, 5.0,
-		0.0, 1.0, 2.0, 3.0, 4.0,
-		0.0, 0.0, 1.0, 2.0, 3.0,
-		0.0, 0.0, 0.0, 1.0, 2.0,
-		0.0, 0.0, 0.0, 0.0, 1.0,
-	};
-	vector<PositType> Lposit = {   // define the lower triangular matrix
-		1.0, 0.0, 0.0, 0.0, 0.0,
-		2.0, 1.0, 0.0, 0.0, 0.0,
-		3.0, 2.0, 1.0, 0.0, 0.0,
-		4.0, 3.0, 2.0, 1.0, 0.0,
-		5.0, 4.0, 3.0, 2.0, 1.0,
-	};
-	vector<PositType> Aposit(d*d);
-	matmul(Lposit, Uposit, Aposit);   // construct the A matrix to solve
-	printMatrix(cout, "A", Aposit);
-	// define a difficult solution
-	vector<PositType> xposit = {
-		epsplus,
-		epsplus,
-		epsplus,
-		epsplus,
-		epsplus
-	};
-	vector<PositType> bposit(d);
-	matvec<nbits, es>(Aposit, xposit, bposit);   // construct the right hand side
-
 	cout << "LinearSolve regular dot product" << endl;
 	CompareIEEEDecompositions(Aieee, xieee, bieee);
 	cout << endl << ">>>>>>>>>>>>>>>>" << endl;
 	cout << "LinearSolve fused-dot product" << endl;
 	ComparePositDecompositions(Aposit, xposit, bposit);
 #endif
-	mtl::dense_vector<PositType> x(5), b(5), xprime(5);
-	mtl::dense2D<PositType> A(5, 5);
-	mtl::mat::uniform_rand(A, -1.0, 1.0);
 
-	x = 1.0;
-	b = A * x;
-	cout << endl; 
-	printMatrix(cout, "Matrix A(5x5):\n", A); 
-	cout << endl;
-	cout << endl;
-	printVector(cout, "RHS    b(5)  :\n", b);
-	cout << endl;
-	CroutCycle<nbits,es,capacity>(A, xprime, b);
-	printVector(cout, "RHS    x(5)  :\n", xprime);
-	cout << endl;
-	CroutFDPCycle<nbits, es, capacity>(A, xprime, b);
-	printVector(cout, "RHS    x(5)  :\n", xprime);
+
 	return EXIT_SUCCESS;
 }
 catch (char const* msg) {
