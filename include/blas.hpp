@@ -205,6 +205,9 @@ void matvec(const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl:
 	// preconditions
 	assert(A.num_cols() == size(x));
 	assert(size(b) == A.num_rows());
+#if HPRBLAS_TRACE_ROUNDING_EVENTS
+	unsigned errors = 0;
+#endif
 	size_t nr = size(b);
 	size_t nc = size(x);
 	for (size_t i = 0; i < nr; ++i) {
@@ -213,7 +216,26 @@ void matvec(const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl:
 			q += sw::unum::quire_mul(A[i][j], x[j]);
 		}
 		convert(q.to_value(), b[i]);     // one and only rounding step of the fused-dot product
+#if HPRBLAS_TRACE_ROUNDING_EVENTS
+		sw::unum::quire<nbits, es> qdiff = q;
+		sw::unum::quire<nbits, es> qsum = b[i];
+		qdiff -= qsum;
+		if (!qdiff.iszero()) {
+			++errors;
+			std::cout << "q    : " << q << std::endl;
+			std::cout << "qsum : " << qsum << std::endl;
+			std::cout << "qdiff: " << qdiff << std::endl;
+			sw::unum::posit<nbits, es> roundingError;
+			convert(qdiff.to_value(), roundingError);
+			std::cout << "matvec b[" << i << "] = " << posit_format(b[i]) << " rounding error: " << posit_format(roundingError) << " " << roundingError << std::endl;
+		}
+#endif
 	}
+#if HPRBLAS_TRACE_ROUNDING_EVENTS
+	if (errors) {
+		std::cout << "HPR-BLAS: tracing found " << errors << " rounding errors in matvec operation\n";
+	}
+#endif
 }
 
 // LEVEL 3 BLAS operators

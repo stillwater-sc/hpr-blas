@@ -6,19 +6,46 @@
 
 #include <chrono>
 // configure the posit number system behavior
-#define POSIT_ROUNDING_ERROR_FREE_IO_FORMAT 1
+#define POSIT_ROUNDING_ERROR_FREE_IO_FORMAT 0
+// configure the HPR-BLAS behavior
+#define HPRBLAS_TRACE_ROUNDING_EVENTS 1
 #include <hprblas>
 #include <mtl_extensions.hpp>
 #include <matrix_utils.hpp>
 #include <print_utils.hpp>
 
-template<size_t nbits, size_t es, size_t capacity = 10>
-void CroutCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector< sw::unum::posit<nbits, es> >& x, mtl::dense_vector< sw::unum::posit<nbits, es> >& b)
+template<typename Matrix, typename Vector>
+void CroutCycle(Matrix& A, const Vector& b)
 {
 	using namespace sw::hprblas;
 
-	assert(num_cols(A) == size(x));
-	size_t N = size(x);
+	assert(num_cols(A) == size(b));
+	size_t N = size(b);
+	using Scalar = typename mtl::Collection<Matrix>::value_type;
+	mtl::dense2D< Scalar > LU(N, N);
+
+	std::cout << "----------------- Crout cycle ------------------------\n";
+	using namespace std::chrono;
+	steady_clock::time_point t1 = steady_clock::now();
+	Crout(A, LU);
+	steady_clock::time_point t2 = steady_clock::now();
+	duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+	double elapsed = time_span.count();
+	std::cout << "Crout took " << elapsed << " seconds." << std::endl;
+	std::cout << "Performance " << (uint32_t)(N*N*N / (1000 * elapsed)) << " KOPS/s" << std::endl;
+	Vector x(N);
+	SolveCrout(LU, b, x);
+	printMatrix(std::cout, "Crout LU", LU);
+	printVector(std::cout, "Crout Solution", x);
+}
+
+template<size_t nbits, size_t es, size_t capacity = 10>
+void CroutCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector< sw::unum::posit<nbits, es> >& b)
+{
+	using namespace sw::hprblas;
+
+	assert(num_cols(A) == size(b));
+	size_t N = size(b);
 	mtl::dense2D< sw::unum::posit<nbits, es> > LU(N, N);
 
 	std::cout << "----------------- Crout cycle ------------------------\n";
@@ -30,6 +57,7 @@ void CroutCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector
 	double elapsed = time_span.count();
 	std::cout << "Crout took " << elapsed << " seconds." << std::endl;
 	std::cout << "Performance " << (uint32_t)(N*N*N / (1000 * elapsed)) << " KOPS/s" << std::endl;
+	mtl::dense_vector< sw::unum::posit<nbits, es> > x(N);
 	SolveCrout(LU, b, x);
 	printMatrix(std::cout, "Crout LU", LU);
 	printVector(std::cout, "Crout Solution", x);
@@ -201,6 +229,101 @@ void CompareIEEEDecompositions(std::vector<Ty>& A, std::vector<Ty>& x, std::vect
 	}
 }
 
+// trace 1 + eps configurations: TODO does this make sense for non-posit numbers?
+template<typename Scalar>
+void TraceDeltas() {
+	using namespace std;
+	using namespace sw::unum;
+	Scalar eps = std::numeric_limits<Scalar>::epsilon();
+	cout << "       eps : " << posit_format(eps) << " " << eps << endl;
+
+	Scalar epsplus;
+	for (auto i : { 0,1,2,4,8,16,32,64 }) {
+		epsplus = Scalar(1.0) + Scalar(i) * eps;
+		cout << "1 + " << setw(2) << i << "*eps : " << posit_format(epsplus) << " " << epsplus << endl;
+	}
+	for (auto i : { 0,1,2,4,8,16,32,64 }) {
+		epsplus = Scalar(1.0) + Scalar(i) * eps;
+		cout << setw(2) << i << "*(1 + eps) : " << posit_format((1 + i)*epsplus) << " " << (1 + i)*epsplus << endl;
+	}
+}
+
+template<typename Scalar>
+void GenerateAndSolveSystemOfLinearEquations(size_t N)
+{
+	using namespace std;
+	using namespace sw::unum;
+	using namespace mtl;
+	using namespace sw::hprblas;
+
+	dense2D<Scalar> U(N, N), L(N, N), A(N, N);
+	fill_U(U);
+	fill_L(L);
+
+	// show the different eps bits that we need to organize to avoid rounding error
+	// cout << "minpos     : " << posit_format(minpos<nbits, es>()) << " " << minpos<nbits, es>() << endl;
+	// TraceDeltas<Scalar>();
+
+	// We want to solve the system Ax=b
+	matmul(A, L, U);   // construct the A matrix to solve
+	printMatrix(cout, "A = LU", A);
+	cout << endl;
+
+	// define a difficult solution
+	Scalar eps = std::numeric_limits<Scalar>::epsilon();
+	// let's pick one that doesn't generate rounding errors in the A * x operator
+	Scalar epsplus = Scalar(1.0) + Scalar(16) * eps;
+
+	dense_vector<Scalar> x(N), b(N);
+	x = epsplus;
+	b = A * x;   // construct the right hand side
+	printVector(cout, "x", x);
+	printVector(cout, "b", b);
+	cout << endl;
+	dense_vector<Scalar> xprime(N);
+	CroutCycle(A, b);
+	cout << endl;
+}
+
+template<size_t nbits, size_t es>
+void GenerateAndSolveSystemOfLinearEquations(size_t N)
+{
+	using namespace std;
+	using namespace sw::unum;
+	using namespace mtl;
+	using namespace sw::hprblas;
+
+	using Scalar = posit<nbits, es>;
+	dense2D<Scalar> U(N, N), L(N, N), A(N, N);
+	fill_U(U);
+	fill_L(L);
+
+	// show the different eps bits that we need to organize to avoid rounding error
+	// cout << "minpos     : " << posit_format(minpos<nbits, es>()) << " " << minpos<nbits, es>() << endl;
+	// TraceDeltas<Scalar>();
+
+	// We want to solve the system Ax=b
+	matmul(A, L, U);   // construct the A matrix to solve
+	printMatrix(cout, "A = LU", A);
+	cout << endl;
+
+	// define a difficult solution
+	Scalar eps = std::numeric_limits<Scalar>::epsilon();
+	// let's pick one that doesn't generate rounding errors in the A * x operator
+	Scalar epsplus = Scalar(1.0) + Scalar(16) * eps;
+
+	dense_vector<Scalar> x(N), b(N);
+	x = epsplus;
+	matvec(A, x, b);   // construct the right hand side
+	printVector(cout, "x", x);
+	printVector(cout, "b", b);
+	cout << endl;
+
+	CroutCycle(A, b);
+	cout << endl;
+	CroutFDPCycle(A, b);
+}
+
 
 int main(int argc, char** argv)
 try {
@@ -214,35 +337,10 @@ try {
 	constexpr size_t es = 1;
 	constexpr size_t capacity = 10;
 
-	{
-		using Scalar = posit<nbits, es>;
-		size_t N = 5;
-		dense2D<Scalar> U(N, N), L(N, N), A(N, N);
-		fill_U(U);
-		fill_L(L);
-
-		// We want to solve the system Ax=b
-		matmul(A, L, U);   // construct the A matrix to solve
-		printMatrix(cout, "A = LU", A);
-		cout << endl;
-
-		// define a difficult solution
-		Scalar eps = std::numeric_limits<Scalar>::epsilon();
-		Scalar epsminus = Scalar(1.0) - eps;
-		Scalar epsplus = Scalar(1.0) + eps;
-		dense_vector<Scalar> x(N), b(N);
-		x = epsplus;
-		matvec(A, x, b);   // construct the right hand side
-		printVector(cout, "x", x);
-		printVector(cout, "b", b);
-		cout << endl;
-		dense_vector<Scalar> xprime(N);
-		CroutCycle(A, xprime, b);
-		printVector(cout, "xprime", xprime);
-		cout << endl;
-		CroutFDPCycle(A, xprime, b);
-		printVector(cout, "xprime", xprime);
-	}
+	using Scalar = posit<nbits, es>;
+	size_t N = 5;
+	GenerateAndSolveSystemOfLinearEquations<Scalar>(N);
+	GenerateAndSolveSystemOfLinearEquations<float>(N);
 
 #if 0
 	cout << "LinearSolve regular dot product" << endl;
