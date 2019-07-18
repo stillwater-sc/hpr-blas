@@ -14,7 +14,6 @@
 #include <matrix_utils.hpp>
 #include <print_utils.hpp>
 
-
 template<typename Matrix>
 Matrix GaussJordanInversion(const Matrix& A) {
 	using Scalar = typename mtl::Collection<Matrix>::value_type;
@@ -38,18 +37,19 @@ Matrix GaussJordanInversion(const Matrix& A) {
 			}
 		}
 		// transform to diagonal matrix
-		for (unsigned j = 0; j < n; j++) {
+		for (unsigned j = 0; j < m; j++) {
 			if (i != j) {
-				Scalar pro = a[j][i] / a[i][i];
-
+				Scalar scale = a[j][i] / a[i][i];
 				for (unsigned k = 0; k < n; ++k) {
-					a[j][k] = a[j][k] - (a[i][k]) * pro;
-					inv[j][k] = inv[j][k] - inv[i][k] * pro;
+					a[j][k] = a[j][k] - a[i][k] * scale;
+					inv[j][k] = inv[j][k] - inv[i][k] * scale;
 				}
 			}
+			//std::cout << i << "," << j << std::endl;
+			//sw::hprblas::printMatrix(std::cout, "a", a);
+			//sw::hprblas::printMatrix(std::cout, "inv", inv);
 		}
 	}
-#if NORMALIZE
 	// transform to identity matrix
 	for (unsigned i = 0; i < m; ++i) {
 		Scalar normalize = a[i][i];
@@ -58,7 +58,6 @@ Matrix GaussJordanInversion(const Matrix& A) {
 			inv[i][j] /= normalize;
 		}
 	}
-#endif
 	sw::hprblas::printMatrix(std::cout, "conversion", a);
 	return inv;
 }
@@ -143,14 +142,18 @@ try {
 	using Scalar = posit<nbits, es>;
 	using Matrix = mtl::mat::dense2D<Scalar>;
 	size_t N = 5;
-	Matrix A(N, N);
-	GenerateHilbertMatrix(A);
-	Matrix Ainv = GaussJordanInversion(A);
-	printMatrix(cout, "Hilbert matrix order 5", A);
-	printMatrix(cout, "Hilbert inverse", Ainv);
-	Matrix Hinv(N, N);
-	GenerateHilbertMatrixInverse(Hinv);
-	printMatrix(cout, "Hilvert inverse reference", Hinv);
+	Matrix H(N, N);
+	GenerateHilbertMatrix(H);
+	Matrix Hinv = GaussJordanInversion(H);
+	printMatrix(cout, "Hilbert matrix order 5", H);
+	printMatrix(cout, "Hilbert inverse", Hinv);
+	Matrix Href(N, N);
+	GenerateHilbertMatrixInverse(Href);
+	printMatrix(cout, "Hilbert inverse reference", Href);
+
+	Matrix test(N, N);
+	matmul(test, H, Hinv);
+	printMatrix(cout, "H * H^-1", test);
 
 	return EXIT_SUCCESS;
 }
