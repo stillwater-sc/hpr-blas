@@ -56,19 +56,19 @@ void GenerateNumericalAnalysisTestCase(const std::string& header, unsigned N, bo
 	// absolute error
 	eabsolute = e - eprime;
 	printVector(cout, "absolute error vector", eabsolute);
-	cout << "L1 norm   " << posit_format(l1_norm(eabsolute)) << "  " << l1_norm(eabsolute) << endl;
-	cout << "L2 norm   " << posit_format(l2_norm(eabsolute)) << "  " << l2_norm(eabsolute) << endl;
-	cout << "Linf norm " << posit_format(linf_norm(eabsolute)) << "  " << linf_norm(eabsolute) << endl;
+	cout << "L1 norm   " << hex_format(l1_norm(eabsolute)) << "  " << l1_norm(eabsolute) << endl;
+	cout << "L2 norm   " << hex_format(l2_norm(eabsolute)) << "  " << l2_norm(eabsolute) << endl;
+	cout << "Linf norm " << hex_format(linf_norm(eabsolute)) << "  " << linf_norm(eabsolute) << endl;
 
 	// relative error
 	cout << "relative error\n";
 	Scalar relative_error;
 	relative_error = l1_norm(eabsolute) / l1_norm(e);
-	cout << "L1 norm   " << posit_format(relative_error) << "  " << relative_error << endl;
+	cout << "L1 norm   " << hex_format(relative_error) << "  " << relative_error << endl;
 	relative_error = l2_norm(eabsolute) / l2_norm(e);
-	cout << "L2 norm   " << posit_format(relative_error) << "  " << relative_error << endl;
+	cout << "L2 norm   " << hex_format(relative_error) << "  " << relative_error << endl;
 	relative_error = linf_norm(eabsolute) / linf_norm(e);
-	cout << "Linf norm " << posit_format(relative_error) << "  " << relative_error << endl;
+	cout << "Linf norm " << hex_format(relative_error) << "  " << relative_error << endl;
 
 	// error volume
 	cout << "error bounding box volume\n";
