@@ -22,7 +22,7 @@ namespace hprblas {
 // L1-norm = sum of absolute value of each vector element
 template<typename Vector>
 typename Vector::value_type l1_norm(const Vector& v) {
-	using Scalar = Vector::value_type;
+	using Scalar = typename Vector::value_type;
 
 	Scalar l1 = Scalar(0);
 	for (unsigned i = 0; i < size(v); ++i) {
@@ -34,7 +34,7 @@ typename Vector::value_type l1_norm(const Vector& v) {
 // L2-norm = Manhattan distance
 template<typename Vector>
 typename Vector::value_type l2_norm(const Vector& v) {
-	using Scalar = Vector::value_type;
+	using Scalar = typename Vector::value_type;
 
 	Scalar l2 = Scalar(0);
 	for (unsigned i = 0; i < size(v); ++i) {
@@ -46,7 +46,7 @@ typename Vector::value_type l2_norm(const Vector& v) {
 // Linfinity-norm = max of the absolute value of each vector element
 template<typename Vector>
 typename Vector::value_type linf_norm(const Vector& v) {
-	using Scalar = Vector::value_type;
+	using Scalar = typename Vector::value_type;
 
 	Scalar linf = Scalar(0);
 	for (unsigned i = 0; i < size(v); ++i) {
@@ -55,5 +55,37 @@ typename Vector::value_type linf_norm(const Vector& v) {
 	return linf;
 }
 
+// calculate an integer power function base^positive_int
+template<typename Scalar>
+Scalar integer_power(Scalar base, int exponent) {
+	if (exponent < 0) {
+		base = Scalar(1) / base;
+		exponent = -exponent;
+	}
+	if (exponent == 0) return Scalar(1);
+	Scalar power = Scalar(1);
+	while (exponent > 1) {
+		if (exponent & 0x1) {
+			power = base * power;
+			base *= base;
+			exponent = (exponent - 1) / 2;
+		}
+		else {
+			base *= base;
+			exponent /= 2;
+		}
+	}
+	return base * power;
 }
+
+template<typename Scalar>
+Scalar error_volume(Scalar Linf, unsigned dimensionality, bool measuredInULP = false) {
+	Scalar ulp = std::numeric_limits<Scalar>::epsilon();
+	if (measuredInULP) {
+		return integer_power(Linf / ulp, dimensionality);
+	}
+	return integer_power(Linf, dimensionality);
 }
+
+} // namespace hprblas
+} // namespace sw
