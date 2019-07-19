@@ -63,10 +63,16 @@
 
 // the underlying matrix/vector machinery
 #include <boost/numeric/mtl/mtl.hpp>
-#include "blas.hpp"
+#include "hprblas.hpp"
 
-#include "lu_decomposition.hpp"
-#include "cholesky.hpp"
+// useful functions
+#include "norms.hpp"
+
+// linear system solvers
+#include "solvers/lu_decomposition.hpp"
+#include "solvers/cholesky.hpp"
+#include "solvers/ldlt.hpp"
+#include "solvers/gauss_jordan.hpp"
 
 
 #endif

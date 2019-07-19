@@ -3,12 +3,14 @@
 // Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
-#include "common.hpp"
+
+#include <chrono>
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #define MTL_WITH_INITLIST
 #include <hprblas>
-#include <print_utils.hpp>  // printing vectors and matrices
+// utilities to generate and print vectors and matrices
+#include "utils/matvec.hpp"
 
 // can the ratio a/b be represented exactly
 bool isRepresentable(int a, int b) {

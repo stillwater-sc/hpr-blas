@@ -18,9 +18,7 @@
 // if you need to configure the posit number system, do it before including <hprblas>
 #include <hprblas>
 // utilities to generate and print vectors and matrices
-#include "vector_utils.hpp"
-#include "matrix_utils.hpp"
-#include "print_utils.hpp"
+#include "utils/matvec.hpp"
 
 using namespace std;
 using namespace sw::unum;

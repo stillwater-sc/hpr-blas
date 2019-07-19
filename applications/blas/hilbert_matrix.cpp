@@ -5,6 +5,9 @@
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 
 #include "common.hpp"
+// Boost arbitrary precision floats
+#include <boost/multiprecision/cpp_bin_float.hpp>
+
 // enable the following define to show the intermediate steps in the fused-dot product
 // #define POSIT_VERBOSE_OUTPUT
 #define QUIRE_TRACE_ADD
@@ -13,14 +16,14 @@
 // to capture all the possible bits, set this to 1 
 #define POSIT_ROUNDING_ERROR_FREE_IO_FORMAT 0
 #include <hprblas>
-#include "print_utils.hpp"
-#include "vector_utils.hpp"
-#include "matrix_utils.hpp"
-#include <boost/multiprecision/cpp_bin_float.hpp>
+// utilities to generate and print vectors and matrices
+#include "utils/matvec.hpp"
 
+// define a 256-bit IEEE floating point type
 constexpr size_t bits_in_octand = 113 + 128;
 typedef boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<bits_in_octand, boost::multiprecision::backends::digit_base_2, void, boost::int16_t, -16382, 16383>, boost::multiprecision::expression_template_option::et_off> cpp_bin_float_octand;
 
+// Generate a Hilbert matrix and inverse test cycle
 template<typename Scalar>
 void GenerateHilbertMatrixTest(size_t N, bool printA = false, bool printB = false) {
 	using namespace std;

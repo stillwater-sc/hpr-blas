@@ -8,10 +8,8 @@
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #define MTL_WITH_INITLIST
 #include <hprblas>
-// matrix/vector helpers
-#include <vector_utils.hpp>
-#include <matrix_utils.hpp>
-#include <print_utils.hpp>
+// utilities to generate and print vectors and matrices
+#include "utils/matvec.hpp"
 
 template<typename Matrix>
 bool isEqual(const Matrix& lhs, const Matrix& rhs) {

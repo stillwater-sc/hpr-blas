@@ -1,7 +1,7 @@
 #pragma once
 // vector_utils.hpp :  include file containing templated utilities to work with vectors and matrices
 //
-// Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 

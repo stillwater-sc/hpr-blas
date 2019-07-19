@@ -1,12 +1,11 @@
 // symmetric.cpp: symmetric matrix generation 
 //
-// Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 #include <hprblas>
-#include "matrix_utils.hpp"
-
-
+// utilities to generate and print vectors and matrices
+#include "utils/matvec.hpp"
 
 int main(int argc, char** argv)
 try {

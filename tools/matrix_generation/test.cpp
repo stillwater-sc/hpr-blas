@@ -5,7 +5,8 @@
 // Filename: eigenvalue_example.cpp (part of MTL4)
 
 #include <hprblas>
-#include <matrix_utils.hpp>
+// utilities to generate and print vectors and matrices
+#include "utils/matvec.hpp"
 
 using Matrix = mtl::mat::dense2D< double >;
 

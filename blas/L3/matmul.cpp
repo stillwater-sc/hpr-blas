@@ -1,6 +1,6 @@
-// matmul.cpp example program comparing float vs posit matrix multiply algorithms
+// matmul.cpp : example program comparing float vs posit matrix multiply algorithms
 //
-// Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
@@ -9,7 +9,8 @@
 #include "common.hpp"
 #include <vector>
 #include <hprblas>
-#include <matrix_utils.hpp>
+// utilities to generate and print vectors and matrices
+#include "utils/matvec.hpp"
 
 template<typename Ty>
 void MeasureMatrixMultiplyPerformance(const std::string& metric) {

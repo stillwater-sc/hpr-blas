@@ -1,4 +1,4 @@
-// mm.cpp example program comparing float vs posit matrix multiply algorithms
+// matmul_morton.cpp : example program comparing float vs posit matrix multiply algorithms
 //
 // Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
@@ -8,7 +8,8 @@
 #pragma warning( disable : 4996)
 #include "common.hpp"
 #include <hprblas>
-#include <matrix_utils.hpp>
+// utilities to generate and print vectors and matrices
+#include "utils/matvec.hpp"
 
 int morton_recursion()
 {
