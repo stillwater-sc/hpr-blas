@@ -55,36 +55,14 @@ typename Vector::value_type linf_norm(const Vector& v) {
 	return linf;
 }
 
-// calculate an integer power function base^positive_int
+// Calculate the volume of the bounding box that contains the absolute error given L-infinity norm
 template<typename Scalar>
-Scalar integer_power(Scalar base, int exponent) {
-	if (exponent < 0) {
-		base = Scalar(1) / base;
-		exponent = -exponent;
-	}
-	if (exponent == 0) return Scalar(1);
-	Scalar power = Scalar(1);
-	while (exponent > 1) {
-		if (exponent & 0x1) {
-			power = base * power;
-			base *= base;
-			exponent = (exponent - 1) / 2;
-		}
-		else {
-			base *= base;
-			exponent /= 2;
-		}
-	}
-	return base * power;
-}
-
-template<typename Scalar>
-Scalar error_volume(Scalar Linf, unsigned dimensionality, bool measuredInULP = false) {
+Scalar error_volume(Scalar Linfinity, unsigned dimensionality, bool measuredInULP = false) {
 	Scalar ulp = std::numeric_limits<Scalar>::epsilon();
 	if (measuredInULP) {
-		return integer_power(Linf / ulp, dimensionality);
+		return sw::unum::integer_power(Linfinity / ulp, dimensionality);
 	}
-	return integer_power(Linf, dimensionality);
+	return sw::unum::integer_power(Linfinity, dimensionality);
 }
 
 } // namespace hprblas
