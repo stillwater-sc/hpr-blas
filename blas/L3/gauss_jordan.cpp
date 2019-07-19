@@ -1,4 +1,4 @@
-// gauss_jordan.cpp; example program comparing float vs posit matrix inversion algorithms
+// gauss_jordan.cpp : example program comparing float vs posit matrix inversion algorithms
 //
 // Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
@@ -8,59 +8,13 @@
 // configure the posit number system behavior
 #define POSIT_ROUNDING_ERROR_FREE_IO_FORMAT 0
 // configure the HPR-BLAS behavior
-#define HPRBLAS_TRACE_ROUNDING_EVENTS 1
+#define HPRBLAS_TRACE_ROUNDING_EVENTS 0
 #include <hprblas>
 #include <mtl_extensions.hpp>
-#include <matrix_utils.hpp>
-#include <print_utils.hpp>
-
-template<typename Matrix>
-Matrix GaussJordanInversion(const Matrix& A) {
-	using Scalar = typename mtl::Collection<Matrix>::value_type;
-
-	size_t m = A.num_rows();
-	size_t n = A.num_cols();
-	Matrix a(n,m), inv(m,n);
-	a = A; // you need a deep copy
-	inv = Scalar(1);
-
-	// Performing elementary operations 
-	for (unsigned i = 0; i < m; ++i)	{
-		if (a[i][i] == 0) {
-			unsigned c = 1;
-			while (a[i + c][i] == 0 && (i + c) < n)	++c;
-			if ((i + c) == n) break;
-			
-			for (unsigned j = i, k = 0; k < n; ++k) {
-				std::swap(a[j][k], a[j + c][k]);
-				std::cerr << "TBD" << std::endl; // need to create a permutation matrix
-			}
-		}
-		// transform to diagonal matrix
-		for (unsigned j = 0; j < m; j++) {
-			if (i != j) {
-				Scalar scale = a[j][i] / a[i][i];
-				for (unsigned k = 0; k < n; ++k) {
-					a[j][k] = a[j][k] - a[i][k] * scale;
-					inv[j][k] = inv[j][k] - inv[i][k] * scale;
-				}
-			}
-			//std::cout << i << "," << j << std::endl;
-			//sw::hprblas::printMatrix(std::cout, "a", a);
-			//sw::hprblas::printMatrix(std::cout, "inv", inv);
-		}
-	}
-	// transform to identity matrix
-	for (unsigned i = 0; i < m; ++i) {
-		Scalar normalize = a[i][i];
-		a[i][i] = Scalar(1);
-		for (unsigned j = 0; j < n; ++j) {
-			inv[i][j] /= normalize;
-		}
-	}
-	sw::hprblas::printMatrix(std::cout, "conversion", a);
-	return inv;
-}
+// utilities to generate and print vectors and matrices
+#include "utils/matvec.hpp"
+#include "norms.hpp"
+#include "solvers/gauss_jordan.hpp"
 
 void dummy() {
 	using namespace std;
@@ -140,6 +94,7 @@ try {
 	constexpr size_t capacity = 10;
 
 	using Scalar = posit<nbits, es>;
+	using Vector = mtl::vec::dense_vector<Scalar>;
 	using Matrix = mtl::mat::dense2D<Scalar>;
 	size_t N = 5;
 	Matrix H(N, N);
@@ -154,6 +109,25 @@ try {
 	Matrix test(N, N);
 	matmul(test, H, Hinv);
 	printMatrix(cout, "H * H^-1", test);
+
+	Matrix I(N, N);
+	matmul(I, H, Hinv);
+	Vector e(N), eprime(N), erelative(N);
+	e = Scalar(1);
+	matvec(I, e, eprime);
+	cout << "L1 norm   " << posit_format(l1_norm(eprime)) << "  " << l1_norm(eprime) << endl;
+	cout << "L2 norm   " << posit_format(l2_norm(eprime)) << "  " << l2_norm(eprime) << endl;
+	cout << "Linf norm " << posit_format(linf_norm(eprime)) << "  " << linf_norm(eprime) << endl;
+	printVector(cout, "reference vector", e);
+	printVector(cout, "error vector", eprime);
+
+	// relative error
+	erelative = e - eprime;
+	printVector(cout, "relative error", erelative);
+	cout << "L1 norm   " << posit_format(l1_norm(erelative)) << "  " << l1_norm(erelative) << endl;
+	cout << "L2 norm   " << posit_format(l2_norm(erelative)) << "  " << l2_norm(erelative) << endl;
+	cout << "Linf norm " << posit_format(linf_norm(erelative)) << "  " << linf_norm(erelative) << endl;
+
 
 	return EXIT_SUCCESS;
 }

@@ -1,29 +1,19 @@
-// binomial_coefficients.cpp example program to test binomial coefficients for Hilbert matrix generation
+// binomial_coefficients.cpp: example program to test binomial coefficients for Hilbert matrix generation
 //
 // Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
-#include "common.hpp"
-#include <boost/multiprecision/cpp_int.hpp>
+
 #include <iostream>
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #include <hprblas>
-#include <matrix_utils.hpp>
+#include <utils/matvec.hpp>
 
 int main() 
 try {
 	using namespace std;
-	using namespace boost::multiprecision;
 	using namespace sw::hprblas;
-
-	/*
-	int128_t v = factorial<int128_t>(20);
-	std::cout << v << std::endl;
-
-	cpp_int u = factorial<cpp_int>(100);
-	std::cout << u << std::endl;
-	*/
 
 	for (uint64_t n = 1; n < 10; ++n) {
 		for (uint64_t k = 0; k <= n; ++k) {

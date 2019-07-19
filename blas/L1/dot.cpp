@@ -10,9 +10,7 @@
 #include <ctime>
 
 #include <hprblas>
-#include <vector_utils.hpp>
-#include <matrix_utils.hpp>
-#include <print_utils.hpp>
+#include <utils/matvec.hpp>
 
 int main(int argc, char** argv)
 try {

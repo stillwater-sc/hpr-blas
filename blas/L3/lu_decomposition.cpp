@@ -11,8 +11,8 @@
 #define HPRBLAS_TRACE_ROUNDING_EVENTS 1
 #include <hprblas>
 #include <mtl_extensions.hpp>
-#include <matrix_utils.hpp>
-#include <print_utils.hpp>
+// utilities to generate and print vectors and matrices
+#include "utils/matvec.hpp"
 
 template<typename Matrix, typename Vector>
 void CroutCycle(Matrix& A, const Vector& b)

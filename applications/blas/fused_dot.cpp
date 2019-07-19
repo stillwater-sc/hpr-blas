@@ -5,7 +5,8 @@
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include <chrono>
 #include <hprblas>
-#include "print_utils.hpp"
+// utilities to generate and print vectors and matrices
+#include "utils/matvec.hpp"
 
 constexpr double pi = 3.14159265358979323846;  // best practice for C++
 

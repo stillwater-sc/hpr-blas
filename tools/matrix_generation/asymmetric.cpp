@@ -5,7 +5,8 @@
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #include <hprblas>
-#include <matrix_utils.hpp>
+// utilities to generate and print vectors and matrices
+#include "utils/matvec.hpp"
 
 int main(int argc, char** argv)
 try {
