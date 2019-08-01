@@ -193,18 +193,17 @@ void print(std::ostream& ostr, size_t n, Vector& x, size_t incx = 1) {
 
 // LEVEL 2 BLAS operators
 
-// A times x = b matrix-vector product
 template<typename Matrix, typename Vector>
-void matvec(const Matrix& A, const Vector& x, Vector& b) {
+void matvec(Vector& b, const Matrix& A, const Vector& x) {
 	b = A * x;
 }
 
-// A times x = b fused matrix-vector product
 template<size_t nbits, size_t es>
-void matvec(const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& x, mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& b) {
+void matvec(mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& b, const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& x) {
 	// preconditions
 	assert(A.num_cols() == size(x));
-	assert(size(b) == A.num_rows());
+	assert(size(b) == size(x));
+
 #if HPRBLAS_TRACE_ROUNDING_EVENTS
 	unsigned errors = 0;
 #endif
@@ -238,9 +237,49 @@ void matvec(const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl:
 #endif
 }
 
+// A times x = b fused matrix-vector product
+template<size_t nbits, size_t es>
+mtl::vec::dense_vector< sw::unum::posit<nbits, es> > fmv(const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& x) {
+	// preconditions
+	assert(A.num_cols() == size(x));
+	mtl::vec::dense_vector< sw::unum::posit<nbits, es> > b(size(x));
+
+#if HPRBLAS_TRACE_ROUNDING_EVENTS
+	unsigned errors = 0;
+#endif
+	size_t nr = size(b);
+	size_t nc = size(x);
+	for (size_t i = 0; i < nr; ++i) {
+		sw::unum::quire<nbits, es> q = 0;
+		for (size_t j = 0; j < nc; ++j) {
+			q += sw::unum::quire_mul(A[i][j], x[j]);
+		}
+		convert(q.to_value(), b[i]);     // one and only rounding step of the fused-dot product
+#if HPRBLAS_TRACE_ROUNDING_EVENTS
+		sw::unum::quire<nbits, es> qdiff = q;
+		sw::unum::quire<nbits, es> qsum = b[i];
+		qdiff -= qsum;
+		if (!qdiff.iszero()) {
+			++errors;
+			std::cout << "q    : " << q << std::endl;
+			std::cout << "qsum : " << qsum << std::endl;
+			std::cout << "qdiff: " << qdiff << std::endl;
+			sw::unum::posit<nbits, es> roundingError;
+			convert(qdiff.to_value(), roundingError);
+			std::cout << "matvec b[" << i << "] = " << posit_format(b[i]) << " rounding error: " << posit_format(roundingError) << " " << roundingError << std::endl;
+		}
+#endif
+	}
+#if HPRBLAS_TRACE_ROUNDING_EVENTS
+	if (errors) {
+		std::cout << "HPR-BLAS: tracing found " << errors << " rounding errors in matvec operation\n";
+	}
+#endif
+	return b;
+}
+
 // LEVEL 3 BLAS operators
 
-// C = A * B without deferred rounding
 template<typename Matrix>
 void matmul(Matrix& C, const Matrix& A, const Matrix& B) {
 	C = A * B;
@@ -248,28 +287,65 @@ void matmul(Matrix& C, const Matrix& A, const Matrix& B) {
 
 // C = A * B fused matrix-matrix product when posits are used
 template<size_t nbits, size_t es>
-void matmul(mtl::mat::dense2D< sw::unum::posit<nbits, es> >& C, const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& B, bool fdp = true) {
+void matmul(mtl::mat::dense2D< sw::unum::posit<nbits, es> >& C, const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& B) {
 	// precondition
 	assert(A.num_cols() == B.num_rows());
-	assert(C.num_rows() == A.num_rows());
-	assert(C.num_cols() == B.num_cols());
-	size_t nr = C.num_rows();
-	size_t nc = C.num_cols();
+	size_t nr = A.num_rows();
+	size_t nc = B.num_cols();
 	size_t nk = A.num_cols();
-	if (fdp) {
-		for (size_t i = 0; i < nr; ++i) {
-			for (size_t j = 0; j < nc; ++j) {
-				sw::unum::quire<nbits, es> q = 0;
-				for (size_t k = 0; k < nk; ++k) {
-					q += sw::unum::quire_mul(A[i][k], B[k][j]);
-				}
-				convert(q.to_value(), C[i][j]);     // one and only rounding step of the fused-dot product
+	// TODO: add asserts to make certain that C is the right size
+
+	for (size_t i = 0; i < nr; ++i) {
+		for (size_t j = 0; j < nc; ++j) {
+			sw::unum::quire<nbits, es> q = 0;
+			for (size_t k = 0; k < nk; ++k) {
+				q += sw::unum::quire_mul(A[i][k], B[k][j]);
 			}
+			convert(q.to_value(), C[i][j]);     // one and only rounding step of the fused-dot product
 		}
 	}
-	else {
-		C = A * B;
+}
+
+// C = A * B fused matrix-matrix product when posits are used
+template<size_t nbits, size_t es>
+mtl::mat::dense2D< sw::unum::posit<nbits, es> > fmm(const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& B) {
+	// precondition
+	assert(A.num_cols() == B.num_rows());
+	size_t nr = A.num_rows();
+	size_t nc = B.num_cols();
+	size_t nk = A.num_cols();
+	mtl::mat::dense2D< sw::unum::posit<nbits, es> > C(nr, nc);
+
+	for (size_t i = 0; i < nr; ++i) {
+		for (size_t j = 0; j < nc; ++j) {
+			sw::unum::quire<nbits, es> q = 0;
+			for (size_t k = 0; k < nk; ++k) {
+				q += sw::unum::quire_mul(A[i][k], B[k][j]);
+			}
+			convert(q.to_value(), C[i][j]);     // one and only rounding step of the fused-dot product
+		}
 	}
+	return C;
+}
+
+// blocked C = A * B
+template<typename Matrix, unsigned blockHeight, unsigned blockWidth>
+Matrix bgemm(const Matrix& A, const Matrix& B) {
+	// precondition
+	assert(A.num_cols() == B.num_rows());
+	size_t nr = A.num_rows();
+	size_t nc = B.num_cols();
+	size_t nk = A.num_cols();
+	Matrix C(nr, nc);
+
+	unsigned nrRowBlocks = nr % blockHeight ? nr / blockHeight + 1 : nr / blockHeight;
+	unsigned nrColBlocks = nc % blockWidth  ? nr / blockWidth + 1  : nc / blockWidth;
+	for (unsigned cr = 0; cr < nrRowBlocks; ++cr) {
+		for (unsigned cb = 0; cb < nrColBlocks; ++cb) {
+
+		}
+	}
+	return C;
 }
 
 } // namespace blas
