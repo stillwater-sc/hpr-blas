@@ -9,9 +9,9 @@
 #define MTL_WITH_INITLIST
 #include <hprblas>
 // matrix/vector helpers
-#include <vector_utils.hpp>
-#include <matrix_utils.hpp>
-#include <print_utils.hpp>
+#include <utils/vector_utils.hpp>
+#include <utils/matrix_utils.hpp>
+#include <utils/print_utils.hpp>
 
 
 int main(int argc, char** argv)

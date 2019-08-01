@@ -45,7 +45,7 @@ try {
 	GenerateHilbertMatrixInverse(Hinv);
 
 	mtl::mat::dense2D<Scalar> I(N, N);
-	sw::hprblas::matmul(I, H, Hinv);
+	I = sw::hprblas::fmm(H, Hinv);
 
 	Scalar lcm = HilbertScalingFactor(N);
 	I = I / lcm;

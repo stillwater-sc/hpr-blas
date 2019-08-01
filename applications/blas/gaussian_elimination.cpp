@@ -43,14 +43,14 @@ void Crout(std::vector<Ty>& S, std::vector<Ty>& D) {
 	assert(S.size() == d*d);
 	assert(D.size() == d*d);
 	for (size_t k = 0; k < d; ++k) {
-		for (size_t i = k; i<d; ++i) {
+		for (size_t i = k; i < d; ++i) {
 			Ty sum = 0.;
-			for (size_t p = 0; p<k; ++p) sum += D[i*d + p] * D[p*d + k];
+			for (size_t p = 0; p < k; ++p) sum += D[i*d + p] * D[p*d + k];
 			D[i*d + k] = S[i*d + k] - sum; // not dividing by diagonals
 		}
 		for (size_t j = k + 1; j < d; ++j) {
 			Ty sum = 0.;
-			for (size_t p = 0; p<k; ++p) sum += D[k*d + p] * D[p*d + j];
+			for (size_t p = 0; p < k; ++p) sum += D[k*d + p] * D[p*d + j];
 			D[k*d + j] = (S[k*d + j] - sum) / D[k*d + k];
 		}
 	}
@@ -156,14 +156,14 @@ template<typename Ty>
 void SolveDoolittle(const std::vector<Ty>& LU, const std::vector<Ty>& b, std::vector<Ty>& x) {
 	int d = (int)b.size();
 	std::vector<Ty> y(d);
-	for (int i = 0; i<d; ++i) {
+	for (int i = 0; i < d; ++i) {
 		Ty sum = 0.;
-		for (int k = 0; k<i; ++k)sum += LU[i*d + k] * y[k];
+		for (int k = 0; k < i; ++k)sum += LU[i*d + k] * y[k];
 		y[i] = (b[i] - sum); // not dividing by diagonals
 	}
 	for (int i = d - 1; i >= 0; --i) {
 		Ty sum = 0.;
-		for (int k = i + 1; k<d; ++k)sum += LU[i*d + k] * x[k];
+		for (int k = i + 1; k < d; ++k)sum += LU[i*d + k] * x[k];
 		x[i] = (y[i] - sum) / LU[i*d + i];
 	}
 }
@@ -174,13 +174,13 @@ void Cholesky(std::vector<Ty>& S, std::vector<Ty>& D) {
 	size_t d = size_t(std::sqrt(S.size()));
 	assert(S.size() == d*d);
 	assert(D.size() == d*d);
-	for (size_t k = 0; k<d; ++k) {
+	for (size_t k = 0; k < d; ++k) {
 		Ty sum = 0.;
-		for (size_t p = 0; p<k; ++p)sum += D[k*d + p] * D[k*d + p];
+		for (size_t p = 0; p < k; ++p)sum += D[k*d + p] * D[k*d + p];
 		D[k*d + k] = sqrt(S[k*d + k] - sum);
-		for (size_t i = k + 1; i<d; ++i) {
+		for (size_t i = k + 1; i < d; ++i) {
 			Ty sum = 0.;
-			for (size_t p = 0; p<k; ++p)sum += D[i*d + p] * D[k*d + p];
+			for (size_t p = 0; p < k; ++p)sum += D[i*d + p] * D[k*d + p];
 			D[i*d + k] = (S[i*d + k] - sum) / D[k*d + k];
 		}
 	}
@@ -192,14 +192,14 @@ void CholeskyRow(std::vector<Ty>& S, std::vector<Ty>& D) {
 	size_t d = size_t(std::sqrt(S.size()));
 	assert(S.size() == d*d);
 	assert(D.size() == d*d);
-	for (size_t k = 0; k<d; ++k) {
-		for (size_t j = 0; j<d; ++j) {
+	for (size_t k = 0; k < d; ++k) {
+		for (size_t j = 0; j < d; ++j) {
 			Ty sum = 0.;
-			for (size_t p = 0; p<j; ++p) sum += D[k*d + p] * D[j*d + p];
+			for (size_t p = 0; p < j; ++p) sum += D[k*d + p] * D[j*d + p];
 			D[k*d + j] = (S[k*d + j] - sum) / D[j*d + j];
 		}
 		Ty sum = 0.;
-		for (size_t p = 0; p<k; ++p) sum += D[k*d + p] * D[k*d + p];
+		for (size_t p = 0; p < k; ++p) sum += D[k*d + p] * D[k*d + p];
 		D[k*d + k] = sqrt(S[k*d + k] - sum);
 	}
 }
@@ -208,14 +208,14 @@ template<typename Ty>
 void SolveCholesky(const std::vector<Ty>& LU, const std::vector<Ty>& b, std::vector<Ty>& x) {
 	int d = (int)b.size();
 	std::vector<Ty> y(d);
-	for (int i = 0; i<d; ++i) {
+	for (int i = 0; i < d; ++i) {
 		Ty sum = 0.;
-		for (int k = 0; k<i; ++k) sum += LU[i*d + k] * y[k];
+		for (int k = 0; k < i; ++k) sum += LU[i*d + k] * y[k];
 		y[i] = (b[i] - sum) / LU[i*d + i];
 	}
 	for (int i = d - 1; i >= 0; --i) {
 		Ty sum = 0.;
-		for (int k = i + 1; k<d; ++k) sum += LU[k*d + i] * x[k];
+		for (int k = i + 1; k < d; ++k) sum += LU[k*d + i] * x[k];
 		x[i] = (y[i] - sum) / LU[i*d + i];
 	}
 }
@@ -236,8 +236,8 @@ void EnumerateTestCases() {
 template<size_t nbits, size_t es, size_t capacity = 10>
 void ComparePositDecompositions(mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& x, mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& b) {
 	using namespace sw::hprblas;
-	size_t d =A.num_cols();
-	assert(A.size() == d*d);
+	size_t d = A.num_cols();
+	assert(A.num_rows() == d);
 	mtl::mat::dense2D< sw::unum::posit<nbits, es> > LU(d*d);
 
 	{
@@ -303,7 +303,7 @@ template<typename Matrix, typename Vector>
 void CompareIEEEDecompositions(Matrix& A, Vector& x, Vector& b) {
 	using namespace sw::hprblas;
 	size_t d = A.num_cols();
-	assert(A.size() == d*d);
+	assert(A.num_rows() == d);
 	Matrix LU(d*d);
 
 	{
@@ -435,107 +435,109 @@ try {
 	using namespace sw::unum;
 	using namespace sw::hprblas;
 
-	// a 32-bit float and a <27,1> posit have the same number of significand bits around 1.0
-	constexpr size_t nbits    = 27;
-	constexpr size_t es       =  1;
-	//constexpr size_t capacity = 10;
-
 	using IEEEType = float;
-	using PositType = posit<nbits, es>;
-	cout << "Using " << dynamic_range(posit<nbits, es>()) << endl;
-
 	float eps = std::numeric_limits<float>::epsilon();
-	//float epsminus= 1.0f - eps;
-	float epsplus = 1.0f + eps;
+	float epsminus = 1.0f - eps;
+	float epsplus  = 1.0f + eps;
+
 	// We want to solve the system Ax=b
 	int d = 5;
 
-	// IEEE input data set up
-	cout << "IEEE inputs\n";
-	mtl::mat::dense2D<IEEEType> Uieee = {     // define the upper triangular matrix
-		{ 1.0, 2.0, 3.0, 4.0, 5.0 },
-		{ 0.0, 1.0, 2.0, 3.0, 4.0 },
-		{ 0.0, 0.0, 1.0, 2.0, 3.0 },
-		{ 0.0, 0.0, 0.0, 1.0, 2.0 },
-		{ 0.0, 0.0, 0.0, 0.0, 1.0 },
-	};
-	mtl::mat::dense2D<IEEEType> Lieee = {     // define the lower triangular matrix
-		{ 1.0, 0.0, 0.0, 0.0, 0.0 },
-		{ 2.0, 1.0, 0.0, 0.0, 0.0 },
-		{ 3.0, 2.0, 1.0, 0.0, 0.0 },
-		{ 4.0, 3.0, 2.0, 1.0, 0.0 },
-		{ 5.0, 4.0, 3.0, 2.0, 1.0 },
-	};
-	mtl::mat::dense2D<IEEEType> Aieee(d*d);
-	matmul(Aieee, Lieee, Uieee);   // construct the A matrix to solve
-	printMatrix(cout, "L", Lieee);
-	printMatrix(cout, "U", Uieee);
-	printMatrix(cout, "A", Aieee);
+	{
+		// IEEE input data set up
+		cout << "IEEE inputs\n";
+		mtl::mat::dense2D<IEEEType> Uieee = {     // define the upper triangular matrix
+			{ 1.0, 2.0, 3.0, 4.0, 5.0 },
+			{ 0.0, 1.0, 2.0, 3.0, 4.0 },
+			{ 0.0, 0.0, 1.0, 2.0, 3.0 },
+			{ 0.0, 0.0, 0.0, 1.0, 2.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 1.0 },
+		};
+		mtl::mat::dense2D<IEEEType> Lieee = {     // define the lower triangular matrix
+			{ 1.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 2.0, 1.0, 0.0, 0.0, 0.0 },
+			{ 3.0, 2.0, 1.0, 0.0, 0.0 },
+			{ 4.0, 3.0, 2.0, 1.0, 0.0 },
+			{ 5.0, 4.0, 3.0, 2.0, 1.0 },
+		};
+		mtl::mat::dense2D<IEEEType> Aieee(d*d);
+		Aieee = Lieee * Uieee;   // construct the A matrix to solve
+		printMatrix(cout, "L", Lieee);
+		printMatrix(cout, "U", Uieee);
+		printMatrix(cout, "A", Aieee);
 
-	// define a difficult solution
-	mtl::vec::dense_vector<IEEEType> xieee = {
-		epsplus,
-		epsplus,
-		epsplus,
-		epsplus,
-		epsplus
-	};
-	mtl::vec::dense_vector<IEEEType> bieee(d);
-	matvec(Aieee, xieee, bieee);   // construct the right hand side
-	printVector(cout, "b", bieee);
+		// define a difficult solution
+		mtl::vec::dense_vector<IEEEType> xieee = {
+			epsplus,
+			epsplus,
+			epsplus,
+			epsplus,
+			epsplus
+		};
+		mtl::vec::dense_vector<IEEEType> bieee(d);
+		bieee = Aieee * xieee;   // construct the right hand side
+		printVector(cout, "b", bieee);
+		cout << "LinearSolve regular dot product" << endl;
+		CompareIEEEDecompositions(Aieee, xieee, bieee);
+	}
 
+	{  // Posit comparison
+		// a 32-bit float and a <27,1> posit have the same number of significand bits around 1.0
+		constexpr size_t nbits = 32;
+		constexpr size_t es = 2;
+		//constexpr size_t capacity = 10;
+		using PositType = posit<nbits, es>;
+		cout << "Using " << dynamic_range(posit<nbits, es>()) << endl;
 
-	// repeat set up for posits
-	cout << "Posit inputs\n";
-	mtl::mat::dense2D<PositType> Uposit = {     // define the upper triangular matrix
-		{ 1.0, 2.0, 3.0, 4.0, 5.0 },
-		{ 0.0, 1.0, 2.0, 3.0, 4.0 },
-		{ 0.0, 0.0, 1.0, 2.0, 3.0 },
-		{ 0.0, 0.0, 0.0, 1.0, 2.0 },
-		{ 0.0, 0.0, 0.0, 0.0, 1.0 },
-	};
-	mtl::mat::dense2D<PositType> Lposit = {     // define the lower triangular matrix
-		{ 1.0, 0.0, 0.0, 0.0, 0.0 },
-		{ 2.0, 1.0, 0.0, 0.0, 0.0 },
-		{ 3.0, 2.0, 1.0, 0.0, 0.0 },
-		{ 4.0, 3.0, 2.0, 1.0, 0.0 },
-		{ 5.0, 4.0, 3.0, 2.0, 1.0 },
-	};
-	mtl::mat::dense2D<PositType> Aposit(d*d);
+		// repeat set up for posits
+		cout << "Posit inputs\n";
+		mtl::mat::dense2D<PositType> Uposit = {     // define the upper triangular matrix
+			{ 1.0, 2.0, 3.0, 4.0, 5.0 },
+			{ 0.0, 1.0, 2.0, 3.0, 4.0 },
+			{ 0.0, 0.0, 1.0, 2.0, 3.0 },
+			{ 0.0, 0.0, 0.0, 1.0, 2.0 },
+			{ 0.0, 0.0, 0.0, 0.0, 1.0 },
+		};
+		mtl::mat::dense2D<PositType> Lposit = {     // define the lower triangular matrix
+			{ 1.0, 0.0, 0.0, 0.0, 0.0 },
+			{ 2.0, 1.0, 0.0, 0.0, 0.0 },
+			{ 3.0, 2.0, 1.0, 0.0, 0.0 },
+			{ 4.0, 3.0, 2.0, 1.0, 0.0 },
+			{ 5.0, 4.0, 3.0, 2.0, 1.0 },
+		};
+		mtl::mat::dense2D<PositType> Aposit(d*d);
+		Aposit = fmm(Lposit, Uposit);   // construct the A matrix to solve
+		printMatrix(cout, "L", Lposit);
+		printMatrix(cout, "U", Uposit);
+		printMatrix(cout, "A", Aposit);
+		// define a difficult solution
+		mtl::vec::dense_vector<PositType> xposit = {
+			epsplus,
+			epsplus,
+			epsplus,
+			epsplus,
+			epsplus
+		};
+		mtl::vec::dense_vector<PositType> bposit(d);
+		bposit = fmv(Aposit, xposit);   // construct the right hand side
+		printVector(cout, "b", bposit);
+		cout << endl << ">>>>>>>>>>>>>>>>" << endl;
+		cout << "LinearSolve fused-dot product" << endl;
+		ComparePositDecompositions(Aposit, xposit, bposit);
+	}
 
-	matmul(Aposit, Lposit, Uposit);   // construct the A matrix to solve
-	printMatrix(cout, "L", Lposit);
-	printMatrix(cout, "U", Uposit); 
-	printMatrix(cout, "A", Aposit);
-	// define a difficult solution
-	mtl::vec::dense_vector<PositType> xposit = {
-		epsplus,
-		epsplus,
-		epsplus,
-		epsplus,
-		epsplus
-	};
-	mtl::vec::dense_vector<PositType> bposit(d);
-	matvec<nbits, es>(Aposit, xposit, bposit);   // construct the right hand side
-	printVector(cout, "b", bposit);
-
-#if 0
+#if 1
 	cout << "posit<25,1>\n";
 	cout << "1.0 - FLT_EPSILON = " << setprecision(17) << epsminus << " converts to " << posit<25, 1>(epsminus) << endl;
-	cout << "1.0 + FLT_EPSILON = " << setprecision(17) << epsplus  << " converts to " << posit<25, 1>(epsplus) << endl;
+	cout << "1.0 + FLT_EPSILON = " << setprecision(17) << epsplus << " converts to " << posit<25, 1>(epsplus) << endl;
 	cout << "posit<26,1>\n";
 	cout << "1.0 - FLT_EPSILON = " << setprecision(17) << epsminus << " converts to " << posit<26, 1>(epsminus) << endl;
-	cout << "1.0 + FLT_EPSILON = " << setprecision(17) << epsplus  << " converts to " << posit<26, 1>(epsplus) << endl;
+	cout << "1.0 + FLT_EPSILON = " << setprecision(17) << epsplus << " converts to " << posit<26, 1>(epsplus) << endl;
 	cout << "posit<27,1>\n";
 	cout << "1.0 - FLT_EPSILON = " << setprecision(17) << epsminus << " converts to " << posit<27, 1>(epsminus) << endl;
-	cout << "1.0 + FLT_EPSILON = " << setprecision(17) << epsplus  << " converts to " << posit<27, 1>(epsplus) << endl;
+	cout << "1.0 + FLT_EPSILON = " << setprecision(17) << epsplus << " converts to " << posit<27, 1>(epsplus) << endl;
 #endif
 
-	cout << "LinearSolve regular dot product" << endl;
-	CompareIEEEDecompositions(Aieee, xieee, bieee); 
-	cout << endl << ">>>>>>>>>>>>>>>>" << endl;
-	cout << "LinearSolve fused-dot product" << endl;
-	ComparePositDecompositions(Aposit, xposit, bposit);
 
 	return EXIT_SUCCESS;
 }

@@ -265,7 +265,7 @@ void GenerateAndSolveSystemOfLinearEquations(size_t N)
 	// TraceDeltas<Scalar>();
 
 	// We want to solve the system Ax=b
-	matmul(A, L, U);   // construct the A matrix to solve
+	A = L*U;   // construct the A matrix to solve
 	printMatrix(cout, "A = LU", A);
 	cout << endl;
 

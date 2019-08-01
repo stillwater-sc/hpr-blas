@@ -33,13 +33,11 @@ void GenerateHilbertMatrixTest(size_t N, bool printA = false, bool printB = fals
 	mtl::mat::dense2D<Scalar> A(N, N), B(N, N), C(N, N);
 	GenerateHilbertMatrix(A);
 	GenerateHilbertMatrixInverse(B);
-	C = 0;
 	matmul(C, A, B);
 	if (printA) printMatrix(cout, "A matrix", A);
 	if (printB) printMatrix(cout, "B matrix", B);
 	printMatrix(cout, "C matrix", C);
 }
-
 
 /*
 Hilbert matrices have very large condition numbers and are a compact

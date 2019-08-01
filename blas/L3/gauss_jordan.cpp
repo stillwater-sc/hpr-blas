@@ -33,24 +33,24 @@ void GenerateNumericalAnalysisTestCase(const std::string& header, unsigned N, bo
 	Matrix Hinv = GaussJordanInversion(H);
 	Matrix Href(N, N);
 	GenerateHilbertMatrixInverse(Href);
-	Matrix test(N, N);
-	matmul(test, H, Hinv);
+	Matrix I(N, N);  // H * Hinv should yield the identity matrix
+	// TODO: this is not clear that for posits this would be a fused matrix multiply
+	matmul(I, H, Hinv);
+
 	if (verbose) {
 		printMatrix(cout, "Hilbert matrix order 5", H);
 		printMatrix(cout, "Hilbert inverse", Hinv);
 
 		printMatrix(cout, "Hilbert inverse reference", Href);
 
-		printMatrix(cout, "H * H^-1", test);
+		printMatrix(cout, "H * H^-1 => I", I);
 	}
-
-	Matrix I(N, N);
-	matmul(I, H, Hinv);  // should yield the identity matrix
 
 	// calculate the numerical error caused by the linear algebra computation
 	Vector e(N), eprime(N), eabsolute(N), erelative(N);
 	e = Scalar(1);
-	matvec(I, e, eprime);
+	// TODO: it is not clear that for posits this would be a fused matrix-vector operation
+	matvec(eprime, I, e);
 	printVector(cout, "reference vector", e);
 	printVector(cout, "error vector", eprime);
 	// absolute error
