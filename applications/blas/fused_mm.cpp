@@ -6,7 +6,6 @@
 
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
-#define MTL_WITH_INITLIST
 #include <hprblas>
 // utilities to generate and print vectors and matrices
 #include "utils/matvec.hpp"

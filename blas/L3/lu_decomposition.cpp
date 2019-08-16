@@ -143,8 +143,10 @@ void ComparePositDecompositions(std::vector< sw::unum::posit<nbits, es> >& A, st
 #endif
 }
 
+#if 0
 template<typename Scalar>
 void RandomMatrix() {
+	using namespace std;
 	mtl::dense_vector<Scalar> x(5), b(5), xprime(5);
 	mtl::dense2D<Scalar> A(5, 5);
 	mtl::mat::uniform_rand(A, -1.0, 1.0);
@@ -163,6 +165,7 @@ void RandomMatrix() {
 	CroutFDPCycle<nbits, es, capacity>(A, xprime, b);
 	printVector(cout, "RHS    x(5)  :\n", xprime);
 }
+#endif
 
 template<typename Ty>
 void CompareIEEEDecompositions(std::vector<Ty>& A, std::vector<Ty>& x, std::vector<Ty>& b) {

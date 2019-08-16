@@ -1,7 +1,7 @@
 # Hyper-BLAS: high-performance reproducible linear algebra
-project (hpr-blas)
+project (hpr-blas LANGUAGES CXX)
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 
 option(HPR_BLAS_CMAKE_TRACE "Tracing CMake results, i.e. printing variable settings." OFF)
 option(HPR_BLAS_ENABLE_TESTS "Enable the build and run of tests." ON)
@@ -26,7 +26,7 @@ if (HPR_BLAS_ENABLE_TESTS)
     # include(Dart)
 endif()
 
-cmake_policy(SET CMP0074 NEW)
+#cmake_policy(SET CMP0074 NEW)
 find_package(Boost)
 message(STATUS "Boost_FOUND " ${Boost_FOUND})
 if (Boost_FOUND)
@@ -46,14 +46,15 @@ include_directories(${UNIVERSAL_INCLUDE_DIRS})
 message(STATUS "UNIVERSAL INCLUDE DIR " ${UNIVERSAL_INCLUDE_DIRS})
 
 # Set hpr-blas include directory
-include_directories("include")
-message(STATUS "HPR-BLAS INCLUDE DIR " "include")
+set(HPR_BLAS_INCLUDE_DIR "./include")
+include_directories(${HPR_BLAS_INCLUDE_DIR})
+message(STATUS "HPR-BLAS INCLUDE DIR " ${HPR_BLAS_INCLUDE_DIR})
 
 if(WIN)
 add_compile_options ( -std=c++11 )
 endif(WIN)
 if(UNIX)
-add_compile_options ( -std=gnu++11 -fext-numeric-literals )
+add_compile_options ( -std=gnu++17 -fext-numeric-literals )
 endif(UNIX)
 
 macro (compile_all testing prefix)

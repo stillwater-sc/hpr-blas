@@ -7,7 +7,6 @@
 // warning C4996: 'std::copy::_Unchecked_iterators::_Deprecate': Call to 'std::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct.
 #pragma warning( disable : 4996)
 #include "common.hpp"
-#include <vector>
 #include <hprblas>
 // utilities to generate and print vectors and matrices
 #include "utils/matvec.hpp"
