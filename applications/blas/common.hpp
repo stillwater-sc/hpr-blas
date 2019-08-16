@@ -35,3 +35,14 @@ log_e(2)		M_LN2		0.693147180559945309417
 log_e(10)		M_LN10		2.30258509299404568402
 
 */
+
+#ifdef _WINDOWS
+// Including SDKDDKVer.h defines the highest available Windows platform.
+
+// If you wish to build your application for a previous Windows platform, include WinSDKVer.h and
+// set the _WIN32_WINNT macro to the platform you wish to support before including SDKDDKVer.h.
+
+#include <SDKDDKVer.h>
+
+#define MTL_WITH_INITLIST
+#endif // WINDOWS
