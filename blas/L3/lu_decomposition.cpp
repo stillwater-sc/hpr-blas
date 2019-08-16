@@ -4,7 +4,7 @@
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
-#include <chrono>
+#include "common.hpp"
 // configure the posit number system behavior
 #define POSIT_ROUNDING_ERROR_FREE_IO_FORMAT 0
 // configure the HPR-BLAS behavior

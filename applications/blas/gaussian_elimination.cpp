@@ -5,6 +5,9 @@
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 
 #include <chrono>
+#ifdef _WINDOWS
+#define MTL_WITH_INITLIST
+#endif
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #include <hprblas>
