@@ -88,7 +88,7 @@ typename Vector::value_type fdp_stride(size_t n, const Vector& x, size_t incx, c
 		if (sw::unum::_trace_quire_add) std::cout << q << '\n';
 	}
 	typename Vector::value_type sum;
-	convert(q.to_value(), sum);     // one and only rounding step of the fused-dot product
+	sw::unum::convert(q.to_value(), sum);     // one and only rounding step of the fused-dot product
 	return sum;
 }
 // Specialized resolved fused dot product that assumes unit stride and a standard vector,
@@ -103,7 +103,7 @@ typename Vector::value_type fdp(const Vector& x, const Vector& y) {
 		q += sw::unum::quire_mul(x[ix], y[iy]);
 	}
 	typename Vector::value_type sum;
-	convert(q.to_value(), sum);     // one and only rounding step of the fused-dot product
+	sw::unum::convert(q.to_value(), sum);     // one and only rounding step of the fused-dot product
 	return sum;
 }
 
@@ -214,7 +214,7 @@ void matvec(mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& b, const mtl::
 		for (size_t j = 0; j < nc; ++j) {
 			q += sw::unum::quire_mul(A[i][j], x[j]);
 		}
-		convert(q.to_value(), b[i]);     // one and only rounding step of the fused-dot product
+		sw::unum::convert(q.to_value(), b[i]);     // one and only rounding step of the fused-dot product
 #if HPRBLAS_TRACE_ROUNDING_EVENTS
 		sw::unum::quire<nbits, es> qdiff = q;
 		sw::unum::quire<nbits, es> qsum = b[i];
@@ -254,7 +254,7 @@ mtl::vec::dense_vector< sw::unum::posit<nbits, es> > fmv(const mtl::mat::dense2D
 		for (size_t j = 0; j < nc; ++j) {
 			q += sw::unum::quire_mul(A[i][j], x[j]);
 		}
-		convert(q.to_value(), b[i]);     // one and only rounding step of the fused-dot product
+		sw::unum::convert(q.to_value(), b[i]);     // one and only rounding step of the fused-dot product
 #if HPRBLAS_TRACE_ROUNDING_EVENTS
 		sw::unum::quire<nbits, es> qdiff = q;
 		sw::unum::quire<nbits, es> qsum = b[i];
@@ -301,7 +301,7 @@ void matmul(mtl::mat::dense2D< sw::unum::posit<nbits, es> >& C, const mtl::mat::
 			for (size_t k = 0; k < nk; ++k) {
 				q += sw::unum::quire_mul(A[i][k], B[k][j]);
 			}
-			convert(q.to_value(), C[i][j]);     // one and only rounding step of the fused-dot product
+			sw::unum::convert(q.to_value(), C[i][j]);     // one and only rounding step of the fused-dot product
 		}
 	}
 }
@@ -322,27 +322,71 @@ mtl::mat::dense2D< sw::unum::posit<nbits, es> > fmm(const mtl::mat::dense2D< sw:
 			for (size_t k = 0; k < nk; ++k) {
 				q += sw::unum::quire_mul(A[i][k], B[k][j]);
 			}
-			convert(q.to_value(), C[i][j]);     // one and only rounding step of the fused-dot product
+			sw::unum::convert(q.to_value(), C[i][j]);     // one and only rounding step of the fused-dot product
 		}
 	}
 	return C;
 }
 
+// subBlockMM generates the partial sums of a sub-block matrix multiply
+// the QuireMatrix is [blockHeight][blockWidth] submatrix
+// A and B matrices are full [n][m] and [m][n] matrices
+template<typename QuireMatrix, typename Matrix, unsigned blockHeight, unsigned blockWidth>
+void subBlockMM(QuireMatrix& C, const Matrix& A, unsigned Ai, unsigned Aj, const Matrix& B, unsigned Bi, unsigned Bj) {
+	using Scalar = typename Matrix::value_type;
+	constexpr size_t nbits = Scalar::nbits;
+	constexpr size_t es = Scalar::es;
+
+	unsigned aRow = Ai * blockHeight;
+	unsigned aCol = Aj * blockWidth;
+	unsigned bRow = Bi * blockHeight;
+	unsigned bCol = Bj * blockWidth;
+	for (unsigned i = 0; i < blockHeight; ++i) {
+		for (unsigned j = 0; j < blockWidth; ++j) {
+			for (unsigned k = 0; k < blockWidth; ++k) {
+				C[i][j] += sw::unum::quire_mul<nbits,es>(A[aRow+i][aCol+k], B[bRow+k][bCol+j]);
+			}
+		}
+	}
+}
+
+// subBlockRound takes a QuireMatrix and rounds the partial sums
+template<typename Matrix, typename QuireMatrix, unsigned blockHeight, unsigned blockWidth>
+void subBlockRound(Matrix& C, const QuireMatrix& C_partial, unsigned bi, unsigned bj) {
+	for (unsigned i = 0; i < blockHeight; ++i) {
+		for (unsigned j = 0; j < blockWidth; ++j) {
+			sw::unum::convert(C_partial[i][j].to_value(), C[bi*blockHeight + i][bj*blockWidth + j]);
+		}
+	}
+}
+
 // blocked C = A * B
 template<typename Matrix, unsigned blockHeight, unsigned blockWidth>
-Matrix bgemm(const Matrix& A, const Matrix& B) {
+Matrix bfmm(const Matrix& A, const Matrix& B) {
 	// precondition
 	assert(A.num_cols() == B.num_rows());
-	size_t nr = A.num_rows();
-	size_t nc = B.num_cols();
-	size_t nk = A.num_cols();
+	unsigned nr = unsigned(A.num_rows());
+	unsigned nc = unsigned(B.num_cols());
+	unsigned nk = unsigned(A.num_cols());
 	Matrix C(nr, nc);
+
+	using Scalar = typename Matrix::value_type;
+	constexpr size_t nbits = Scalar::nbits;
+	constexpr size_t es = Scalar::es;
+	using Quire = typename sw::unum::quire<nbits, es>;
+	using QuireMatrix = typename mtl::mat::dense2D<Quire>;
+
+	QuireMatrix C_partial(blockHeight, blockWidth);
+	C_partial = Scalar(0);
 
 	unsigned nrRowBlocks = nr % blockHeight ? nr / blockHeight + 1 : nr / blockHeight;
 	unsigned nrColBlocks = nc % blockWidth  ? nr / blockWidth + 1  : nc / blockWidth;
-	for (unsigned cr = 0; cr < nrRowBlocks; ++cr) {
-		for (unsigned cb = 0; cb < nrColBlocks; ++cb) {
-
+	for (unsigned bi = 0; bi < nrRowBlocks; ++bi) {			// row block index
+		for (unsigned bj = 0; bj < nrColBlocks; ++bj) {		// col block index
+			for (unsigned bk = 0; bk < nrRowBlocks; ++bk) { // block iterator
+				subBlockMM<QuireMatrix, Matrix, blockHeight, blockWidth>(C_partial, A, bi, bk, B, bk, bj);
+			}
+			subBlockRound<Matrix, QuireMatrix, blockHeight, blockWidth>(C, C_partial, bi, bj);
 		}
 	}
 	return C;
