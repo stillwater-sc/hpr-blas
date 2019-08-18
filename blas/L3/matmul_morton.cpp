@@ -84,7 +84,7 @@ void NumericalAttributes() {
 	Scalar epsplus = Scalar(1.0) + eps;
 	Scalar max_exp = std::numeric_limits<Scalar>::max_exponent;
 	Scalar min_exp = std::numeric_limits<Scalar>::min_exponent;
-	cout << " epsilon " << eps << " min exp " << min_exp << " max exp " << max_exp << endl;
+	std::cout << " epsilon " << eps << " min exp " << min_exp << " max exp " << max_exp << std::endl;
 }
 
 int main(int argc, char** argv)
