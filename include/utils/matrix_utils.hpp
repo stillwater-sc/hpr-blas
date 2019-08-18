@@ -394,5 +394,18 @@ void GenerateHilbertMatrixInverse(mtl::mat::dense2D<Scalar>& m, Scalar scale = S
 	}
 }
 
+// isEqual compares to matrices
+template<typename Matrix>
+bool isEqual(const Matrix& lhs, const Matrix& rhs) {
+	size_t r = lhs.num_rows();
+	size_t c = lhs.num_cols();
+	for (size_t i = 0; i < r; ++i) {
+		for (size_t j = 0; j < c; ++j) {
+			if (lhs[i][j] != rhs[i][j]) return false;
+		}
+	}
+	return true;
+}
+
 } // namespace hprblas
 } // namespace sw

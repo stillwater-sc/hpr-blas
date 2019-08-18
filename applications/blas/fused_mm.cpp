@@ -4,7 +4,6 @@
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 
-
 // warning C4996: 'std::copy::_Unchecked_iterators::_Deprecate': Call to 'std::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
 #pragma warning(disable : 4996) 
 
@@ -13,18 +12,6 @@
 #include <hprblas>
 // utilities to generate and print vectors and matrices
 #include "utils/matvec.hpp"
-
-template<typename Matrix>
-bool isEqual(const Matrix& lhs, const Matrix& rhs) {
-	size_t r = lhs.num_rows();
-	size_t c = lhs.num_cols();
-	for (size_t i = 0; i < r; ++i) {
-		for (size_t j = 0; j < c; ++j) {
-			if (lhs[i][j] != rhs[i][j]) return false;
-		}
-	}
-	return true;
-}
 
 int main(int argc, char** argv)
 try {
@@ -41,7 +28,7 @@ try {
 	using Scalar = typename sw::unum::posit<nbits, es>;
 	using Matrix = typename mtl::mat::dense2D<Scalar>;
 
-	size_t N = 5;
+	size_t N = 10;
 	Matrix H(N, N);
 	GenerateHilbertMatrix(H);
 
@@ -56,7 +43,7 @@ try {
 	printMatrix(cout, "H * H^-1", I1);
 
 	// using a blocked form
-	constexpr size_t blockSize = 3;
+	constexpr size_t blockSize = 7;
 	Matrix I2(N, N);
 	I2 = sw::hprblas::bfmm(H, Hinv, blockSize);
 	I2 = I2 / lcm;
