@@ -41,7 +41,7 @@ try {
 	using Scalar = typename sw::unum::posit<nbits, es>;
 	using Matrix = typename mtl::mat::dense2D<Scalar>;
 
-	size_t N = 10;
+	size_t N = 5;
 	Matrix H(N, N);
 	GenerateHilbertMatrix(H);
 
@@ -56,10 +56,9 @@ try {
 	printMatrix(cout, "H * H^-1", I1);
 
 	// using a blocked form
-	constexpr size_t blockHeight = 5;
-	constexpr size_t blockWidth = 5;
+	constexpr size_t blockSize = 3;
 	Matrix I2(N, N);
-	I2 = sw::hprblas::bfmm(H, Hinv, blockHeight, blockWidth);
+	I2 = sw::hprblas::bfmm(H, Hinv, blockSize);
 	I2 = I2 / lcm;
 	printMatrix(cout, "H * H^-1", I2);
 
