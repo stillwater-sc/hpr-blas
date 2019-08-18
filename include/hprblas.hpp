@@ -328,11 +328,22 @@ mtl::mat::dense2D< sw::unum::posit<nbits, es> > fmm(const mtl::mat::dense2D< sw:
 	return C;
 }
 
+template<typename Scalar>
+inline Scalar minimum(const Scalar& a, const Scalar& b) {
+	return (a < b ? a : b);
+}
+
+// if you only specify one set of block parameters in the specification then by 
+// the virtue of doing block matrix multiplication you generate the invariant : blockHeight == blockWidth
+// Thus, no need to specify blockHeight and blockWidth: we can simplify to blockSize
+// blockHeight = blockWidth = blockSize
+
 // subBlockMM generates the partial sums of a sub-block matrix multiply
 // the QuireMatrix is [blockHeight][blockWidth] submatrix
 // A and B matrices are full [n][m] and [m][n] matrices
 template<typename Matrix>
 void subBlockMM(Matrix& C_partial, const Matrix& A, unsigned Ai, unsigned Aj, const Matrix& B, unsigned Bi, unsigned Bj) {
+	assert(mtl::mat::num_rows(C_partial) == mtl::mat::num_cols(C_partial));
 	using Scalar = typename Matrix::value_type;
 	constexpr size_t nbits = Scalar::nbits;
 	constexpr size_t es = Scalar::es;
@@ -342,39 +353,20 @@ void subBlockMM(Matrix& C_partial, const Matrix& A, unsigned Ai, unsigned Aj, co
 	unsigned bRows = unsigned(mtl::mat::num_rows(B));
 	unsigned bCols = unsigned(mtl::mat::num_cols(B));
 
-	unsigned blockHeight = unsigned(mtl::mat::num_rows(C_partial));
-	unsigned blockWidth = unsigned(mtl::mat::num_cols(C_partial));
+	unsigned blockSize = unsigned(mtl::mat::num_rows(C_partial));
 
-	unsigned aRow = Ai * blockHeight;
-	unsigned aCol = Aj * blockWidth;
-	unsigned bRow = Bi * blockHeight;
-	unsigned bCol = Bj * blockWidth;
+	unsigned aRow = Ai * blockSize;
+	unsigned aCol = Aj * blockSize;
+	unsigned bRow = Bi * blockSize;
+	unsigned bCol = Bj * blockSize;
 
-	unsigned maxRow;
-	if (aRow + blockHeight < aRows) {
-		if (bRow + blockHeight < bRows) {
-			maxRow = blockHeight;
-		}
-		else {
-			maxRow = bRows - bRow;
-		}
-	}
-	else {
-		maxRow = aRows - aRow;
-	}
-	unsigned maxCol;
-	if (aCol + blockWidth < aCols) {
-		if (bCol + blockWidth < bCols) {
-			maxCol = blockWidth;
-		}
-		else {
-			maxCol = bCols - bCol;
-		}
-	}
-	else {
-		maxCol = aCols = aCol;
-	}
-
+	unsigned maxRow = minimum(
+		(aRow + blockSize < aRows) ? blockSize : aRows - aRow,
+		(bRow + blockSize < bRows) ? blockSize : bRows - bRow);
+	unsigned maxCol = minimum(
+		(aCol + blockSize < aCols) ? blockSize : aCols - aCol,
+		(bCol + blockSize < bCols) ? blockSize : bCols - bCol);
+							  
 	for (unsigned i = 0; i < maxRow; ++i) {
 		for (unsigned j = 0; j < maxCol; ++j) {
 			for (unsigned k = 0; k < maxCol; ++k) {
@@ -384,11 +376,61 @@ void subBlockMM(Matrix& C_partial, const Matrix& A, unsigned Ai, unsigned Aj, co
 	}
 }
 
+// copySubBlockInto copies a subblock matrix into of the mother matrix
+template<typename Matrix>
+void copySubBlockInto(Matrix& A, unsigned ai, unsigned aj, const Matrix& SubBlock) {
+	unsigned blockHeight = unsigned(mtl::mat::num_rows(SubBlock));
+	unsigned blockWidth = unsigned(mtl::mat::num_cols(SubBlock));
+
+	unsigned aRows = unsigned(mtl::mat::num_rows(A));
+	unsigned aCols = unsigned(mtl::mat::num_cols(A));
+
+	unsigned aRow = ai * blockHeight;
+	unsigned aCol = aj * blockWidth;
+
+	unsigned maxRow = (aRow + blockHeight < aRows) ? blockHeight : aRows - aRow;
+	unsigned maxCol = (aCol + blockWidth < aCols) ? blockWidth : aCols - aCol;
+
+	for (unsigned i = 0; i < maxRow; ++i) {
+		for (unsigned j = 0; j < maxCol; ++j) {
+			A[aRow + i][aCol + j] = SubBlock[i][j];
+		}
+	}
+}
+
+// bmm is a blocked matrix multply: C = A * B
+template<typename Matrix>
+Matrix bmm(const Matrix& A, const Matrix& B, unsigned blockSize) {
+	// precondition
+	assert(A.num_cols() == B.num_rows());
+	unsigned nr = unsigned(A.num_rows());
+	unsigned nc = unsigned(B.num_cols());
+	unsigned nk = unsigned(A.num_cols());
+	Matrix C(nr, nc);
+
+	using Scalar = typename Matrix::value_type;
+	Matrix C_partial(blockSize, blockSize);
+
+	unsigned nrRowBlocks = nr % blockSize ? nr / blockSize + 1 : nr / blockSize;
+	unsigned nrColBlocks = nc % blockSize ? nr / blockSize + 1 : nc / blockSize;
+	for (unsigned bi = 0; bi < nrRowBlocks; ++bi) {			// row block index
+		for (unsigned bj = 0; bj < nrColBlocks; ++bj) {		// col block index
+			C_partial = Scalar(0);
+			for (unsigned bk = 0; bk < nrRowBlocks; ++bk) { // block iterator
+				subBlockMM(C_partial, A, bi, bk, B, bk, bj);
+			}
+			copySubBlockInto(C, bi, bj, C_partial);
+		}
+	}
+	return C;
+}
+
 // subBlockMM generates the partial sums of a sub-block matrix multiply
-// the QuireMatrix is [blockHeight][blockWidth] submatrix
+// the QuireMatrix is a square matrix
 // A and B matrices are full [n][m] and [m][n] matrices
 template<typename QuireMatrix, typename Matrix>
 void subBlockMM(QuireMatrix& C, const Matrix& A, unsigned Ai, unsigned Aj, const Matrix& B, unsigned Bi, unsigned Bj) {
+	assert(mtl::mat::num_rows(C) == mtl::mat::num_cols(C));
 	using Scalar = typename Matrix::value_type;
 	constexpr size_t nbits = Scalar::nbits;
 	constexpr size_t es = Scalar::es;
@@ -398,38 +440,19 @@ void subBlockMM(QuireMatrix& C, const Matrix& A, unsigned Ai, unsigned Aj, const
 	unsigned bRows = unsigned(mtl::mat::num_rows(B));
 	unsigned bCols = unsigned(mtl::mat::num_cols(B));
 
-	unsigned blockHeight = unsigned(mtl::mat::num_rows(C));
-	unsigned blockWidth = unsigned(mtl::mat::num_cols(C));
+	unsigned blockSize = unsigned(mtl::mat::num_rows(C));
 
-	unsigned aRow = Ai * blockHeight;
-	unsigned aCol = Aj * blockWidth;
-	unsigned bRow = Bi * blockHeight;
-	unsigned bCol = Bj * blockWidth;
+	unsigned aRow = Ai * blockSize;
+	unsigned aCol = Aj * blockSize;
+	unsigned bRow = Bi * blockSize;
+	unsigned bCol = Bj * blockSize;
 
-	unsigned maxRow;
-	if (aRow + blockHeight < aRows) {
-		if (bRow + blockHeight < bRows) {
-			maxRow = blockHeight;
-		}
-		else {
-			maxRow = bRows - bRow;
-		}
-	}
-	else {
-		maxRow = aRows - aRow;
-	}
-	unsigned maxCol;
-	if (aCol + blockWidth < aCols) {
-		if (bCol + blockWidth < bCols) {
-			maxCol = blockWidth;
-		}
-		else {
-			maxCol = bCols - bCol;
-		}
-	}
-	else {
-		maxCol = aCols = aCol;
-	}
+	unsigned maxRow = minimum(
+		(aRow + blockSize < aRows) ? blockSize : aRows - aRow,
+		(bRow + blockSize < bRows) ? blockSize : bRows - bRow);
+	unsigned maxCol = minimum(
+		(aCol + blockSize < aCols) ? blockSize : aCols - aCol,
+		(bCol + blockSize < bCols) ? blockSize : bCols - bCol);
 
 	for (unsigned i = 0; i < maxRow; ++i) {
 		for (unsigned j = 0; j < maxCol; ++j) {
@@ -441,18 +464,30 @@ void subBlockMM(QuireMatrix& C, const Matrix& A, unsigned Ai, unsigned Aj, const
 }
 
 // subBlockRound takes a sub-block address and a QuireMatrix and rounds the partial sums
+
 template<typename Matrix, typename QuireMatrix>
-void subBlockRound(Matrix& C, unsigned bi, unsigned bj, const QuireMatrix& C_partial) {
+void subBlockRound(Matrix& C, unsigned ci, unsigned cj, const QuireMatrix& C_partial) {
 	unsigned blockHeight = unsigned(mtl::mat::num_rows(C_partial));
 	unsigned blockWidth = unsigned(mtl::mat::num_cols(C_partial));
-	for (unsigned i = 0; i < blockHeight; ++i) {
-		for (unsigned j = 0; j < blockWidth; ++j) {
-			sw::unum::convert(C_partial[i][j].to_value(), C[bi*blockHeight + i][bj*blockWidth + j]);
+
+	unsigned cRows = unsigned(mtl::mat::num_rows(C));
+	unsigned cCols = unsigned(mtl::mat::num_cols(C));
+
+	unsigned cRow = ci * blockHeight;
+	unsigned cCol = cj * blockWidth;
+
+	unsigned maxRow = (cRow + blockHeight < cRows) ? blockHeight : cRows - cRow;
+	unsigned maxCol = (cCol + blockWidth < cCols) ? blockWidth : cCols - cCol;
+
+	for (unsigned i = 0; i < maxRow; ++i) {
+		for (unsigned j = 0; j < maxCol; ++j) {
+			sw::unum::convert(C_partial[i][j].to_value(), C[cRow + i][cCol + j]);
 		}
 	}
 }
 
 // copySubBlock copies a subblock matrix out of the mother matrix
+// This function is more generic than used in block matmul, as this can take non-square matrices
 template<typename Matrix>
 void copySubBlock(Matrix& SubBlock, const Matrix& M, unsigned bi, unsigned bj) {
 	unsigned blockHeight = unsigned(mtl::mat::num_rows(SubBlock));
@@ -464,9 +499,9 @@ void copySubBlock(Matrix& SubBlock, const Matrix& M, unsigned bi, unsigned bj) {
 	}
 }
 
-// blocked C = A * B
+// bfmm is a blocked fused matrix multply: C = A * B
 template<typename Matrix>
-Matrix bfmm(const Matrix& A, const Matrix& B, unsigned blockHeight, unsigned blockWidth) {
+Matrix bfmm(const Matrix& A, const Matrix& B, unsigned blockSize) {
 	// precondition
 	assert(A.num_cols() == B.num_rows());
 	unsigned nr = unsigned(A.num_rows());
@@ -479,11 +514,10 @@ Matrix bfmm(const Matrix& A, const Matrix& B, unsigned blockHeight, unsigned blo
 	constexpr size_t es = Scalar::es;
 	using Quire = typename sw::unum::quire<nbits, es>;
 	using QuireMatrix = typename mtl::mat::dense2D<Quire>;
+	QuireMatrix C_partial(blockSize, blockSize);
 
-	QuireMatrix C_partial(blockHeight, blockWidth);
-
-	unsigned nrRowBlocks = nr % blockHeight ? nr / blockHeight + 1 : nr / blockHeight;
-	unsigned nrColBlocks = nc % blockWidth  ? nr / blockWidth + 1  : nc / blockWidth;
+	unsigned nrRowBlocks = nr % blockSize ? nr / blockSize + 1 : nr / blockSize;
+	unsigned nrColBlocks = nc % blockSize ? nr / blockSize + 1  : nc / blockSize;
 	for (unsigned bi = 0; bi < nrRowBlocks; ++bi) {			// row block index
 		for (unsigned bj = 0; bj < nrColBlocks; ++bj) {		// col block index
 			C_partial = Scalar(0);
