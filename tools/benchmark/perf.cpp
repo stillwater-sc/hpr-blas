@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 try {
 	//using namespace std;
 	using namespace mtl;
-	//using namespace sw::unum;
+	using namespace sw::unum;
 	using namespace sw::hprblas;
 
 	int nrOfFailedTestCases = 0;
@@ -49,6 +49,7 @@ try {
 		using Vector = mtl::dense_vector<sw::unum::posit<nbits, es>, mtl::vec::parameters<tag::row_major> >;
 		axpy_test<sw::unum::posit<nbits, es>,Vector>("posit<32,2> AXPY is ", vecSize, sw::unum::posit<nbits, es>(10.0), sw::unum::posit<nbits, es>(-1.0));
 	}
+
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
