@@ -52,14 +52,23 @@ void printMatrix(std::ostream& ostr, const std::string& name, const std::vector<
 
 // printSubMatrix pretty prints a sub-matrix of a 2D dense matrix
 template<typename Matrix>
-void printSubMatrix(std::ostream& ostr, const std::string& name, const Matrix& M, unsigned bi, unsigned bj, unsigned blockHeight, unsigned blockWidth) {
-	ostr << "Sub-Matrix (" << bi << "," << bj << ") of " << name << " of size " << blockHeight << "x" << blockWidth << std::endl;
+void printSubMatrix(std::ostream& ostr, const std::string& name, const Matrix& A, unsigned ai, unsigned aj, unsigned blockHeight, unsigned blockWidth) {
+	ostr << "Sub-Matrix (" << ai << "," << aj << ") of " << name << " of size " << blockHeight << "x" << blockWidth << std::endl;
 	std::streamsize old_prec = ostr.precision();
 	ostr << std::setprecision(17);
 
-	for (unsigned i = 0; i < blockHeight; ++i) {
-		for (unsigned j = 0; j < blockWidth; ++j) {
-			std::cout << std::setw(20) << M[bi*blockHeight + i][bj*blockWidth + j] << " ";
+	unsigned aRows = unsigned(mtl::mat::num_rows(A));
+	unsigned aCols = unsigned(mtl::mat::num_cols(A));
+
+	unsigned aRow = ai*blockHeight;
+	unsigned aCol = aj*blockWidth;
+
+	unsigned maxRow = (aRow + blockHeight < aRows) ? blockHeight : aRows - aRow;
+	unsigned maxCol = (aCol + blockWidth < aCols) ? blockWidth : aCols - aCol;
+
+	for (unsigned i = 0; i < maxRow; ++i) {
+		for (unsigned j = 0; j < maxCol; ++j) {
+			std::cout << std::setw(20) << A[aRow + i][aCol + j] << " ";
 		}
 		ostr << std::endl;
 	}

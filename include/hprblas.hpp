@@ -360,18 +360,22 @@ void subBlockMM(Matrix& C_partial, const Matrix& A, unsigned Ai, unsigned Aj, co
 	unsigned bRow = Bi * blockSize;
 	unsigned bCol = Bj * blockSize;
 
-	unsigned maxRow = minimum(
-		(aRow + blockSize < aRows) ? blockSize : aRows - aRow,
-		(bRow + blockSize < bRows) ? blockSize : bRows - bRow);
-	unsigned maxCol = minimum(
-		(aCol + blockSize < aCols) ? blockSize : aCols - aCol,
-		(bCol + blockSize < bCols) ? blockSize : bCols - bCol);
-							  
-	for (unsigned i = 0; i < maxRow; ++i) {
-		for (unsigned j = 0; j < maxCol; ++j) {
-			for (unsigned k = 0; k < maxCol; ++k) {
+	// calculate the shape of submatrix A
+	unsigned ar = (aRow + blockSize < aRows) ? blockSize : aRows - aRow;
+	unsigned ac = (aCol + blockSize < aCols) ? blockSize : aCols - aCol;
+	unsigned br = (bRow + blockSize < bRows) ? blockSize : bRows - bRow;
+	unsigned bc = (bCol + blockSize < bCols) ? blockSize : bCols - bCol;
+	
+//	std::cout << "A=" << ar << "x" << ac << "  B=" << br << "x" << bc << std::endl;
+	assert(ac == br);
+	// A(ar,ac) x B(br,bc) = C(ar,bc) if ac == br
+	for (unsigned i = 0; i < ar; ++i) {
+		for (unsigned j = 0; j < bc; ++j) {
+			for (unsigned k = 0; k < ac; ++k) {
 				C_partial[i][j] += A[aRow + i][aCol + k] * B[bRow + k][bCol + j];
 			}
+//			std::cout << "A(" << Ai << "," << Aj << ") B(" << Bi << "," << Bj << ") C(" << i << "," << j << ")\n";
+//			printMatrix(std::cout, "partial", C_partial);
 		}
 	}
 }
@@ -447,16 +451,18 @@ void subBlockMM(QuireMatrix& C, const Matrix& A, unsigned Ai, unsigned Aj, const
 	unsigned bRow = Bi * blockSize;
 	unsigned bCol = Bj * blockSize;
 
-	unsigned maxRow = minimum(
-		(aRow + blockSize < aRows) ? blockSize : aRows - aRow,
-		(bRow + blockSize < bRows) ? blockSize : bRows - bRow);
-	unsigned maxCol = minimum(
-		(aCol + blockSize < aCols) ? blockSize : aCols - aCol,
-		(bCol + blockSize < bCols) ? blockSize : bCols - bCol);
+	// calculate the shape of submatrix A
+	unsigned ar = (aRow + blockSize < aRows) ? blockSize : aRows - aRow;
+	unsigned ac = (aCol + blockSize < aCols) ? blockSize : aCols - aCol;
+	unsigned br = (bRow + blockSize < bRows) ? blockSize : bRows - bRow;
+	unsigned bc = (bCol + blockSize < bCols) ? blockSize : bCols - bCol;
 
-	for (unsigned i = 0; i < maxRow; ++i) {
-		for (unsigned j = 0; j < maxCol; ++j) {
-			for (unsigned k = 0; k < maxCol; ++k) {
+	//	std::cout << "A=" << ar << "x" << ac << "  B=" << br << "x" << bc << std::endl;
+	assert(ac == br);
+	// A(ar,ac) x B(br,bc) = C(ar,bc) if ac == br
+	for (unsigned i = 0; i < ar; ++i) {
+		for (unsigned j = 0; j < bc; ++j) {
+			for (unsigned k = 0; k < ac; ++k) {
 				C[i][j] += sw::unum::quire_mul<nbits,es>(A[aRow+i][aCol+k], B[bRow+k][bCol+j]);
 			}
 		}
