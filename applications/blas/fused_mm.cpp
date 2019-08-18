@@ -4,6 +4,10 @@
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 
+
+// warning C4996: 'std::copy::_Unchecked_iterators::_Deprecate': Call to 'std::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
+#pragma warning(disable : 4996) 
+
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #include <hprblas>
@@ -32,12 +36,10 @@ try {
 	int nrOfFailedTestCases = 0;
 
 	// configure the number system
-	constexpr size_t nbits = 32;
+	constexpr size_t nbits = 64;
 	constexpr size_t es = 2;
 	using Scalar = typename sw::unum::posit<nbits, es>;
 	using Matrix = typename mtl::mat::dense2D<Scalar>;
-	constexpr size_t blockHeight = 5;
-	constexpr size_t blockWidth = 5;
 
 	size_t N = 10;
 	Matrix H(N, N);
@@ -46,14 +48,20 @@ try {
 	Matrix Hinv(N, N);
 	GenerateHilbertMatrixInverse(Hinv);
 
-	Matrix I1(N, N), I2(N, N);
+	// using an inefficient linear form
+	Matrix I1(N, N);
 	I1 = sw::hprblas::fmm(H, Hinv);
-	I2 = sw::hprblas::bfmm<Matrix, blockHeight, blockWidth>(H, Hinv);
-
 	Scalar lcm = HilbertScalingFactor(N);
 	I1 = I1 / lcm;
-
 	printMatrix(cout, "H * H^-1", I1);
+
+	// using a blocked form
+	constexpr size_t blockHeight = 5;
+	constexpr size_t blockWidth = 5;
+	Matrix I2(N, N);
+	I2 = sw::hprblas::bfmm(H, Hinv, blockHeight, blockWidth);
+	I2 = I2 / lcm;
+	printMatrix(cout, "H * H^-1", I2);
 
 	mtl::mat::dense2D<Scalar> eye(N, N);
 	eye = Scalar(1);
