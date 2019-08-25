@@ -6,7 +6,7 @@
 #include "common.hpp"
 #include <boost/multiprecision/cpp_int.hpp>
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
-#include <posit>
+#include <universal/posit/posit>
 
 template<typename Ty>
 Ty factorial(unsigned fact) {

@@ -8,7 +8,7 @@
 #include <vector>
 #define POSIT_VERBOSE_OUTPUT
 #define QUIRE_TRACE_ADD
-#include <posit>
+#include <universal/posit/posit>
 
 
 namespace sw {

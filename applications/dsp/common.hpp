@@ -13,6 +13,6 @@
 #include <string>
 
 #include <complex>
-#include <posit>
+#include <universal/posit/posit>
 #define MTL_INITIALIZER_LISTS
 #include <boost/numeric/mtl/mtl.hpp>

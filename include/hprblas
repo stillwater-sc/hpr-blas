@@ -33,8 +33,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////
 /// INCLUDE FILES that make up the library
-#include "posit.hpp"
-#include "numeric_limits.hpp"
+#include "universal/posit/posit.hpp"
+#include "universal/posit/numeric_limits.hpp"
 
 // fast specializations for special posit configurations
 // enable fast implementations of the standard posits
@@ -44,22 +44,22 @@
 // For example, POSIT_FAST_POSIT_8_0, when set to 1, will enable the fast implementation of posit<8,0>.
 // The individual POSIT_FAST_### macros enable fine grain control over which configurations
 // use fast code.
-#include "specializations.hpp"
+#include "universal/posit/specializations.hpp"
 
-#include "posit_manipulators.hpp"
-#include "posit_functions.hpp"
+#include "universal/posit/posit_manipulators.hpp"
+#include "universal/posit/posit_functions.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /// the quire that enables user-controlled rounding
-#include "quire.hpp"
+#include "universal/posit/quire.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /// the posit exact dot product
-#include "fdp.hpp"
+#include "universal/posit/fdp.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /// math functions
-#include "math_functions.hpp"
+#include "universal/posit/math_functions.hpp"
 
 // the underlying matrix/vector machinery
 #include <boost/numeric/mtl/mtl.hpp>

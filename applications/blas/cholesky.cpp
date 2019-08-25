@@ -34,7 +34,7 @@
 *****************************************************************/
 #include <stdio.h>
 #include <math.h>
-#include <posit>
+#include <universal/posit/posit>
 
 #define  SIZE 25
 

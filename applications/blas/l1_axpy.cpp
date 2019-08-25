@@ -6,7 +6,7 @@
 #include "common.hpp"
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
-#include <posit>
+#include <universal/posit/posit>
 
 // axpy: a times x plus y
 template<typename scale_T, typename vector_T>

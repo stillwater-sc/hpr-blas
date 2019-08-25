@@ -10,7 +10,7 @@
 #include <typeinfo>
 
 #include <boost/numeric/mtl/mtl.hpp>
-#include <posit>
+#include <universal/posit/posit>
 
 using namespace std;
 using namespace sw::unum;

@@ -1,11 +1,11 @@
 // fma.cpp: example program contrasting fused multiply-accumulate functionality between IEEE and POSIT
 //
-// Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
 
-#include <posit>
+#include <universal/posit/posit>
 
  // generate specific test case that you can trace with the trace conditions in posit.h
  // for most bugs they are traceable with _trace_conversion and _trace_sub

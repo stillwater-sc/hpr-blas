@@ -6,7 +6,7 @@
 
 #include "common.hpp"
 
-#include <posit>
+#include <universal/posit/posit>
 #define MTL_WITH_INITLIST 1
 #include <boost/numeric/mtl/mtl.hpp>
 
