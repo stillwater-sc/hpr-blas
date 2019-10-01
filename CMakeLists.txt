@@ -100,13 +100,6 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 message(STATUS "C++14 support has been enabled by default")
 
-#if(MSVC)
-#add_compile_options ( -std=c++11 )
-#endif(MSVC)
-#if(UNIX)
-#add_compile_options ( -std=gnu++17 -fext-numeric-literals )
-#endif(UNIX)
-
 macro (compile_all testing prefix)
     # cycle through the sources
     # For the according directories, we assume that each cpp file is a separate test
