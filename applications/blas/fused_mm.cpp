@@ -1,4 +1,4 @@
-// fused_mm.cpp example program to demonstrate BLAS L# Reproducible Matrix-Matrix product
+// fused_mm.cpp: example program to demonstrate BLAS L# Reproducible Matrix-Matrix product
 //
 // Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
