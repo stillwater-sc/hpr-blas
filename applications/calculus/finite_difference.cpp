@@ -1,22 +1,12 @@
-// factorial.cpp example program to demonstrate factorials with arbitrary precision number systems
+// finite_difference.cpp example program to demonstrate finite difference calculations
 //
 // Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include "common.hpp"
 #include <boost/multiprecision/cpp_int.hpp>
-#include <universal/integer/integer>
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #include <universal/posit/posit>
-
-template<typename Ty>
-Ty factorial(unsigned fact) {
-	Ty v = 1;
-	for (unsigned i = 2; i <= fact; ++i) {
-		v *= i;
-	}
-	return v;
-}
 
 int main() 
 try {
@@ -24,18 +14,6 @@ try {
 	using namespace boost::multiprecision;
 	using namespace sw::unum;
 
-	int128_t v = factorial<int128_t>(20);
-	std::cout << v << std::endl;
-
-	cpp_int u = factorial<cpp_int>(20);
-	std::cout << u << std::endl;
-
-	integer<128> w = factorial< integer<128> >(20);
-	std::cout << w << std::endl;
-
-	using Posit = posit<64, 3>;
-	Posit p = factorial<Posit>(20);
-	cout << setprecision(27) << p << endl;
 
 	return EXIT_SUCCESS;
 }
