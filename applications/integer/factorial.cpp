@@ -24,17 +24,18 @@ try {
 	using namespace boost::multiprecision;
 	using namespace sw::unum;
 
-	int128_t v = factorial<int128_t>(20);
+	int N = 30;
+	int128_t v = factorial<int128_t>(N);
 	std::cout << v << std::endl;
 
-	cpp_int u = factorial<cpp_int>(20);
+	cpp_int u = factorial<cpp_int>(N);
 	std::cout << u << std::endl;
 
-	integer<128> w = factorial< integer<128> >(20);
+	integer<128> w = factorial< integer<128> >(N);
 	std::cout << w << std::endl;
 
 	using Posit = posit<64, 3>;
-	Posit p = factorial<Posit>(20);
+	Posit p = factorial<Posit>(N);
 	cout << setprecision(27) << p << endl;
 
 	return EXIT_SUCCESS;
