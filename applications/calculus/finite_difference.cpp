@@ -91,13 +91,13 @@ struct tan_f {
 };
 
 template<typename Real>
-void EnumerateDerivativeError() {
+void EnumerateFirstDerivativeError(const Real& x) {
 	using namespace std;
 	using namespace sw::unum; // for m_pi_4
 
-	cout << "sin at PI/4 : " << sin_f<Real>()(Real(m_pi_4)) << endl;
-	cout << "cos at PI/4 : " << cos_f<Real>()(m_pi_4) << endl;
-	cout << "tan at PI/4 : " << tan_f<Real>()(m_pi_4) << endl;
+	cout << "sin at " << double(x) << " : " << sin_f<Real>()(x) << endl;
+	cout << "cos at " << double(x) << " : " << cos_f<Real>()(x) << endl;
+//	cout << "tan at " << double(x) << " : " << tan_f<Real>()(x) << endl;
 
 	using forward_sin_f = forward_difference<sin_f<Real>, Real>;
 	using backward_sin_f = backward_difference<sin_f<Real>, Real>;
@@ -105,24 +105,26 @@ void EnumerateDerivativeError() {
 
 	constexpr int WIDTH = 16;
 
+	cout << "Finite Difference approximation of the first derivative of the function sine(x)\n";
+	cout << "Using " << typeid(Real).name() << endl;
 	Real h = Real(0.05);
 	sin_f<Real> sin_o;
 	cout << setw(WIDTH) << "step (h)" << setw(WIDTH) << "backward" << setw(WIDTH) << "error" << setw(WIDTH) << "forward" << setw(WIDTH) << "error" << setw(WIDTH) << "central" << setw(WIDTH) << "error\n";
 	for (unsigned i = 0; i < 10; ++i) {
 		// backward = left
 		backward_sin_f ld_sin_o(sin_o, h);
-		Real ld_sin = ld_sin_o(Real(m_pi_4));
-		Real lerror = ld_sin - cos(m_pi_4);
+		Real ld_sin = ld_sin_o(x);
+		Real lerror = ld_sin - cos(x);
 
 		// forward = right
 		forward_sin_f rd_sin_o(sin_o, h);
-		Real rd_sin = rd_sin_o(Real(m_pi_4));
-		Real rerror = rd_sin - cos(m_pi_4);
+		Real rd_sin = rd_sin_o(x);
+		Real rerror = rd_sin - cos(x);
 
 		// central = middle
 		central_sin_f md_sin_o(sin_o, h);
-		Real md_sin = md_sin_o(Real(m_pi_4));
-		Real merror = md_sin - cos(m_pi_4);
+		Real md_sin = md_sin_o(x);
+		Real merror = md_sin - cos(x);
 
 		cout << setw(WIDTH) << h << setw(WIDTH) << ld_sin << setw(WIDTH) << lerror << setw(WIDTH) << rd_sin << setw(WIDTH) << rerror << setw(WIDTH) << md_sin << setw(WIDTH) << merror << endl;
 
@@ -136,9 +138,34 @@ try {
 	using namespace boost::multiprecision;
 	using namespace sw::unum;
 
-	EnumerateDerivativeError<float>();
+	constexpr unsigned NR_SAMPLES = 3;
+	long double samples[3];
+	samples[0] = m_pi_4;
+	samples[1] = m_1_pi / 3.0l; 
+	samples[2] = m_pi_2;
 
-	EnumerateDerivativeError< posit<32, 2> >();
+	for (unsigned i = 0; i < NR_SAMPLES; ++i) {
+		{
+			using Real = float;
+			EnumerateFirstDerivativeError<Real>(Real(samples[i]));
+		}
+
+		{
+			using Real = double;
+			EnumerateFirstDerivativeError<Real>(Real(samples[i]));
+		}
+
+		{
+			using Real = posit<32, 2>;
+			EnumerateFirstDerivativeError<Real>(Real(samples[i]));
+		}
+
+		{
+			using Real = posit<64, 3>;
+			EnumerateFirstDerivativeError<Real>(Real(samples[i]));
+		}
+	}
+
 	
 	return EXIT_SUCCESS;
 }
