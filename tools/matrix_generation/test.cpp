@@ -63,6 +63,7 @@ int eigenvalue_example() {
 
 int main() {
     using namespace std;
+	using namespace sw::unum;
     using namespace sw::hprblas;
 
 #ifdef MTL_MSVC_BUG_FIX
@@ -75,4 +76,16 @@ int main() {
 		cout << A << endl;
 	    // cout << eigenvalues(A) << endl;
     }
+
+	{
+		using Matrix = mtl::mat::dense2D< posit<16,1> >;
+		Matrix M1(3, 3);
+
+		M1 = 2, 0, 0,
+			 1, 1, 0,
+			 0, 1, 3;
+
+		cout << "M1:\n" << M1 << endl;
+		printMatrix(cout, "M1", M1, 0, true);
+	}
 }

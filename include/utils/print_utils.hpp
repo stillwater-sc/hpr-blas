@@ -23,13 +23,21 @@ void printVector(std::ostream& ostr, const std::string& name, const Vector& v) {
 
 // printMatrix pretty prints a 2D dense matrix
 template<typename Matrix>
-void printMatrix(std::ostream& ostr, const std::string& name, const Matrix& M) {
+void printMatrix(std::ostream& ostr, const std::string& name, const Matrix& M, int precision = 17, bool hex = false) {
 	size_t d = num_rows(M);
 	ostr << "Matrix: " << name << " is " << d << "x" << d << std::endl;
 	std::streamsize old_prec = ostr.precision();
-	ostr << std::setprecision(17);
+	ostr << std::setprecision(precision);
 	for (size_t i = 0; i<d; ++i) {
-		for (size_t j = 0; j<d; ++j) std::cout << std::setw(20) << M[i][j] << " ";
+		if (hex) {
+			std::cout << '[';
+			for (size_t j = 0; j < d; ++j) std::cout << " " << sw::unum::hex_format(M[i][j]);
+			std::cout << ']';
+		}
+		else {
+			for (size_t j = 0; j<d; ++j) std::cout << std::setw(20) << M[i][j] << " ";
+		}
+		
 		ostr << std::endl;
 	}
 	ostr << std::setprecision(old_prec);
