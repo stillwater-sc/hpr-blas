@@ -249,24 +249,26 @@ try {
 
 	// define upper half by symmetry
 	for (i=0; i<n; i++)
-	for (j=i+1; j<n; j++)
-		A[i][j]=A[j][i];
+		for (j=i+1; j<n; j++)	
+			A[i][j]=A[j][i];
 
 	if (Check_Matrix(n,A)) {
-	MatCopy(n,A,A1);
-	printf("\n Determinant = %f\n", choldet(n,A));
-	MatPrint("Matrix A:",n,A);
-	cholsl(n,A,B);
-	MatPrint("Matrix Inv(A):",n,B);
+		MatCopy(n,A,A1);
+		printf("\n Determinant = %f\n", choldet(n,A));
+		MatPrint("Matrix A:",n,A);
+		cholsl(n,A,B);
+		MatPrint("Matrix Inv(A):",n,B);
 	}
-	else
-	printf("\n Sorry, this matrix is not positive definite !\n");
+	else {
+		printf("\n Sorry, this matrix is not positive definite !\n");
+		return EXIT_FAILURE;
+	}
 
 	printf("\n Do you want a verification (y/n)?: ");
 	scanf("%c", &answer);
 	if (answer=='y') {
-	MatMult(n,A1,B,C);
-	MatPrint("Verification A * Inv(A) = I:",n,C);
+		MatMult(n,A1,B,C);
+		MatPrint("Verification A * Inv(A) = I:",n,C);
 	}
 	printf("\n");
 }

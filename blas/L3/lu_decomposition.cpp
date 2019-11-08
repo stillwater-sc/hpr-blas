@@ -15,7 +15,7 @@
 #include "utils/matvec.hpp"
 
 template<typename Matrix, typename Vector>
-void CroutCycle(Matrix& A, const Vector& b)
+void CroutCycle(Matrix& A, Vector& x, const Vector& b)
 {
 	using namespace sw::hprblas;
 
@@ -33,14 +33,13 @@ void CroutCycle(Matrix& A, const Vector& b)
 	double elapsed = time_span.count();
 	std::cout << "Crout took " << elapsed << " seconds." << std::endl;
 	std::cout << "Performance " << (uint32_t)(N*N*N / (1000 * elapsed)) << " KOPS/s" << std::endl;
-	Vector x(N);
 	SolveCrout(LU, b, x);
 	printMatrix(std::cout, "Crout LU", LU);
 	printVector(std::cout, "Crout Solution", x);
 }
 
 template<size_t nbits, size_t es, size_t capacity = 10>
-void CroutCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector< sw::unum::posit<nbits, es> >& b)
+void CroutCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector< sw::unum::posit<nbits, es> >& x, mtl::dense_vector< sw::unum::posit<nbits, es> >& b)
 {
 	using namespace sw::hprblas;
 
@@ -57,7 +56,6 @@ void CroutCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector
 	double elapsed = time_span.count();
 	std::cout << "Crout took " << elapsed << " seconds." << std::endl;
 	std::cout << "Performance " << (uint32_t)(N*N*N / (1000 * elapsed)) << " KOPS/s" << std::endl;
-	mtl::dense_vector< sw::unum::posit<nbits, es> > x(N);
 	SolveCrout(LU, b, x);
 	printMatrix(std::cout, "Crout LU", LU);
 	printVector(std::cout, "Crout Solution", x);
@@ -68,9 +66,9 @@ void CroutFDPCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vec
 {
 	using namespace sw::hprblas;
 
-	size_t d = size(b);
-	assert(size(A) == d*d);
-	mtl::dense2D< sw::unum::posit<nbits, es> > LU(d, d);
+	assert(num_cols(A) == size(b));
+	size_t N = size(b);
+	mtl::dense2D< sw::unum::posit<nbits, es> > LU(N, N);
 
 	std::cout << "----------------- Crout FDP cycle --------------------\n";
 	using namespace std::chrono;
@@ -80,7 +78,7 @@ void CroutFDPCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vec
 	duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
 	double elapsed = time_span.count();
 	std::cout << "Crout with FDP took " << elapsed << " seconds." << std::endl;
-	std::cout << "Performance " << (uint32_t)(d*d*d / (1000 * elapsed)) << " KOPS/s" << std::endl;
+	std::cout << "Performance " << (uint32_t)(N*N*N / (1000 * elapsed)) << " KOPS/s" << std::endl;
 	SolveCroutFDP(LU, b, x);
 	printMatrix(std::cout, "Crout FDP LU", LU);
 	printVector(std::cout, "Crout FDP Solution", x);
@@ -251,6 +249,15 @@ void TraceDeltas() {
 	}
 }
 
+// generate an A matrix that has an exact factorization solution
+template<typename Matrix>
+void GenerateSystemOfLinearEquations(unsigned N, Matrix& L, Matrix& U, Matrix& A) {
+	using namespace sw::hprblas;
+	fill_L(L);
+	fill_U(U);
+	A = L * U;
+}
+
 template<typename Scalar>
 void GenerateAndSolveSystemOfLinearEquations(size_t N)
 {
@@ -339,11 +346,46 @@ try {
 	constexpr size_t nbits = 16;
 	constexpr size_t es = 1;
 	constexpr size_t capacity = 10;
+	constexpr size_t N = 5;
 
-	using Scalar = posit<nbits, es>;
-	size_t N = 5;
-	GenerateAndSolveSystemOfLinearEquations<Scalar>(N);
-	GenerateAndSolveSystemOfLinearEquations<float>(N);
+	//using Scalar = posit<nbits, es>;
+	//
+	//GenerateAndSolveSystemOfLinearEquations<Scalar>(N);
+	//GenerateAndSolveSystemOfLinearEquations<float>(N);
+
+	{
+		using Real = double;
+		cout << "Crout LU for type: " << typeid(Real).name() << endl;
+		dense2D<Real> U(N, N), L(N, N), A(N, N);
+		GenerateSystemOfLinearEquations(N, L, U, A);
+		printMatrix(cout, "L", L);
+		printMatrix(cout, "U", U);
+		printMatrix(cout, "A = LU", A);
+
+		dense_vector<Real> x(N), y(N), b(N);
+		y = Real(1.0);
+		b = A * y;   // construct the right hand side with rounding error
+//		x = A / b;
+		CroutCycle(A, x, b);
+		cout << endl;
+	}
+
+	{
+		using Real = posit<32,2>;
+		cout << "Crout LU for type: " << typeid(Real).name() << endl;
+		dense2D<Real> U(N, N), L(N, N), A(N, N);
+		GenerateSystemOfLinearEquations(N, L, U, A);
+		printMatrix(cout, "L", L);
+		printMatrix(cout, "U", U);
+		printMatrix(cout, "A = LU", A);
+
+		dense_vector<Real> x(N), y(N), b(N);
+		y = Real(1.0);
+		b = A * y;   // construct the right hand side with rounding error
+//		x = A / b;
+		CroutFDPCycle(A, x, b);
+		cout << endl;
+	}
 
 #if 0
 	cout << "LinearSolve regular dot product" << endl;
