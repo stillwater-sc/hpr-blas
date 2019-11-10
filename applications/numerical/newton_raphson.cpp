@@ -1,11 +1,9 @@
 // newton_raphson.cpp: example program showing the Newton-Raphson algorithm using valid arithmetic
 //
-// Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
-
 #include "common.hpp"
-
 
 /* 
 * Based on the Boost example/newton-raphson.cpp
@@ -144,9 +142,9 @@ try {
 	using namespace std;
 	using namespace sw::unum;
 
-	const size_t nbits = 16;
-	const size_t es = 1;
-	const size_t vecSize = 32;
+	constexpr size_t nbits = 16;
+	constexpr size_t es = 1;
+	constexpr size_t vecSize = 32;
 
 	{
 		I1_aux::traits_type::rounding rnd;
@@ -167,7 +165,7 @@ try {
 	}
 
 
-  return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }
 catch (char const* msg) {
 	std::cerr << msg << std::endl;
