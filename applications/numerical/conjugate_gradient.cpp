@@ -45,9 +45,43 @@ unsigned CG(const Matrix& A, const Vector& b, Vector& x, Real epsilon) {
 		Vector r_prev = r;
 		r = r - alpha * A * p;
 		error = mtl::two_norm(r);
-		std::cout << "iteration: " << k << " error : " << error << std::endl;
 		Real beta = dot(r, r) / dot(r_prev, r_prev);
 		p = r + beta * p;
+		std::cout << "iteration: " << std::setw(4) << k
+			<< " alpha: " << std::setw(12) << alpha
+			<< " beta: " << std::setw(12) << beta
+			<< " error : " << error << std::endl;
+		++k;
+		if (k > 1.5* size(b)) break;
+	}
+	return k;
+}
+
+// Conjugate Gradient algorithm, returns the iteration number of convergence
+template<typename Matrix, typename Vector, typename Real>
+unsigned fdpCG(const Matrix& A, const Vector& b, Vector& x, Real epsilon) {
+	using namespace sw::unum;
+	//using Real = Vector::value_type;
+	// starting x is provided by calling context
+	unsigned k = 0;
+	Vector r = b;
+	Real error = mtl::two_norm(r);
+	Vector p = r;
+	Vector Ap(size(p)); // need to create the vector to be the same structure as p as the expression (A * p) doesn't do it
+	while (error > epsilon) {
+		Ap = A * p;
+		Real alpha = fdp(r, r) / fdp(p, Ap);
+		x = x + alpha * p;
+		Vector r_prev = r;
+		r = r - alpha * A * p;
+		Real beta = fdp(r, r) / fdp(r_prev, r_prev);
+		p = r + beta * p;
+		error = mtl::two_norm(r);
+		std::cout << "iteration: " << std::setw(4) << k 
+			<< " alpha: " << std::setw(12) << alpha 
+			<< " beta: " << std::setw(12) << beta 
+			<< " error : " << error << std::endl;
+
 		++k;
 		if (k > 1.5* size(b)) break;
 	}
@@ -73,9 +107,34 @@ void CGdriver(unsigned N, Real epsilon) {
 	unsigned k = CG(A, b, x, epsilon);
 	cout << "solution: " << x << " at iteration: " << k << endl;
 
-	Vector separation(N);
-	separation = ones - x;
-	cout << "exact error is: " << two_norm(separation) << endl;
+	Vector error(N);
+	error = ones - x;
+	cout << "exact error is: " << two_norm(error) << endl;
+}
+
+template<size_t nbits, size_t es>
+void fdpCGdriver(unsigned N, sw::unum::posit<nbits,es> epsilon) {
+	using namespace std;
+	using namespace mtl;
+	using Real = sw::unum::posit<nbits, es>;
+	using Matrix = mtl::dense2D<Real>;
+	using Vector = mtl::dense_vector<Real>;
+
+	Matrix A(N, N);
+	mat::laplacian_setup(A, N, 1);
+	cout << A << endl;
+
+	Vector b(N), x(N), ones(N);
+	ones = Real(1);
+	b = A * ones;
+	x = Real(0.0);  // starting x
+	cout << b << endl;
+	unsigned k = fdpCG(A, b, x, epsilon);
+	cout << "solution: " << x << " at iteration: " << k << endl;
+
+	Vector error(N);
+	error = ones - x;
+	cout << "exact error is: " << two_norm(error) << endl;
 }
 
 // CG test program
@@ -84,7 +143,9 @@ try {
 	using namespace std;
 	using namespace sw::unum;
 
+	string separation_string = "=================================================================\n";
 	constexpr unsigned N = 10;
+	long double accuracy = 1.0e-3;
 
 	{
 		constexpr size_t nbits = 16;
@@ -92,15 +153,27 @@ try {
 		using Real = posit<nbits,es>;
 		cout << "type: " << typeid(Real).name() << endl;
 		cout << "minpos : " << minpos<nbits, es>() << endl;
-		Real epsilon = Real(0.001);
+		Real epsilon = Real(accuracy);
 		CGdriver(N, epsilon);
 	}
 	
+	cout << separation_string;
 	{
 		using Real = cpp_bin_float_half;
 		cout << "type: " << typeid(Real).name() << endl;
-		Real epsilon = Real(0.001);
+		Real epsilon = Real(accuracy);
 		CGdriver(N, epsilon);
+	}
+	cout << separation_string;
+	{
+		constexpr size_t nbits = 16;
+		constexpr size_t es = 1;
+		using Real = posit<nbits, es>;
+		cout << "type: " << typeid(Real).name() << endl;
+		cout << "minpos : " << minpos<nbits, es>() << endl;
+		Real epsilon = Real(accuracy);
+		CGdriver(N, epsilon);
+		fdpCGdriver(N, epsilon);
 	}
 
 	return EXIT_SUCCESS;
