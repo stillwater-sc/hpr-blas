@@ -193,11 +193,13 @@ void print(std::ostream& ostr, size_t n, Vector& x, size_t incx = 1) {
 
 // LEVEL 2 BLAS operators
 
+// Matrix-vector product: b = A * x
 template<typename Matrix, typename Vector>
 void matvec(Vector& b, const Matrix& A, const Vector& x) {
 	b = A * x;
 }
 
+// Matrix-vector product: b = A * x, posit specialized
 template<size_t nbits, size_t es>
 void matvec(mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& b, const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& x) {
 	// preconditions

@@ -88,6 +88,37 @@ unsigned fdpCG(const Matrix& A, const Vector& b, Vector& x, Real epsilon) {
 	return k;
 }
 
+// Conjugate Gradient algorithm, returns the iteration number of convergence
+template<typename Matrix, typename Vector, typename Real>
+unsigned fdp2CG(const Matrix& A, const Vector& b, Vector& x, Real epsilon) {
+	using namespace sw::unum;
+	//using Real = Vector::value_type;
+	// starting x is provided by calling context
+	unsigned k = 0;
+	Vector r = b;
+	Real error = mtl::two_norm(r);
+	Vector p = r;
+	Vector Ap(size(p)); // need to create the vector to be the same structure as p as the expression (A * p) doesn't do it
+	while (error > epsilon) {
+		sw::hprblas::matvec(Ap, A, p);   // Ap = A * p
+		Real alpha = fdp(r, r) / fdp(p, Ap);
+		x = x + alpha * p;
+		Vector r_prev = r;
+		r = r - alpha * Ap;
+		Real beta = fdp(r, r) / fdp(r_prev, r_prev);
+		p = r + beta * p;
+		error = mtl::two_norm(r);
+		std::cout << "iteration: " << std::setw(4) << k
+			<< " alpha: " << std::setw(12) << alpha
+			<< " beta: " << std::setw(12) << beta
+			<< " error : " << error << std::endl;
+
+		++k;
+		if (k > 1.5* size(b)) break;
+	}
+	return k;
+}
+
 template<typename Real>
 void CGdriver(unsigned N, Real epsilon) {
 	using namespace std;
@@ -97,7 +128,7 @@ void CGdriver(unsigned N, Real epsilon) {
 
 	Matrix A(N, N);
 	mat::laplacian_setup(A, N, 1);
-	cout << A << endl;
+	//cout << A << endl;
 
 	Vector b(N), x(N), ones(N);
 	ones = Real(1);
@@ -112,6 +143,7 @@ void CGdriver(unsigned N, Real epsilon) {
 	cout << "exact error is: " << two_norm(error) << endl;
 }
 
+// CG with fdp applied to alpha/beta calculation only
 template<size_t nbits, size_t es>
 void fdpCGdriver(unsigned N, sw::unum::posit<nbits,es> epsilon) {
 	using namespace std;
@@ -122,7 +154,7 @@ void fdpCGdriver(unsigned N, sw::unum::posit<nbits,es> epsilon) {
 
 	Matrix A(N, N);
 	mat::laplacian_setup(A, N, 1);
-	cout << A << endl;
+	//cout << A << endl;
 
 	Vector b(N), x(N), ones(N);
 	ones = Real(1);
@@ -130,6 +162,32 @@ void fdpCGdriver(unsigned N, sw::unum::posit<nbits,es> epsilon) {
 	x = Real(0.0);  // starting x
 	cout << b << endl;
 	unsigned k = fdpCG(A, b, x, epsilon);
+	cout << "solution: " << x << " at iteration: " << k << endl;
+
+	Vector error(N);
+	error = ones - x;
+	cout << "exact error is: " << two_norm(error) << endl;
+}
+
+// CG with fdp applied to alpha/beta and to matvec A * p as well
+template<size_t nbits, size_t es>
+void fdp2CGdriver(unsigned N, sw::unum::posit<nbits, es> epsilon) {
+	using namespace std;
+	using namespace mtl;
+	using Real = sw::unum::posit<nbits, es>;
+	using Matrix = mtl::dense2D<Real>;
+	using Vector = mtl::dense_vector<Real>;
+
+	Matrix A(N, N);
+	mat::laplacian_setup(A, N, 1);
+	//cout << A << endl;
+
+	Vector b(N), x(N), ones(N);
+	ones = Real(1);
+	b = A * ones;
+	x = Real(0.0);  // starting x
+	cout << b << endl;
+	unsigned k = fdp2CG(A, b, x, epsilon);
 	cout << "solution: " << x << " at iteration: " << k << endl;
 
 	Vector error(N);
@@ -174,6 +232,7 @@ try {
 		Real epsilon = Real(accuracy);
 		CGdriver(N, epsilon);
 		fdpCGdriver(N, epsilon);
+		fdp2CGdriver(N, epsilon);
 	}
 
 	return EXIT_SUCCESS;
