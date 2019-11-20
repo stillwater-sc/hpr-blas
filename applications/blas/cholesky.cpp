@@ -32,36 +32,62 @@
 * -------------------------------------------------------------- *
 * Release 1.1 : added verification Inv(A) * A = I.               *
 *****************************************************************/
-#include <stdio.h>
-#include <math.h>
-#include <universal/posit/posit>
-
-#define  SIZE 25
+#include <hprblas>
+//#include <universal/posit/posit>
 
 
-typedef double MAT[SIZE][SIZE], VEC[SIZE];
+/* ----------------------------------------------------
+		main method for Cholesky decomposition.
 
-void choldc1(int,MAT,VEC); 
+		input/output  A  Symmetric positive def. matrix
+		output        p  vector of resulting diag of a
+		author:       <Vadum Kutsyy, kutsyy@hotmail.com>
+   ----------------------------------------------------- */
+template<typename Matrix, typename Vector>
+void choldc1(Matrix& A, Vector& p) {
+	using Scalar = typename Matrix::value_type;
+	int N = int(mtl::mat::num_cols(A));
+
+	for (int i = 0; i < N; i++) {
+		for (int j = i; j < N; j++) {
+			Scalar sum = A[i][j];
+			for (int k = i - 1; k >= 0; k--) {
+				sum -= A[i][k] * A[j][k];
+			}
+			if (i == j) {
+				if (sum <= 0) {
+					std::cout << " a is not positive definite!\n";
+				}
+				p[i] = sqrt(sum);
+			}
+			else {
+				A[j][i] = sum / p[i];
+			}
+		}
+	}
+}
 
 /* -----------------------------------------------
         Cholesky decomposition.
 
-        input    n  size of matrix
         input    A  Symmetric positive def. matrix
-        output   a  lower deomposed matrix
-        uses        choldc1(int,MAT,VEC)
+        output   L  lower decomposed matrix
+        uses        choldc1(Matrix&, Vector&)
    ----------------------------------------------- */
-void choldc(int n,MAT A, MAT a) {
-	int i,j;
-	VEC p;
-	for (i = 0; i < n; i++) 
-		for (j = 0; j < n; j++) 
-			a[i][j] = A[i][j];
-	choldc1(n, a, p);
-	for (i = 0; i < n; i++) {
-		a[i][i] = p[i];
-		for (j = i + 1; j < n; j++) {
-			a[i][j] = 0;
+template<typename Matrix>
+void choldc(const Matrix& A, Matrix& L) {
+	int N = int(mtl::mat::num_cols(A));
+	for (int i = 0; i < N; i++) 
+		for (int j = 0; j < N; j++) 
+			L[i][j] = A[i][j];
+
+	using Scalar = typename Matrix::value_type;
+	mtl::vec::dense_vector<Scalar> p(N);
+	choldc1(L, p);
+	for (int i = 0; i < N; i++) {
+		L[i][i] = p[i];
+		for (int j = i + 1; j < N; j++) {
+			L[i][j] = 0;
 		}
 	}
 }
@@ -69,30 +95,33 @@ void choldc(int n,MAT A, MAT a) {
 /* -----------------------------------------------------
          Inverse of Cholesky decomposition.
 
-         input    n  size of matrix
-         input    A  Symmetric positive def. matrix
-         output   a  inverse of lower deomposed matrix
-         uses        choldc1(int,MAT,VEC)         
+         input    A     Symmetric positive def. matrix
+         output   Linv  inverse of lower decomposed matrix
+         uses        choldc1(Matrix,Vector)         
    ----------------------------------------------------- */
-        void choldcsl(int n, MAT A, MAT a) {
-	  int i,j,k; double sum;
-	  VEC p;
-          for (i = 0; i < n; i++) 
-	    for (j = 0; j < n; j++) 
-	      a[i][j] = A[i][j];
-          choldc1(n, a, p);
-          for (i = 0; i < n; i++) {
-            a[i][i] = 1 / p[i];
-            for (j = i + 1; j < n; j++) {
-              sum = 0;
-              for (k = i; k < j; k++) {
-                sum -= a[j][k] * a[k][i];
-	      }
-              a[j][i] = sum / p[j];
-	    }
-	  }
+template<typename Matrix>
+void choldcsl(const Matrix& A, Matrix& Linv) {
+	using Scalar = typename Matrix::value_type;
+	int N = int(mtl::mat::num_cols(A));
+	mtl::vec::dense_vector<Scalar> p(N);
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			Linv[i][j] = A[i][j];
+			choldc1(Linv, p);
+			for (int i = 0; i < N; i++) {
+				Linv[i][i] = 1 / p[i];
+				for (j = i + 1; j < N; j++) {
+					Scalar sum = Scalar(0);
+					for (int k = i; k < j; k++) {
+						sum -= Linv[j][k] * Linv[k][i];
+					}
+					Linv[j][i] = sum / p[j];
+				}
+			}
+		}
 	}
- 
+}
+
 /* -----------------------------------------------------------------------------
         Computation of Determinant of the matrix using Cholesky decomposition
 
@@ -101,145 +130,88 @@ void choldc(int n,MAT A, MAT a) {
         return      det(a)
         uses        choldc(int,MAT,MAT)
    ------------------------------------------------------------------------------ */
-        double choldet(int n, MAT a) {
-	   MAT c; double d=1; int i;
-           choldc(n,a,c);
-           for (i = 0; i < n; i++)  d *= c[i][i];
-           return d * d;
+template<typename Matrix, typename Scalar>
+Scalar choldet(const Matrix& A) {
+	int N = int(mtl::mat::num_cols(A));
+	Matrix C(N,N); 
+	choldc(A, C);
+	std::cout << "choldc: \n" << C << std::endl;
+	Scalar d = Scalar(1);
+
+	for (int i = 0; i < N; i++) {
+		d *= C[i][i];
 	}
+	return d * d;
+}
  
 /* ---------------------------------------------------
         Matrix inverse using Cholesky decomposition
 
-        input    n  size of matrix
         input	  A  Symmetric positive def. matrix
-        output   a  inverse of A
+        output   Ainv  inverse of A
         uses        choldc1(MAT, VEC)
    --------------------------------------------------- */
-        void cholsl(int n, MAT A, MAT a) {
-	  int i,j,k;
-          choldcsl(n,A,a);
-          for (i = 0; i < n; i++) {
-            for (j = i + 1; j < n; j++) {
-              a[i][j] = 0.0;
-	    }
-	  }
-          for (i = 0; i < n; i++) {
-            a[i][i] *= a[i][i];
-            for (k = i + 1; k < n; k++) {
-              a[i][i] += a[k][i] * a[k][i];
-	    }
-            for (j = i + 1; j < n; j++) {
-              for (k = j; k < n; k++) {
-                a[i][j] += a[k][i] * a[k][j];
-	      }
-	    }
-	  }
-          for (i = 0; i < n; i++) {
-            for (j = 0; j < i; j++) {
-              a[i][j] = a[j][i];
-	    }
-	  }
-	}
-
-/* ----------------------------------------------------
-        main method for Cholesky decomposition.
-
-        input         n  size of matrix
-        input/output  a  Symmetric positive def. matrix
-        output        p  vector of resulting diag of a
-        author:       <Vadum Kutsyy, kutsyy@hotmail.com>
-   ----------------------------------------------------- */
-        void choldc1(int n, MAT a, VEC p) {
-          int i,j,k;
-          double sum;
-
-	  for (i = 0; i < n; i++) {
-            for (j = i; j < n; j++) {
-              sum = a[i][j];
-              for (k = i - 1; k >= 0; k--) {
-                sum -= a[i][k] * a[j][k];
-	      }
-              if (i == j) {
-                if (sum <= 0) {
-                  printf(" a is not positive definite!\n");
+template<typename Matrix>
+void cholsl(const Matrix& A, Matrix& Ainv) {
+	choldcsl(A, Ainv);
+	int N = int(mtl::mat::num_cols(A));
+	for (int i = 0; i < N; i++) {
+		for (int j = i + 1; j < N; j++) {
+			Ainv[i][j] = 0.0;
 		}
-                p[i] = sqrt(sum);
-	      }
-              else {
-                a[j][i] = sum / p[i];
-	      }
-	    }
-	  }
 	}
+	for (int i = 0; i < N; i++) {
+		Ainv[i][i] *= Ainv[i][i];
+		for (int k = i + 1; k < N; k++) {
+			Ainv[i][i] += Ainv[k][i] * Ainv[k][i];
+		}
+		for (int j = i + 1; j < N; j++) {
+			for (int k = j; k < N; k++) {
+				Ainv[i][j] += Ainv[k][i] * Ainv[k][j];
+			}
+		}
+	}
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < i; j++) {
+			Ainv[i][j] = Ainv[j][i];
+		}
+	}
+}
 
-	//print a square real matrix A of size n with caption s
-	//(n items per line).
-	void MatPrint(const char *s, int n, MAT A) { int i,j; printf("\n %s\n", s);
-	  for (i=0; i<n; i++) {
-	    for (j=0; j<n; j++) 
-	      printf(" %10.6f",A[i][j]);
-            printf("\n");
-          }
-        }
 
-        //check if matrix A is positive definite (return 1)
-        //or not positive definite (return 0) 
-        int Check_Matrix(int n, MAT A) {
-          int i,j,k,result; double sum;
-          result=1;
-	  for (i=0; i<n; i++) {
-	    for (j = i; j<n; j++) {
-              sum = A[i][j];
-              for (k = i - 1; k>=0; k--)
+// CheckPositiveDefinite returns true if the Matrix A is a Positive Definite matrix
+template<typename Matrix>
+bool CheckPositiveDefinite(Matrix& A) {
+	using Scalar = typename Matrix::value_type;
+	assert(mtl::mat::num_rows(A) == mtl::mat::num_cols(A));  // got a be square
+	int N = int(mtl::mat::num_rows(A));
+    bool result = true;
+	for (int i = 0; i < N; i++) {
+	    for (int j = i; j < N; j++) {
+              Scalar sum = A[i][j];
+              for (int k = i - 1; k >= 0; k--)
                 sum -= A[i][k] * A[j][k];
               if (i == j)
-                if (sum <= 0.0) result=0;
+                if (sum <= 0.0) result = false;
 	    }
-          }
-	  return result;
-	}
-
-/******************************************
-*    MULTIPLICATION OF TWO SQUARE REAL    *                                     
-*    MATRICES                             *
-* --------------------------------------- *                                     
-* INPUTS:    A  MATRIX N*N                *                                     
-*            B  MATRIX N*N                *                                     
-*            N  INTEGER                   *                                     
-* --------------------------------------- *                                     
-* OUTPUTS:   C  MATRIX N*N PRODUCT A*B    *                                     
-*                                         *
-******************************************/
-void MatMult(int n, MAT A,MAT B, MAT C) {
-  double SUM;
-  int I,J,K;
-  for (I=0; I<n; I++)                                                                  
-    for (J=0; J<n; J++) {
-      SUM = 0.0;                                                                
-      for (K=0; K<n; K++)
-       SUM += A[I][K]*B[K][J];                                               
-      C[I][J]=SUM;                                                            
-    }                                                                   
+    }
+	return result;
 }
 
-//copy MAT A in MAT A1
-void MatCopy(int n, MAT A, MAT A1) {
-  int i,j;
-  for (i=0; i<n; i++)
-    for (j=0; j<n; j++)
-      A1[i][j]=A[i][j];
-}
 
 // main program to demonstrate the use of function cholsl()
 int main(int argc, char* argv[]) 
 try {
-	MAT A, A1, B, C; int i,j, n; char answer;
-	printf(" Inversion of a square real symetric matrix by Cholesky method\n");
-	printf(" (The matrix must positive def.).\n");
+	using namespace std;
+	using namespace mtl;
+	using Scalar = double;
+	using Matrix = mtl::mat::dense2D<Scalar>;
 
-	n = 4;
-	printf("\n Size = %d\n", n);
+	cout << " Inversion of a square real symmetric positive definite matrix by Cholesky method\n";
+	
+	constexpr unsigned N = 4;
+	cout << "matrix size is " << N << endl;
+	Matrix A(N,N), A1(N,N), B(N,N), C(N,N);
 
 	// define lower half of symmetrical matrix
 	A[0][0]= 5;
@@ -248,29 +220,25 @@ try {
 	A[3][0]=-1; A[3][1]=-1; A[3][2]=-1; A[3][3]= 5;
 
 	// define upper half by symmetry
-	for (i=0; i<n; i++)
-		for (j=i+1; j<n; j++)	
+	for (unsigned i=0; i<N; i++)
+		for (unsigned j=i+1; j<N; j++)	
 			A[i][j]=A[j][i];
 
-	if (Check_Matrix(n,A)) {
-		MatCopy(n,A,A1);
-		printf("\n Determinant = %f\n", choldet(n,A));
-		MatPrint("Matrix A:",n,A);
-		cholsl(n,A,B);
-		MatPrint("Matrix Inv(A):",n,B);
+	if (CheckPositiveDefinite(A)) {
+		A1 = A;
+		cout << "Determinant = " << choldet<Matrix,Scalar>(A) << endl;
+		cout << "Original Matrix:\n" << A << endl;
+		cholsl(A, B);
+		cout << "Matrix Inv(A)  :\n" << B << endl;
 	}
 	else {
-		printf("\n Sorry, this matrix is not positive definite !\n");
+		cout << "Sorry, this matrix is not positive definite !\n";
 		return EXIT_FAILURE;
 	}
 
-	printf("\n Do you want a verification (y/n)?: ");
-	scanf("%c", &answer);
-	if (answer=='y') {
-		MatMult(n,A1,B,C);
-		MatPrint("Verification A * Inv(A) = I:",n,C);
-	}
-	printf("\n");
+	cout << "verification of the decomposition U^T * U = A\n";
+	C = A1 * B;
+	cout << "Verification A * Inv(A) = I:\n" << C << endl;
 }
 catch (char const* msg) {
 	std::cerr << msg << std::endl;
