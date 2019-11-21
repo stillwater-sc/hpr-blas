@@ -36,15 +36,9 @@
 //#include <universal/posit/posit>
 
 
-/* ----------------------------------------------------
-		main method for Cholesky decomposition.
-
-		input/output  A  Symmetric positive def. matrix
-		output        p  vector of resulting diag of A
-		author:       <Vadum Kutsyy, kutsyy@hotmail.com>
-   ----------------------------------------------------- */
+// In-place Cholesky factorization of an SPD matrix A, generating the factor UT and the diagonal
 template<typename Matrix, typename Vector>
-void choldc1(Matrix& A, Vector& p) {
+bool CholeskyFactorization(Matrix& A, Vector& diagonal) {
 	using Scalar = typename Matrix::value_type;
 	int N = int(mtl::mat::num_cols(A));
 
@@ -56,38 +50,61 @@ void choldc1(Matrix& A, Vector& p) {
 			}
 			if (i == j) {
 				if (sum <= 0) {
-					std::cout << " a is not positive definite!\n";
+					std::cerr << "Matrix is not positive definite!\n";
+					return false;
 				}
-				p[i] = sqrt(sum);
+				diagonal[i] = sqrt(sum);
 			}
 			else {
-				A[j][i] = sum / p[i];
+				A[j][i] = sum / diagonal[i];
 			}
 		}
 	}
+	return true;
 }
 
-/* -----------------------------------------------
-        Cholesky decomposition.
-
-        input    A  Symmetric positive def. matrix
-        output   L  lower decomposed matrix
-        uses        choldc1(Matrix&, Vector&)
-   ----------------------------------------------- */
-template<typename Matrix>
-void choldc(const Matrix& A, Matrix& L) {
-	int N = int(mtl::mat::num_cols(A));
-	for (int i = 0; i < N; i++) 
-		for (int j = 0; j < N; j++) 
-			L[i][j] = A[i][j];
-
+// Cholesky factorization of an SPD matrix A, generating the factor UT and the diagonal
+template<typename Matrix, typename Vector>
+bool CholeskyFactorization(const Matrix& A, Matrix& UT, Vector& diagonal) {
 	using Scalar = typename Matrix::value_type;
-	mtl::vec::dense_vector<Scalar> p(N);
-	choldc1(L, p);
+	int N = int(mtl::mat::num_cols(A));
+
+	UT = A;
 	for (int i = 0; i < N; i++) {
-		L[i][i] = p[i];
+		for (int j = i; j < N; j++) {
+			Scalar sum = A[i][j];
+			for (int k = i - 1; k >= 0; k--) {
+				sum -= UT[i][k] * UT[j][k];
+			}
+			if (i == j) {
+				if (sum <= 0) {
+					std::cout << "Matrix is not positive definite!\n";
+					return false;
+				}
+				diagonal[i] = sqrt(sum);
+			}
+			else {
+				UT[j][i] = sum / diagonal[i];
+			}
+		}
+	}
+	return true;
+}
+
+// CholeskyDecomposition takes a Symmetric Positive Definite Matrix A, and returns the lower triangular Cholesky factorized matrix U transpose (UT)
+template<typename Matrix>
+void CholeskyDecomposition(const Matrix& A, Matrix& UT) {
+	using Scalar = typename Matrix::value_type;
+	int N = int(mtl::mat::num_cols(A));
+	mtl::vec::dense_vector<Scalar> diagonal(N);
+
+	CholeskyFactorization(A, UT, diagonal);
+
+	// complete the UT by nulling out the upper triangular part
+	for (int i = 0; i < N; i++) {
+		UT[i][i] = diagonal[i];
 		for (int j = i + 1; j < N; j++) {
-			L[i][j] = 0;
+			UT[i][j] = 0;
 		}
 	}
 }
@@ -110,7 +127,7 @@ void choldcsl(const Matrix& A, Matrix& Linv) {
 	}
 
 	mtl::vec::dense_vector<Scalar> p(N);
-	choldc1(Linv, p);
+	CholeskyFactorization(Linv, p);
 	for (int i = 0; i < N; i++) {
 		Linv[i][i] = 1 / p[i];
 		for (int j = i + 1; j < N; j++) {
@@ -123,19 +140,12 @@ void choldcsl(const Matrix& A, Matrix& Linv) {
 	}
 }
 
-/* -----------------------------------------------------------------------------
-        Computation of Determinant of the matrix using Cholesky decomposition
-
-        input    n  size of matrix
-        input    A  Symmetric positive def. matrix
-        return      det(a)
-        uses        choldc(MAT,MAT)
-   ------------------------------------------------------------------------------ */
+// Return value of the determinant of a symmetric, positive definite matrix via a Cholesky decomposition
 template<typename Matrix, typename Scalar>
-Scalar choldet(const Matrix& A) {	
+Scalar DeterminantSPD(const Matrix& A) {	
 	int N = int(mtl::mat::num_cols(A));
 	Matrix C(N, N);
-	choldc(A, C);
+	CholeskyDecomposition(A, C);
 	Scalar d = Scalar(1);
 	for (int i = 0; i < N; i++) {
 		d *= C[i][i];
@@ -235,23 +245,22 @@ try {
 
 	// save a copy
 	A1 = A;
-	
-	if (CheckPositiveDefinite(A)) {
-		cout << "Determinant = " << choldet<Matrix,Scalar>(A) << endl;
-		cout << "Original Matrix:\n" << A << endl;
-		UT = Scalar(0);
-		choldc(A, UT);
-		cout << "Cholesky U^T Matrix:\n" << UT << endl;
-		Ainv = UT;
-		cholsl(A, Ainv);
-		cout << "Matrix Inv(A)  :\n" << Ainv << endl;
-	}
-	else {
-		cout << "Sorry, this matrix is not positive definite !\n";
+	p = 0;
+
+	if (!CheckPositiveDefinite(A)) {
+		cout << "This matrix is not positive definite !\n";
 		return EXIT_FAILURE;
 	}
+	cout << "Original Matrix:\n" << A << endl;
+	Scalar determinant = DeterminantSPD<Matrix, Scalar>(A);
+	cout << "Determinant = " << determinant << endl;
 
-
+	UT = Scalar(0);
+	CholeskyDecomposition(A, UT);
+	cout << "Cholesky U^T Matrix:\n" << UT << endl;
+	Ainv = UT;
+	cholsl(A, Ainv);
+	cout << "Matrix Inv(A)  :\n" << Ainv << endl;
 
 	cout << "verification of the decomposition U^T * U = A\n";
 	C = A1 * Ainv;
