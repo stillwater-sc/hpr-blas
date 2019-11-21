@@ -243,7 +243,52 @@ bool CheckPositiveDefinite(Matrix& A) {
 	return result;
 }
 
-
+/* 
+* SAMPLE RUN:                                                    *
+*                                                                *
+* Inversion of a square real symetric matrix by Cholevsky method *
+* (The matrix must positive definite).                           *
+*                                                                *
+* Size = 4                                                       *
+*                                                                *
+* Determinant = 432.000000                                       *
+*                                                                *
+* Matrix A:                                                      *
+* 5.000000 -1.000000 -1.000000 -1.000000                         *
+* -1.000000 5.000000 -1.000000 -1.000000                         *
+* -1.000000 -1.000000 5.000000 -1.000000                         *
+* -1.000000 -1.000000 -1.000000 5.000000                         *
+*                                                                *
+* Matrix Inv(A):                                                 *
+* 0.250000 0.083333 0.083333 0.083333                            *
+* 0.083333 0.250000 0.083333 0.083333                            *
+* 0.083333 0.083333 0.250000 0.083333                            *
+* 0.083333 0.083333 0.083333 0.250000                            *
+*                                                                *
+* SetupMatrix can generate the above test matrix with the call   *
+* int N = 4;                                                     *
+* Matrix A(N,N);                                                 *
+* SetupMatrix(A, N)                                              *
+*/
+template<typename Matrix>
+void SetupMatrix(Matrix& A, int bandwidth = 0) {
+	int N = int(mtl::mat::num_rows(A));
+	A = 0;
+	// define lower half of symmetrical matrix
+	for (int i = 0; i < N; ++i) {
+		for (int j = 0; j < N; ++j) {
+			if (i == j) {
+				A[i][i] = 5;
+			}
+			else {
+				int diff = (i - j) > 0 ? (i - j) : (j - i);
+				if (diff <= bandwidth) {
+					A[i][j] = -1;
+				}
+			}
+		}
+	}
+}
 // main program to demonstrate the use of function cholsl()
 int main(int argc, char* argv[]) 
 try {
@@ -254,24 +299,18 @@ try {
 	using Vector = mtl::vec::dense_vector<Scalar>;
 
 	cout << " Inversion of a square real symmetric positive definite matrix by Cholesky method\n";
-	
-	constexpr unsigned N = 4;
+	constexpr int m = 5;
+	constexpr int n = 4;
+	constexpr unsigned N = m*n;
 	cout << "matrix size is " << N << endl;
 	Matrix A(N,N), Ainv(N,N), A1(N,N), UT(N,N), C(N,N), Linv(N,N);
 	Vector p(N);
 
-	// define lower half of symmetrical matrix
-	A[0][0]= 5;
-	A[1][0]=-1; A[1][1]= 5;
-	A[2][0]=-1; A[2][1]=-1; A[2][2]= 5;
-	A[3][0]=-1; A[3][1]=-1; A[3][2]=-1; A[3][3]= 5;
+	// intended for N = 4
+	SetupMatrix(A, N);
+	mtl::mat::laplacian_setup(A, m, n);
 
-	// define upper half by symmetry
-	for (unsigned i=0; i<N; i++)
-		for (unsigned j=i+1; j<N; j++)	
-			A[i][j]=A[j][i];
-
-	// save a copy
+	// save a copy for the verification phase, as our in-place Cholesky factorization is destructive
 	A1 = A;
 	p = 0;
 
