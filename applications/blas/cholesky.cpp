@@ -93,12 +93,13 @@ bool CholeskyFactorization(const Matrix& A, Matrix& UT, Vector& diagonal) {
 
 // CholeskyDecomposition takes a Symmetric Positive Definite Matrix A, and returns the lower triangular Cholesky factorized matrix U transpose (UT)
 template<typename Matrix>
-void CholeskyDecomposition(const Matrix& A, Matrix& UT) {
+bool CholeskyDecomposition(const Matrix& A, Matrix& UT) {
 	using Scalar = typename Matrix::value_type;
 	int N = int(mtl::mat::num_cols(A));
 	mtl::vec::dense_vector<Scalar> diagonal(N);
 
-	CholeskyFactorization(A, UT, diagonal);
+	bool success = CholeskyFactorization(A, UT, diagonal);
+	if (!success) return false;
 
 	// complete the UT by nulling out the upper triangular part
 	for (int i = 0; i < N; i++) {
@@ -107,6 +108,33 @@ void CholeskyDecomposition(const Matrix& A, Matrix& UT) {
 			UT[i][j] = 0;
 		}
 	}
+
+	return true;
+}
+
+// CholeskyDecomposition takes a Symmetric Positive Definite Matrix A, and returns the lower triangular Cholesky factorized matrix U transpose (UT)
+template<typename Matrix>
+Matrix CholeskyDecomposition(const Matrix& A) {
+	using Scalar = typename Matrix::value_type;
+	int N = int(mtl::mat::num_cols(A));
+	Matrix UT(N, N);
+	mtl::vec::dense_vector<Scalar> diagonal(N);
+
+	UT = 0;
+	bool success = CholeskyFactorization(A, UT, diagonal);
+	if (!success) {
+		UT = 0;
+		return UT;
+	}
+
+	// complete the UT by nulling out the upper triangular part
+	for (int i = 0; i < N; i++) {
+		UT[i][i] = diagonal[i];
+		for (int j = i + 1; j < N; j++) {
+			UT[i][j] = 0;
+		}
+	}
+	return UT;
 }
  
 /* -----------------------------------------------------
@@ -255,9 +283,21 @@ try {
 	Scalar determinant = DeterminantSPD<Matrix, Scalar>(A);
 	cout << "Determinant = " << determinant << endl;
 
-	UT = Scalar(0);
-	CholeskyDecomposition(A, UT);
-	cout << "Cholesky U^T Matrix:\n" << UT << endl;
+	{ // syntax #1
+		UT = Scalar(0);
+		if (CholeskyDecomposition(A, UT)) {
+			cout << "In-place Cholesky\nU^T Matrix:\n" << UT << endl;
+		}
+		else {
+			cerr << "Couldn't factorize matrix\n";
+		}
+	}
+
+	{ // syntax #2
+		UT = CholeskyDecomposition(A);
+		cout << "MATLAB Cholesky\nU^T Matrix:\n" << UT << endl;
+	}
+
 	Ainv = UT;
 	cholsl(A, Ainv);
 	cout << "Matrix Inv(A)  :\n" << Ainv << endl;
