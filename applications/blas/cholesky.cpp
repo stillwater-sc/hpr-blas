@@ -40,7 +40,7 @@
 		main method for Cholesky decomposition.
 
 		input/output  A  Symmetric positive def. matrix
-		output        p  vector of resulting diag of a
+		output        p  vector of resulting diag of A
 		author:       <Vadum Kutsyy, kutsyy@hotmail.com>
    ----------------------------------------------------- */
 template<typename Matrix, typename Vector>
@@ -103,21 +103,22 @@ template<typename Matrix>
 void choldcsl(const Matrix& A, Matrix& Linv) {
 	using Scalar = typename Matrix::value_type;
 	int N = int(mtl::mat::num_cols(A));
-	mtl::vec::dense_vector<Scalar> p(N);
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < N; j++) {
 			Linv[i][j] = A[i][j];
-			choldc1(Linv, p);
-			for (int i = 0; i < N; i++) {
-				Linv[i][i] = 1 / p[i];
-				for (j = i + 1; j < N; j++) {
-					Scalar sum = Scalar(0);
-					for (int k = i; k < j; k++) {
-						sum -= Linv[j][k] * Linv[k][i];
-					}
-					Linv[j][i] = sum / p[j];
-				}
+		}
+	}
+
+	mtl::vec::dense_vector<Scalar> p(N);
+	choldc1(Linv, p);
+	for (int i = 0; i < N; i++) {
+		Linv[i][i] = 1 / p[i];
+		for (int j = i + 1; j < N; j++) {
+			Scalar sum = Scalar(0);
+			for (int k = i; k < j; k++) {
+				sum -= Linv[j][k] * Linv[k][i];
 			}
+			Linv[j][i] = sum / p[j];
 		}
 	}
 }
@@ -126,18 +127,16 @@ void choldcsl(const Matrix& A, Matrix& Linv) {
         Computation of Determinant of the matrix using Cholesky decomposition
 
         input    n  size of matrix
-        input    a  Symmetric positive def. matrix
+        input    A  Symmetric positive def. matrix
         return      det(a)
-        uses        choldc(int,MAT,MAT)
+        uses        choldc(MAT,MAT)
    ------------------------------------------------------------------------------ */
 template<typename Matrix, typename Scalar>
-Scalar choldet(const Matrix& A) {
+Scalar choldet(const Matrix& A) {	
 	int N = int(mtl::mat::num_cols(A));
-	Matrix C(N,N); 
+	Matrix C(N, N);
 	choldc(A, C);
-	std::cout << "choldc: \n" << C << std::endl;
 	Scalar d = Scalar(1);
-
 	for (int i = 0; i < N; i++) {
 		d *= C[i][i];
 	}
@@ -154,12 +153,16 @@ Scalar choldet(const Matrix& A) {
 template<typename Matrix>
 void cholsl(const Matrix& A, Matrix& Ainv) {
 	choldcsl(A, Ainv);
+//	std::cout << "first   Ainv\n" << Ainv << std::endl;
+
 	int N = int(mtl::mat::num_cols(A));
 	for (int i = 0; i < N; i++) {
 		for (int j = i + 1; j < N; j++) {
 			Ainv[i][j] = 0.0;
 		}
 	}
+//	std::cout << "second   Ainv\n" << Ainv << std::endl;
+
 	for (int i = 0; i < N; i++) {
 		Ainv[i][i] *= Ainv[i][i];
 		for (int k = i + 1; k < N; k++) {
@@ -171,11 +174,15 @@ void cholsl(const Matrix& A, Matrix& Ainv) {
 			}
 		}
 	}
+//	std::cout << "third  Ainv\n" << Ainv << std::endl;
+
 	for (int i = 0; i < N; i++) {
 		for (int j = 0; j < i; j++) {
 			Ainv[i][j] = Ainv[j][i];
 		}
 	}
+//	std::cout << "final  Ainv\n" << Ainv << std::endl;
+
 }
 
 
@@ -189,10 +196,10 @@ bool CheckPositiveDefinite(Matrix& A) {
 	for (int i = 0; i < N; i++) {
 	    for (int j = i; j < N; j++) {
               Scalar sum = A[i][j];
-              for (int k = i - 1; k >= 0; k--)
-                sum -= A[i][k] * A[j][k];
-              if (i == j)
-                if (sum <= 0.0) result = false;
+			  for (int k = i - 1; k >= 0; k--) {
+				  sum -= A[i][k] * A[j][k];
+			  }
+              result = (i == j) && (sum <= 0.0) ? false : result;
 	    }
     }
 	return result;
@@ -204,14 +211,16 @@ int main(int argc, char* argv[])
 try {
 	using namespace std;
 	using namespace mtl;
-	using Scalar = double;
+	using Scalar = sw::unum::posit<32,2>;
 	using Matrix = mtl::mat::dense2D<Scalar>;
+	using Vector = mtl::vec::dense_vector<Scalar>;
 
 	cout << " Inversion of a square real symmetric positive definite matrix by Cholesky method\n";
 	
 	constexpr unsigned N = 4;
 	cout << "matrix size is " << N << endl;
-	Matrix A(N,N), A1(N,N), B(N,N), C(N,N);
+	Matrix A(N,N), Ainv(N,N), A1(N,N), UT(N,N), C(N,N), Linv(N,N);
+	Vector p(N);
 
 	// define lower half of symmetrical matrix
 	A[0][0]= 5;
@@ -224,20 +233,28 @@ try {
 		for (unsigned j=i+1; j<N; j++)	
 			A[i][j]=A[j][i];
 
+	// save a copy
+	A1 = A;
+	
 	if (CheckPositiveDefinite(A)) {
-		A1 = A;
 		cout << "Determinant = " << choldet<Matrix,Scalar>(A) << endl;
 		cout << "Original Matrix:\n" << A << endl;
-		cholsl(A, B);
-		cout << "Matrix Inv(A)  :\n" << B << endl;
+		UT = Scalar(0);
+		choldc(A, UT);
+		cout << "Cholesky U^T Matrix:\n" << UT << endl;
+		Ainv = UT;
+		cholsl(A, Ainv);
+		cout << "Matrix Inv(A)  :\n" << Ainv << endl;
 	}
 	else {
 		cout << "Sorry, this matrix is not positive definite !\n";
 		return EXIT_FAILURE;
 	}
 
+
+
 	cout << "verification of the decomposition U^T * U = A\n";
-	C = A1 * B;
+	C = A1 * Ainv;
 	cout << "Verification A * Inv(A) = I:\n" << C << endl;
 }
 catch (char const* msg) {
