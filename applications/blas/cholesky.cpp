@@ -200,44 +200,73 @@ void cholsl(const Matrix& A, Matrix& Ainv) {
 
 template<typename Matrix>
 Matrix Inverse(const Matrix& A) {
+	assert(mtl::mat::num_rows(A) == mtl::mat::num_cols(A)); // assert squareness
+	using Scalar = Matrix::value_type;
 	int N = int(mtl::mat::num_cols(A));
+	mtl::vec::dense_vector<Scalar> diagonal(N);	
 	Matrix Ainv(N, N);
-	if (CholeskyDecomposition(A, Ainv)) {
-		choldcsl(A, Ainv);
-		//	std::cout << "first   Ainv\n" << Ainv << std::endl;
-
-		for (int i = 0; i < N; ++i) {
-			for (int j = i + 1; j < N; ++j) {
-				Ainv[i][j] = 0.0;
+	Ainv = A;
+	for (int i = 0; i < N; ++i) {
+		for (int j = i; j < N; ++j) {
+			Scalar sum = Ainv[i][j];
+			for (int k = i - 1; k >= 0; k--) {
+				sum -= Ainv[i][k] * Ainv[j][k];
 			}
-		}
-		//	std::cout << "second   Ainv\n" << Ainv << std::endl;
-
-		for (int i = 0; i < N; ++i) {
-			Ainv[i][i] *= Ainv[i][i];
-			for (int k = i + 1; k < N; ++k) {
-				Ainv[i][i] += Ainv[k][i] * Ainv[k][i];
-			}
-			for (int j = i + 1; j < N; ++j) {
-				for (int k = j; k < N; ++k) {
-					Ainv[i][j] += Ainv[k][i] * Ainv[k][j];
+			if (i == j) {
+				if (sum <= 0) {
+					std::cerr << "inverse: matrix is not positive definite!\n";
+					Ainv = 0;
+					return Ainv;
 				}
+				diagonal[i] = sqrt(sum);
+			}
+			else {
+				Ainv[j][i] = sum / diagonal[i];
 			}
 		}
-		//	std::cout << "third  Ainv\n" << Ainv << std::endl;
+	}
+	std::cout << "step 1\n" << Ainv << std::endl;
 
-		for (int i = 0; i < N; ++i) {
-			for (int j = 0; j < i; ++j) {
-				Ainv[i][j] = Ainv[j][i];
+	for (int i = 0; i < N; ++i) {
+		Ainv[i][i] = 1 / diagonal[i];
+		for (int j = i + 1; j < N; ++j) {
+			Scalar sum = Scalar(0);
+			for (int k = i; k < j; ++k) {
+				sum -= Ainv[j][k] * Ainv[k][i];
+			}
+			Ainv[j][i] = sum / diagonal[j];
+		}
+	}
+	std::cout << "step 2\n" << Ainv << std::endl;
+
+	for (int i = 0; i < N; ++i) {
+		for (int j = i + 1; j < N; ++j) {
+			Ainv[i][j] = 0.0;
+		}
+	}
+	std::cout << "step 3\n" << Ainv << std::endl;
+
+	for (int i = 0; i < N; ++i) {
+		Ainv[i][i] *= Ainv[i][i];
+		for (int k = i + 1; k < N; ++k) {
+			Ainv[i][i] += Ainv[k][i] * Ainv[k][i];
+		}
+		for (int j = i + 1; j < N; ++j) {
+			for (int k = j; k < N; ++k) {
+				Ainv[i][j] += Ainv[k][i] * Ainv[k][j];
 			}
 		}
-		//	std::cout << "final  Ainv\n" << Ainv << std::endl;
 	}
-	else {
-		Ainv = 0;
+	std::cout << "step 4\n" << Ainv << std::endl;
+
+	for (int i = 0; i < N; ++i) {
+		for (int j = 0; j < i; ++j) {
+			Ainv[i][j] = Ainv[j][i];
+		}
 	}
+	std::cout << "step 5\n" << Ainv << std::endl;
+
 	return Ainv;
-
 }
 
 // CheckPositiveDefinite returns true if the Matrix A is a Positive Definite matrix
@@ -319,13 +348,14 @@ try {
 	cout << " Inversion of a square real symmetric positive definite matrix by Cholesky method\n";
 	constexpr int m = 4;
 	constexpr int n = 4;
-	constexpr unsigned N = 4; // m*n;
+	constexpr unsigned N = 4;  m*n;
 	cout << "matrix size is " << N << endl;
-	Matrix A(N,N), Aorig(N, N);
+	Matrix A(N,N), Aorig(N, N), T(N, N);
 
 	// intended for N = 4
 	SetupMatrix(A, N);
 	//mtl::mat::laplacian_setup(A, m, n);
+	cout << "Original Matrix:\n" << A << endl;
 
 	// save a copy for the verification phase, as our in-place Cholesky factorization is destructive
 	Aorig = A;
@@ -334,10 +364,11 @@ try {
 		cout << "This matrix is not positive definite !\n";
 		return EXIT_FAILURE;
 	}
-	cout << "Original Matrix:\n" << A << endl;
+
 	Scalar determinant = DeterminantSPD(A);
 	cout << "Determinant = " << determinant << endl;
 
+	/*
 	Matrix UT(N, N);
 	{ // syntax #1
 		UT = Scalar(0);
@@ -354,7 +385,7 @@ try {
 		cout << "MATLAB Cholesky\nU^T Matrix:\n" << UT << endl;
 	}
 
-	Matrix T(N, N);
+	
 
 	Matrix U(N, N);
 	U = trans(UT);
@@ -373,14 +404,18 @@ try {
 	}
 
 	// Inverse
+	{
+		Matrix Ainv(N, N);
+		Ainv = UT;
+		cholsl(A, Ainv);
+		cout << "Matrix Inv(A)  :\n" << Ainv << endl;
+	}
+	*/
 	Matrix Ainv(N, N);
-	Ainv = UT;
-	cholsl(A, Ainv);
-	cout << "Matrix Inv(A)  :\n" << Ainv << endl;
 	Ainv = Inverse(A);
 	cout << "Matrix Inv(A)  :\n" << Ainv << endl;
 
-	T = Aorig * Ainv;
+	T = A * Ainv;
 	cout << "Verification A * Inv(A) = I:\n" << with_format(T, 10, 3) << endl;
 
 
@@ -396,6 +431,7 @@ try {
 		cout << setprecision(orig_precision);
 	}
 
+	/*
 	{
 		Matrix I(N, N);
 		I = Scalar(1);
@@ -409,6 +445,7 @@ try {
 		cout << "Frobenius-norm " << sw::hprblas::frobenius_norm(I) << endl;
 		cout << setprecision(orig_precision);
 	}
+	*/
 }
 catch (char const* msg) {
 	std::cerr << msg << std::endl;
