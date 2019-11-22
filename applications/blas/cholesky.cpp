@@ -1,37 +1,8 @@
-/*****************************************************************
-*  Inversion of a symmetric matrix by Cholesky decomposition.    *
-*  The matrix must be positive definite.                         * 
-* -------------------------------------------------------------- *
-* REFERENCE:                                                     *
-*             From a Java Library Created by Vadim Kutsyy,       *
-*             "http://www.kutsyy.com".                           *
-* -------------------------------------------------------------- * 
-* SAMPLE RUN:                                                    *
-*                                                                *
-* Inversion of a square real symetric matrix by Cholevsky method *
-* (The matrix must positive definite).                           *
-*                                                                *
-* Size = 4                                                       *
-*                                                                *
-* Determinant = 432.000000                                       *
-*                                                                *
-* Matrix A:                                                      *
-* 5.000000 -1.000000 -1.000000 -1.000000                         *
-* -1.000000 5.000000 -1.000000 -1.000000                         *
-* -1.000000 -1.000000 5.000000 -1.000000                         *
-* -1.000000 -1.000000 -1.000000 5.000000                         *
-*                                                                *
-* Matrix Inv(A):                                                 *
-* 0.250000 0.083333 0.083333 0.083333                            *
-* 0.083333 0.250000 0.083333 0.083333                            *
-* 0.083333 0.083333 0.250000 0.083333                            *
-* 0.083333 0.083333 0.083333 0.250000                            *
-*                                                                *
-*                      C++ Release By Jean-Pierre Moreau, Paris. *
-*                                (www.jpmoreau.fr)               *
-* -------------------------------------------------------------- *
-* Release 1.1 : added verification Inv(A) * A = I.               *
-*****************************************************************/
+// cholesky.cpp: Cholesky decomposition
+//
+// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+//
+// This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 #include <boost/numeric/mtl/operation/frobenius_norm.hpp>
 #include <norms.hpp>
 #include <hprblas>
@@ -96,6 +67,7 @@ bool CholeskyFactorization(const Matrix& A, Matrix& UT, Vector& diagonal) {
 // CholeskyDecomposition takes a Symmetric Positive Definite Matrix A, and returns the lower triangular Cholesky factorized matrix U transpose (UT)
 template<typename Matrix>
 bool CholeskyDecomposition(const Matrix& A, Matrix& UT) {
+	assert(mtl::mat::num_rows(A) == mtl::mat::num_cols(A)); // assert squareness
 	using Scalar = typename Matrix::value_type;
 	int N = int(mtl::mat::num_cols(A));
 	mtl::vec::dense_vector<Scalar> diagonal(N);
@@ -225,6 +197,47 @@ void cholsl(const Matrix& A, Matrix& Ainv) {
 
 }
 
+template<typename Matrix>
+Matrix Inverse(const Matrix& A) {
+	int N = int(mtl::mat::num_cols(A));
+	Matrix Ainv(N, N);
+	if (CholeskyDecomposition(A, Ainv)) {
+		choldcsl(A, Ainv);
+		//	std::cout << "first   Ainv\n" << Ainv << std::endl;
+
+		for (int i = 0; i < N; ++i) {
+			for (int j = i + 1; j < N; ++j) {
+				Ainv[i][j] = 0.0;
+			}
+		}
+		//	std::cout << "second   Ainv\n" << Ainv << std::endl;
+
+		for (int i = 0; i < N; ++i) {
+			Ainv[i][i] *= Ainv[i][i];
+			for (int k = i + 1; k < N; ++k) {
+				Ainv[i][i] += Ainv[k][i] * Ainv[k][i];
+			}
+			for (int j = i + 1; j < N; ++j) {
+				for (int k = j; k < N; ++k) {
+					Ainv[i][j] += Ainv[k][i] * Ainv[k][j];
+				}
+			}
+		}
+		//	std::cout << "third  Ainv\n" << Ainv << std::endl;
+
+		for (int i = 0; i < N; ++i) {
+			for (int j = 0; j < i; ++j) {
+				Ainv[i][j] = Ainv[j][i];
+			}
+		}
+		//	std::cout << "final  Ainv\n" << Ainv << std::endl;
+	}
+	else {
+		Ainv = 0;
+	}
+	return Ainv;
+
+}
 
 // CheckPositiveDefinite returns true if the Matrix A is a Positive Definite matrix
 template<typename Matrix>
@@ -362,6 +375,8 @@ try {
 	Matrix Ainv(N, N);
 	Ainv = UT;
 	cholsl(A, Ainv);
+	cout << "Matrix Inv(A)  :\n" << Ainv << endl;
+	Ainv = Inverse(A);
 	cout << "Matrix Inv(A)  :\n" << Ainv << endl;
 
 	T = Aorig * Ainv;
