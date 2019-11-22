@@ -143,11 +143,12 @@ void choldcsl(const Matrix& A, Matrix& Linv) {
 }
 
 // Return value of the determinant of a symmetric, positive definite matrix via a Cholesky decomposition
-template<typename Matrix, typename Scalar>
-Scalar DeterminantSPD(const Matrix& A) {	
+template<typename Matrix>
+typename Matrix::value_type DeterminantSPD(const Matrix& A) {	
 	int N = int(mtl::mat::num_cols(A));
 	Matrix C(N, N);
 	CholeskyDecomposition(A, C);
+	using Scalar = typename Matrix::value_type;
 	Scalar d = Scalar(1);
 	for (int i = 0; i < N; ++i) {
 		d *= C[i][i];
@@ -318,13 +319,13 @@ try {
 	cout << " Inversion of a square real symmetric positive definite matrix by Cholesky method\n";
 	constexpr int m = 4;
 	constexpr int n = 4;
-	constexpr unsigned N = m*n;
+	constexpr unsigned N = 4; // m*n;
 	cout << "matrix size is " << N << endl;
 	Matrix A(N,N), Aorig(N, N);
 
 	// intended for N = 4
 	SetupMatrix(A, N);
-	mtl::mat::laplacian_setup(A, m, n);
+	//mtl::mat::laplacian_setup(A, m, n);
 
 	// save a copy for the verification phase, as our in-place Cholesky factorization is destructive
 	Aorig = A;
@@ -334,7 +335,7 @@ try {
 		return EXIT_FAILURE;
 	}
 	cout << "Original Matrix:\n" << A << endl;
-	Scalar determinant = DeterminantSPD<Matrix, Scalar>(A);
+	Scalar determinant = DeterminantSPD(A);
 	cout << "Determinant = " << determinant << endl;
 
 	Matrix UT(N, N);
