@@ -32,6 +32,8 @@
 * -------------------------------------------------------------- *
 * Release 1.1 : added verification Inv(A) * A = I.               *
 *****************************************************************/
+#include <boost/numeric/mtl/operation/frobenius_norm.hpp>
+#include <norms.hpp>
 #include <hprblas>
 //#include <universal/posit/posit>
 
@@ -42,8 +44,8 @@ bool CholeskyFactorization(Matrix& A, Vector& diagonal) {
 	using Scalar = typename Matrix::value_type;
 	int N = int(mtl::mat::num_cols(A));
 
-	for (int i = 0; i < N; i++) {
-		for (int j = i; j < N; j++) {
+	for (int i = 0; i < N; ++i) {
+		for (int j = i; j < N; ++j) {
 			Scalar sum = A[i][j];
 			for (int k = i - 1; k >= 0; k--) {
 				sum -= A[i][k] * A[j][k];
@@ -70,8 +72,8 @@ bool CholeskyFactorization(const Matrix& A, Matrix& UT, Vector& diagonal) {
 	int N = int(mtl::mat::num_cols(A));
 
 	UT = A;
-	for (int i = 0; i < N; i++) {
-		for (int j = i; j < N; j++) {
+	for (int i = 0; i < N; ++i) {
+		for (int j = i; j < N; ++j) {
 			Scalar sum = A[i][j];
 			for (int k = i - 1; k >= 0; k--) {
 				sum -= UT[i][k] * UT[j][k];
@@ -102,9 +104,9 @@ bool CholeskyDecomposition(const Matrix& A, Matrix& UT) {
 	if (!success) return false;
 
 	// complete the UT by nulling out the upper triangular part
-	for (int i = 0; i < N; i++) {
+	for (int i = 0; i < N; ++i) {
 		UT[i][i] = diagonal[i];
-		for (int j = i + 1; j < N; j++) {
+		for (int j = i + 1; j < N; ++j) {
 			UT[i][j] = 0;
 		}
 	}
@@ -128,9 +130,9 @@ Matrix CholeskyDecomposition(const Matrix& A) {
 	}
 
 	// complete the UT by nulling out the upper triangular part
-	for (int i = 0; i < N; i++) {
+	for (int i = 0; i < N; ++i) {
 		UT[i][i] = diagonal[i];
-		for (int j = i + 1; j < N; j++) {
+		for (int j = i + 1; j < N; ++j) {
 			UT[i][j] = 0;
 		}
 	}
@@ -148,19 +150,19 @@ template<typename Matrix>
 void choldcsl(const Matrix& A, Matrix& Linv) {
 	using Scalar = typename Matrix::value_type;
 	int N = int(mtl::mat::num_cols(A));
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
+	for (int i = 0; i < N; ++i) {
+		for (int j = 0; j < N; ++j) {
 			Linv[i][j] = A[i][j];
 		}
 	}
 
 	mtl::vec::dense_vector<Scalar> p(N);
 	CholeskyFactorization(Linv, p);
-	for (int i = 0; i < N; i++) {
+	for (int i = 0; i < N; ++i) {
 		Linv[i][i] = 1 / p[i];
-		for (int j = i + 1; j < N; j++) {
+		for (int j = i + 1; j < N; ++j) {
 			Scalar sum = Scalar(0);
-			for (int k = i; k < j; k++) {
+			for (int k = i; k < j; ++k) {
 				sum -= Linv[j][k] * Linv[k][i];
 			}
 			Linv[j][i] = sum / p[j];
@@ -175,7 +177,7 @@ Scalar DeterminantSPD(const Matrix& A) {
 	Matrix C(N, N);
 	CholeskyDecomposition(A, C);
 	Scalar d = Scalar(1);
-	for (int i = 0; i < N; i++) {
+	for (int i = 0; i < N; ++i) {
 		d *= C[i][i];
 	}
 	return d * d;
@@ -194,28 +196,28 @@ void cholsl(const Matrix& A, Matrix& Ainv) {
 //	std::cout << "first   Ainv\n" << Ainv << std::endl;
 
 	int N = int(mtl::mat::num_cols(A));
-	for (int i = 0; i < N; i++) {
-		for (int j = i + 1; j < N; j++) {
+	for (int i = 0; i < N; ++i) {
+		for (int j = i + 1; j < N; ++j) {
 			Ainv[i][j] = 0.0;
 		}
 	}
 //	std::cout << "second   Ainv\n" << Ainv << std::endl;
 
-	for (int i = 0; i < N; i++) {
+	for (int i = 0; i < N; ++i) {
 		Ainv[i][i] *= Ainv[i][i];
-		for (int k = i + 1; k < N; k++) {
+		for (int k = i + 1; k < N; ++k) {
 			Ainv[i][i] += Ainv[k][i] * Ainv[k][i];
 		}
-		for (int j = i + 1; j < N; j++) {
-			for (int k = j; k < N; k++) {
+		for (int j = i + 1; j < N; ++j) {
+			for (int k = j; k < N; ++k) {
 				Ainv[i][j] += Ainv[k][i] * Ainv[k][j];
 			}
 		}
 	}
 //	std::cout << "third  Ainv\n" << Ainv << std::endl;
 
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < i; j++) {
+	for (int i = 0; i < N; ++i) {
+		for (int j = 0; j < i; ++j) {
 			Ainv[i][j] = Ainv[j][i];
 		}
 	}
@@ -231,10 +233,10 @@ bool CheckPositiveDefinite(Matrix& A) {
 	assert(mtl::mat::num_rows(A) == mtl::mat::num_cols(A));  // got a be square
 	int N = int(mtl::mat::num_rows(A));
     bool result = true;
-	for (int i = 0; i < N; i++) {
-	    for (int j = i; j < N; j++) {
+	for (int i = 0; i < N; ++i) {
+	    for (int j = i; j < N; ++j) {
               Scalar sum = A[i][j];
-			  for (int k = i - 1; k >= 0; k--) {
+			  for (int k = i - 1; k >= 0; --k) {
 				  sum -= A[i][k] * A[j][k];
 			  }
               result = (i == j) && (sum <= 0.0) ? false : result;
@@ -298,21 +300,21 @@ try {
 	using Matrix = mtl::mat::dense2D<Scalar>;
 	using Vector = mtl::vec::dense_vector<Scalar>;
 
+	auto orig_precision = cout.precision();
+
 	cout << " Inversion of a square real symmetric positive definite matrix by Cholesky method\n";
-	constexpr int m = 5;
+	constexpr int m = 4;
 	constexpr int n = 4;
 	constexpr unsigned N = m*n;
 	cout << "matrix size is " << N << endl;
-	Matrix A(N,N), Ainv(N,N), A1(N,N), UT(N,N), C(N,N), Linv(N,N);
-	Vector p(N);
+	Matrix A(N,N), Aorig(N, N);
 
 	// intended for N = 4
 	SetupMatrix(A, N);
 	mtl::mat::laplacian_setup(A, m, n);
 
 	// save a copy for the verification phase, as our in-place Cholesky factorization is destructive
-	A1 = A;
-	p = 0;
+	Aorig = A;
 
 	if (!CheckPositiveDefinite(A)) {
 		cout << "This matrix is not positive definite !\n";
@@ -322,6 +324,7 @@ try {
 	Scalar determinant = DeterminantSPD<Matrix, Scalar>(A);
 	cout << "Determinant = " << determinant << endl;
 
+	Matrix UT(N, N);
 	{ // syntax #1
 		UT = Scalar(0);
 		if (CholeskyDecomposition(A, UT)) {
@@ -337,13 +340,59 @@ try {
 		cout << "MATLAB Cholesky\nU^T Matrix:\n" << UT << endl;
 	}
 
+	Matrix T(N, N);
+
+	Matrix U(N, N);
+	U = trans(UT);
+	T = UT * U;
+	cout << "verification of the decomposition A = U^T * U = A\n" << with_format(T, 10, 3) << endl;
+	{
+		// non-quire norms
+		cout << setprecision(30);
+		Scalar oneNorm = one_norm(T);
+		cout << "l1-norm        " << oneNorm << endl;
+		Scalar infNorm = infinity_norm(T);
+		cout << "linf-norm      " << infNorm << endl;
+		Scalar frobenius = frobenius_norm(T);
+		cout << "Frobenius-norm " << frobenius << endl;
+		cout << setprecision(orig_precision);
+	}
+
+	// Inverse
+	Matrix Ainv(N, N);
 	Ainv = UT;
 	cholsl(A, Ainv);
 	cout << "Matrix Inv(A)  :\n" << Ainv << endl;
 
-	cout << "verification of the decomposition U^T * U = A\n";
-	C = A1 * Ainv;
-	cout << "Verification A * Inv(A) = I:\n" << C << endl;
+	T = Aorig * Ainv;
+	cout << "Verification A * Inv(A) = I:\n" << with_format(T, 10, 3) << endl;
+
+
+	{
+		// non-quire norms
+		cout << setprecision(30);
+		Scalar oneNorm = one_norm(T);
+		cout << "l1-norm        " << oneNorm << endl;
+		Scalar infNorm = infinity_norm(T);
+		cout << "linf-norm      " << infNorm << endl;
+		Scalar frobenius = frobenius_norm(T);
+		cout << "Frobenius-norm " << frobenius << endl;
+		cout << setprecision(orig_precision);
+	}
+
+	{
+		Matrix I(N, N);
+		I = Scalar(1);
+
+		Scalar oneNorm = one_norm(I);
+		cout << "l1-norm        " << oneNorm << endl;
+		Scalar infNorm = infinity_norm(I);
+		cout << "linf-norm      " << infNorm << endl;
+		Scalar frobenius = frobenius_norm(I);
+		cout << "Frobenius-norm " << frobenius << endl;
+		cout << "Frobenius-norm " << sw::hprblas::frobenius_norm(I) << endl;
+		cout << setprecision(orig_precision);
+	}
 }
 catch (char const* msg) {
 	std::cerr << msg << std::endl;

@@ -62,6 +62,7 @@
 #include "universal/posit/math_functions.hpp"
 
 // the underlying matrix/vector machinery
+#define MTL_FROBENIUS_NORM_INCLUDE
 #include <boost/numeric/mtl/mtl.hpp>
 #include "hprblas.hpp"
 

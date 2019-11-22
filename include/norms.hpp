@@ -55,6 +55,21 @@ typename Vector::value_type linf_norm(const Vector& v) {
 	return linf;
 }
 
+// Frobenius-norm = sqrt of the sum of absolute squares
+template<typename Matrix>
+typename Matrix::value_type frobenius_norm(const Matrix& M) {
+	using Scalar = typename Matrix::value_type;
+	assert(mtl::mat::num_rows(M) == mtl::mat::num_cols(M)); // assuming squareness
+	int N = int(mtl::mat::num_cols(M));
+	Scalar frobenius = Scalar(0);
+	for (int i = 0; i < N; ++i) {
+		for (int j = 0; j < N; ++j) {
+			frobenius += M[i][j] * M[i][j];
+		}
+	}
+	return sqrt(frobenius);
+}
+
 // Calculate the volume of the bounding box that contains the absolute error given L-infinity norm
 template<typename Scalar>
 Scalar error_volume(Scalar Linfinity, unsigned dimensionality, bool measuredInULP = false) {
