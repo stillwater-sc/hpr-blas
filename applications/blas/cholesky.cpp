@@ -3,11 +3,7 @@
 // Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
-#include <boost/numeric/mtl/operation/frobenius_norm.hpp>
-#include <norms.hpp>
 #include <hprblas>
-//#include <universal/posit/posit>
-
 
 // In-place Cholesky factorization of an SPD matrix A, generating the factor UT and the diagonal
 template<typename Matrix, typename Vector>
@@ -394,9 +390,9 @@ try {
 	{
 		// non-quire norms
 		cout << setprecision(30);
-		Scalar oneNorm = one_norm(T);
+		Scalar oneNorm = l1_norm(T);
 		cout << "l1-norm        " << oneNorm << endl;
-		Scalar infNorm = infinity_norm(T);
+		Scalar infNorm = linf_norm(T);
 		cout << "linf-norm      " << infNorm << endl;
 		Scalar frobenius = frobenius_norm(T);
 		cout << "Frobenius-norm " << frobenius << endl;
@@ -422,30 +418,29 @@ try {
 	{
 		// non-quire norms
 		cout << setprecision(30);
-		Scalar oneNorm = one_norm(T);
+		Scalar oneNorm = sw::hprblas::l1_norm(T);
 		cout << "l1-norm        " << oneNorm << endl;
-		Scalar infNorm = infinity_norm(T);
+		Scalar infNorm = sw::hprblas::linf_norm(T);
 		cout << "linf-norm      " << infNorm << endl;
-		Scalar frobenius = frobenius_norm(T);
+		Scalar frobenius = sw::hprblas::frobenius_norm(T);
 		cout << "Frobenius-norm " << frobenius << endl;
 		cout << setprecision(orig_precision);
 	}
 
-	/*
+	
 	{
 		Matrix I(N, N);
 		I = Scalar(1);
 
-		Scalar oneNorm = one_norm(I);
+		Scalar oneNorm = sw::hprblas::l1_norm(I);
 		cout << "l1-norm        " << oneNorm << endl;
-		Scalar infNorm = infinity_norm(I);
+		Scalar infNorm = sw::hprblas::linf_norm(I);
 		cout << "linf-norm      " << infNorm << endl;
-		Scalar frobenius = frobenius_norm(I);
+		Scalar frobenius = sw::hprblas::frobenius_norm(I);
 		cout << "Frobenius-norm " << frobenius << endl;
-		cout << "Frobenius-norm " << sw::hprblas::frobenius_norm(I) << endl;
 		cout << setprecision(orig_precision);
 	}
-	*/
+	
 }
 catch (char const* msg) {
 	std::cerr << msg << std::endl;

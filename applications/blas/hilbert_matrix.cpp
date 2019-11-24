@@ -1,13 +1,14 @@
-// l3_fused_mv.cpp example program to demonstrate BLAS L3 Reproducible Matrix-Matrix product
+// hilbert_matrix.cpp: verification test program to study numerical behavior of very poorly conditioned matrices
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
-
 #include "common.hpp"
 // Boost arbitrary precision floats
 #include <boost/multiprecision/cpp_bin_float.hpp>
 
+// enable INITLISTs with MTL matrices
+#define MTL_WITH_INITLIST
 // enable the following define to show the intermediate steps in the fused-dot product
 // #define POSIT_VERBOSE_OUTPUT
 #define QUIRE_TRACE_ADD

@@ -61,15 +61,20 @@
 /// math functions
 #include "universal/posit/math_functions.hpp"
 
-// the underlying matrix/vector machinery
-#define MTL_FROBENIUS_NORM_INCLUDE
+///////////////////////////////////////////////////////////////////////////////////////
+/// the underlying matrix/vector machinery
+#define MTL_WITH_INITLIST
 #include <boost/numeric/mtl/mtl.hpp>
-#include "hprblas.hpp"
 
-// useful functions
+///////////////////////////////////////////////////////////////////////////////////////
+/// the High-Performance Reproducible Basic Linear Algebra Subroutines
+/// L1, L2, and L3 matrix/vector operations
+#include "hprblas.hpp"
+/// norms (l1, l2, linf, Frobenius) using HPR methods
 #include "norms.hpp"
 
-// linear system solvers
+///////////////////////////////////////////////////////////////////////////////////////
+/// linear system solvers
 #include "solvers/lu_decomposition.hpp"
 #include "solvers/cholesky.hpp"
 #include "solvers/ldlt.hpp"

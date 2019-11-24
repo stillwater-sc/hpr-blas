@@ -1,10 +1,8 @@
+#pragma once
 // common.hpp : include file for standard system include files,
 // or project specific include files that are used frequently, but
 // are changed infrequently
 //
-
-#pragma once
-
 #include <cstdint>	// uint8_t, etc.
 
 #include <iostream>
@@ -43,6 +41,4 @@ log_e(10)		M_LN10		2.30258509299404568402
 // set the _WIN32_WINNT macro to the platform you wish to support before including SDKDDKVer.h.
 
 #include <SDKDDKVer.h>
-
-#define MTL_WITH_INITLIST
 #endif // WINDOWS
