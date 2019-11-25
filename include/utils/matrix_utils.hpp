@@ -304,26 +304,31 @@ void fill_L(Matrix& A, double lowerbound = 0.0, double upperbound = 1.0)
 /// Hilbert matrices
 
 // Greatest Common Divisor of two numbers, a and b
-size_t gcd(size_t a, size_t b)
+template<typename IntegerType>
+IntegerType gcd(IntegerType a, IntegerType b)
 {
-	if (b == 0)	return a;
+	if (b == IntegerType(0))	return a;
 	return gcd(b, a % b);
 }
 
 // Least Common Multiple of n numbers
-size_t findlcm(const std::vector<size_t>& v)
+template<typename IntegerType>
+IntegerType findlcm(const std::vector<IntegerType>& v)
 {
-	size_t lcm = v[0];
+	IntegerType lcm = v[0];
 	for (size_t i = 1; i < v.size(); i++) {
 		lcm = (v[i] * lcm) / gcd(v[i], lcm);
 	}
 	return lcm;
 }
 
-size_t HilbertScalingFactor(size_t N) {
-	std::vector<size_t> coef;
-	for (size_t i = 2; i <= N; ++i) coef.push_back(i);
-	for (size_t j = 2; j <= N; ++j) coef.push_back(N + j - 1);
+// Generate the scaling factor of a Hilbert matrix so that its elements are representable
+// that is, no infinite expensions of rationals, such as 1/3, 1/10, etc.
+template<typename IntegerType>
+IntegerType HilbertScalingFactor(IntegerType N) {
+	std::vector<IntegerType> coef;
+	for (IntegerType i = 2; i <= N; ++i) coef.push_back(i);
+	for (IntegerType j = 2; j <= N; ++j) coef.push_back(N + j - IntegerType(1));
 	return findlcm(coef);
 }
 

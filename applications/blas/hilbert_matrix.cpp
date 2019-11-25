@@ -6,6 +6,8 @@
 #include "common.hpp"
 // Boost arbitrary precision floats
 #include <boost/multiprecision/cpp_bin_float.hpp>
+// Universal arbitrary precision integers
+#include <universal/integer/integer>
 
 // enable INITLISTs with MTL vectors and matrices
 #define MTL_WITH_INITLIST
@@ -101,6 +103,82 @@ void EnumerateHilbertMatrices() {
 	GenerateHilbertMatrixTest<op>(N);
 }
 
+// Generate scaling factors for a sequence of Hilbert matrix sizes constrained by [2..upperbound]
+template<typename IntegerType>
+void CalculateHilbertMatrixScalingFactors(IntegerType upperbound = 30) {
+/*
+Scaling factors for a collection of Hilbert matrices
+N is a size_t
+N = 2 scaling factor = 6
+N = 3 scaling factor = 60
+N = 4 scaling factor = 420
+N = 5 scaling factor = 2520
+N = 6 scaling factor = 27720
+N = 7 scaling factor = 360360
+N = 8 scaling factor = 360360
+N = 9 scaling factor = 12252240
+N = 10 scaling factor = 232792560
+N = 11 scaling factor = 232792560
+N = 12 scaling factor = 5354228880
+N = 13 scaling factor = 26771144400
+N = 14 scaling factor = 80313433200
+N = 15 scaling factor = 2329089562800
+N = 16 scaling factor = 72201776446800
+N = 17 scaling factor = 144403552893600
+N = 18 scaling factor = 144403552893600
+N = 19 scaling factor = 5342931457063200
+N = 20 scaling factor = 5342931457063200
+N = 21 scaling factor = 219060189739591200
+N = 22 scaling factor = 9419588158802421600
+N = 23 scaling factor = 8829725487644060640  <---- fail
+N = 24 scaling factor = 7966566035391366368  <---- all fails from this point on
+N = 25 scaling factor = 4328644540401716384
+N = 26 scaling factor = 12668683009887232224
+N = 27 scaling factor = 13388079202269110789
+N = 28 scaling factor = 9861751895175310850
+N = 29 scaling factor = 13506701862403363960
+N = 30 scaling factor = 14643306287797112328
+
+N is an integer<128>
+Scaling factors for a collection of Hilbert matrices
+N = 2 scaling factor = 6
+N = 3 scaling factor = 60
+N = 4 scaling factor = 420
+N = 5 scaling factor = 2520
+N = 6 scaling factor = 27720
+N = 7 scaling factor = 360360
+N = 8 scaling factor = 360360
+N = 9 scaling factor = 12252240
+N = 10 scaling factor = 232792560
+N = 11 scaling factor = 232792560
+N = 12 scaling factor = 5354228880
+N = 13 scaling factor = 26771144400
+N = 14 scaling factor = 80313433200
+N = 15 scaling factor = 2329089562800
+N = 16 scaling factor = 72201776446800
+N = 17 scaling factor = 144403552893600
+N = 18 scaling factor = 144403552893600
+N = 19 scaling factor = 5342931457063200
+N = 20 scaling factor = 5342931457063200
+N = 21 scaling factor = 219060189739591200
+N = 22 scaling factor = 9419588158802421600
+N = 23 scaling factor = 9419588158802421600
+N = 24 scaling factor = 442720643463713815200
+N = 25 scaling factor = 3099044504245996706400
+N = 26 scaling factor = 3099044504245996706400
+N = 27 scaling factor = 164249358725037825439200
+N = 28 scaling factor = 164249358725037825439200
+N = 29 scaling factor = 164249358725037825439200
+N = 30 scaling factor = 9690712164777231700912800
+*/
+	using namespace std;
+	cout << "Scaling factors for a collection of Hilbert matrices\n";
+
+	for (IntegerType i = 2; i <= upperbound; ++i) {
+		cout << "N = " << i << " scaling factor = " << sw::hprblas::HilbertScalingFactor(i) << endl;
+	}
+}
+
 int main(int argc, char** argv)
 try {
 	using namespace std;
@@ -109,12 +187,9 @@ try {
 
 	int nrOfFailedTestCases = 0;
 
-	cout << "Scaling factors for a collection of Hilbert matrices\n";
-	for (size_t i = 2; i < 21; ++i) {
-		HilbertScalingFactor(i);
-	}
-
-	EnumerateHilbertMatrices();
+	using IntegerType = sw::unum::integer<128>;
+	CalculateHilbertMatrixScalingFactors(IntegerType(30));
+	// EnumerateHilbertMatrices();
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
