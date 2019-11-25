@@ -187,9 +187,27 @@ try {
 
 	int nrOfFailedTestCases = 0;
 
-	using IntegerType = sw::unum::integer<128>;
-	CalculateHilbertMatrixScalingFactors(IntegerType(30));
+	//using IntegerType = sw::unum::integer<128>;
+	//CalculateHilbertMatrixScalingFactors(IntegerType(30));
+	
 	// EnumerateHilbertMatrices();
+
+	// can't go higher than N = 21 as the Hilbert matrix generator is using size_t as scaling factor type
+	constexpr size_t N = 5;
+	size_t scale = HilbertScalingFactor(N);
+	using Scalar = double;
+	using Matrix = mtl::mat::dense2D<Scalar>;
+	Matrix H(N, N), Hinv(N,N);
+	GenerateHilbertMatrix(H);
+	cout << H << endl;
+	GenerateHilbertMatrixInverse(Hinv);
+	cout << Hinv << endl;
+
+	Matrix B(N, N), C(N, N);
+	B = H * Hinv;
+	cout << B << endl;
+	C = B / scale;
+	cout << C << endl;
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
