@@ -179,6 +179,36 @@ N = 30 scaling factor = 9690712164777231700912800
 	}
 }
 
+// Test of Hilbert matrix inversion accuracy
+// can't go higher than N = 21 as the Hilbert matrix generator is using size_t as scaling factor type
+template<typename Scalar>
+void HilbertInverseTest(size_t N) {
+	using namespace std;
+	using namespace sw::hprblas;
+
+	size_t scale = HilbertScalingFactor(N);
+	using Matrix = mtl::mat::dense2D<Scalar>;
+	Matrix H(N, N), Hinv(N, N);
+	GenerateHilbertMatrix(H);
+	cout << H << endl;
+	GenerateHilbertMatrixInverse(Hinv);
+	cout << Hinv << endl;
+
+	Matrix B(N, N), C(N, N);
+	B = H * Hinv;
+	cout << B << endl;
+	C = B / scale;
+	cout << C << endl;
+
+	// Calculate the inverse via Cholesky
+	Matrix Hinv2(N, N);
+	Hinv2 = sw::hprblas::Inverse(H);
+	B = H * Hinv2;
+	cout << typeid(Scalar).name() << endl;
+	cout << "Verification H * Hinv = I\n" << B << endl;
+	cout << "minpos = " << std::numeric_limits<Scalar>::min() << endl;
+}
+
 int main(int argc, char** argv)
 try {
 	using namespace std;
@@ -193,21 +223,9 @@ try {
 	// EnumerateHilbertMatrices();
 
 	// can't go higher than N = 21 as the Hilbert matrix generator is using size_t as scaling factor type
-	constexpr size_t N = 5;
-	size_t scale = HilbertScalingFactor(N);
-	using Scalar = double;
-	using Matrix = mtl::mat::dense2D<Scalar>;
-	Matrix H(N, N), Hinv(N,N);
-	GenerateHilbertMatrix(H);
-	cout << H << endl;
-	GenerateHilbertMatrixInverse(Hinv);
-	cout << Hinv << endl;
-
-	Matrix B(N, N), C(N, N);
-	B = H * Hinv;
-	cout << B << endl;
-	C = B / scale;
-	cout << C << endl;
+	size_t N = 5;
+	HilbertInverseTest<double>(N);
+//	HilbertInverseTest<posit<32, 2>>(N);
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
