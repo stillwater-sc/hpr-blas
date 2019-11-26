@@ -11,8 +11,6 @@
 #include <iomanip>
 #include <string>
 
-#include <boost/numeric/mtl/mtl.hpp>
-#include <boost/numeric/interval.hpp>
 #include <vector>
 #include <algorithm>
 #include <utility>

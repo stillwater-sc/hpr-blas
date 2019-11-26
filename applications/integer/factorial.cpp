@@ -1,42 +1,45 @@
-// factorial.cpp example program to demonstrate factorials with arbitrary precision number systems
+// factorial.cpp: example program to demonstrate factorials with arbitrary precision number systems
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include "common.hpp"
+// bring in different number systems
 #include <boost/multiprecision/cpp_int.hpp>
 #include <universal/integer/integer>
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #include <universal/posit/posit>
-
-template<typename Ty>
-Ty factorial(unsigned fact) {
-	Ty v = 1;
-	for (unsigned i = 2; i <= fact; ++i) {
-		v *= i;
-	}
-	return v;
-}
+// bring in the factorial function
+#include <universal/functions/factorial.hpp>
 
 int main() 
 try {
 	using namespace std;
 	using namespace boost::multiprecision;
+	using namespace sw::function;
 	using namespace sw::unum;
 
 	int N = 30;
 	int128_t v = factorial<int128_t>(N);
-	std::cout << v << std::endl;
-
+	std::cout << typeid(v).name() << " : \n" << v << std::endl;
+	 
 	cpp_int u = factorial<cpp_int>(N);
-	std::cout << u << std::endl;
+	std::cout << typeid(u).name() << " : \n" << u << std::endl;
 
 	integer<128> w = factorial< integer<128> >(N);
-	std::cout << w << std::endl;
+	std::cout << typeid(w).name() << " : \n" << w << std::endl;
 
-	using Posit = posit<64, 3>;
-	Posit p = factorial<Posit>(N);
-	cout << setprecision(27) << p << endl;
+	using Posit64 = posit<64, 3>;
+	Posit64 p64 = factorial<Posit64>(N);
+	cout << typeid(p64).name() << " : \n" << setprecision(40) << p64 << endl;
+
+	using Posit128 = posit<128, 4>;
+	Posit128 p128 = factorial<Posit128>(N);
+	cout << typeid(p128).name() << " : \n" << setprecision(40) << p128 << endl;
+
+	using Posit256 = posit<256, 4>;
+	Posit256 p256 = factorial<Posit256>(N);
+	cout << typeid(p256).name() << " : \n" << setprecision(40) << p256 << endl;
 
 	return EXIT_SUCCESS;
 }
