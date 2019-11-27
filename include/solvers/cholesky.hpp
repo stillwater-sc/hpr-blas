@@ -4,7 +4,6 @@
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
-
 #include <vector>
 #define POSIT_VERBOSE_OUTPUT
 #define QUIRE_TRACE_ADD
@@ -37,6 +36,27 @@ then A is Hermitian and positive definite.
 
 namespace sw {
 namespace hprblas {
+
+
+// CheckPositiveDefinite returns true if the Matrix A is a Positive Definite matrix
+// uses a Cholesky decomposition to make that determination.
+template<typename Matrix>
+bool CheckPositiveDefinite(Matrix& A) {
+	assert(mtl::mat::num_rows(A) == mtl::mat::num_cols(A));
+	using Scalar = typename Matrix::value_type;
+	int N = int(mtl::mat::num_rows(A));
+	bool result = true;
+	for (int i = 0; i < N; ++i) {
+		for (int j = i; j < N; ++j) {
+			Scalar sum = A[i][j];
+			for (int k = i - 1; k >= 0; --k) {
+				sum -= A[i][k] * A[j][k];
+			}
+			result = (i == j) && (sum <= 0.0) ? false : result;
+		}
+	}
+	return result;
+}
 
 // Cholesky decomposition of a matrix, returns false if matrix A is not positive-definite
 template<typename Matrix>

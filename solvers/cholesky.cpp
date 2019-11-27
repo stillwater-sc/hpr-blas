@@ -1,29 +1,12 @@
 // cholesky.cpp: Cholesky decomposition
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 #include <hprblas>
+#include <chrono>
 
-// CheckPositiveDefinite returns true if the Matrix A is a Positive Definite matrix
-template<typename Matrix>
-bool CheckPositiveDefinite(Matrix& A) {
-	using Scalar = typename Matrix::value_type;
-	assert(mtl::mat::num_rows(A) == mtl::mat::num_cols(A));  // got a be square
-	int N = int(mtl::mat::num_rows(A));
-    bool result = true;
-	for (int i = 0; i < N; ++i) {
-	    for (int j = i; j < N; ++j) {
-              Scalar sum = A[i][j];
-			  for (int k = i - 1; k >= 0; --k) {
-				  sum -= A[i][k] * A[j][k];
-			  }
-              result = (i == j) && (sum <= 0.0) ? false : result;
-	    }
-    }
-	return result;
-}
-
+#if 0
 /* 
 * SAMPLE RUN:                                                    *
 *                                                                *
@@ -70,8 +53,9 @@ void SetupMatrix(Matrix& A, int bandwidth = 0) {
 		}
 	}
 }
+#endif
 
-// main program to demonstrate the use of function cholsl()
+// main program to compare Cholesky() transformations using different number systems
 int main(int argc, char* argv[]) 
 try {
 	using namespace std;
@@ -90,8 +74,6 @@ try {
 	Matrix A(N,N), Aorig(N, N), T(N, N);
 	Vector x(N), b(N);
 
-	// intended for N = 4
-	//SetupMatrix(A, 4);
 	mtl::mat::laplacian_setup(A, m, n);
 	cout << "Original Matrix:\n" << A << endl;
 
@@ -111,6 +93,25 @@ try {
 	x = Scalar(0);
 	sw::hprblas::SolveCholesky(L, b, x);
 	cout << "result x :\n" << x << endl;
+
+	{
+		using namespace std::chrono;
+		using namespace sw::hprblas;
+
+		Matrix A(N, N), L(N, N), T(N, N);
+		Vector x(N), b(N);
+		laplacian_setup(A,m,n);
+		steady_clock::time_point t1 = steady_clock::now();
+		Cholesky(A, L);
+		steady_clock::time_point t2 = steady_clock::now();
+		duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+		double elapsed = time_span.count();
+		std::cout << "Cholesky took " << elapsed << " seconds." << std::endl;
+		std::cout << "Performance " << (uint32_t)(N*N*N / (1000 * elapsed)) << " KOPS/s" << std::endl;
+		SolveCholesky(L, b, x);
+		cout << "Cholesky LLT:\n" << L << endl;
+		cout << "Solution:\n" << x << endl;
+	}
 
 #if 0
 	// save a copy for the verification phase, as our in-place Cholesky factorization is destructive
