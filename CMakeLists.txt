@@ -139,6 +139,7 @@ add_subdirectory("tools/benchmark")
 add_subdirectory("tools/matrix_generation")
 add_subdirectory("blas")
 add_subdirectory("applications")
+add_subdirectory("solvers")
 add_subdirectory("c_api/lib")
 add_subdirectory("c_api/test")
 
