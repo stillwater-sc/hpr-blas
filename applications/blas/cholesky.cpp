@@ -85,15 +85,34 @@ try {
 	cout << " Inversion of a square real symmetric positive definite matrix by Cholesky method\n";
 	constexpr int m = 4;
 	constexpr int n = 4;
-	constexpr unsigned N = 4;  m*n;
+	constexpr unsigned N = m*n;
 	cout << "matrix size is " << N << endl;
 	Matrix A(N,N), Aorig(N, N), T(N, N);
+	Vector x(N), b(N);
 
 	// intended for N = 4
-	SetupMatrix(A, N);
-	//mtl::mat::laplacian_setup(A, m, n);
+	//SetupMatrix(A, 4);
+	mtl::mat::laplacian_setup(A, m, n);
 	cout << "Original Matrix:\n" << A << endl;
 
+	Matrix L(N, N);
+	if (!sw::hprblas::Cholesky(A, L)) {
+		cerr << "matrix is not positive definite" << endl;
+		return EXIT_FAILURE;
+	}
+	cout << "Result:\n" << L << endl;
+	Matrix U(N, N);
+	U = trans(L);
+	cout << "Verification: L * LT = A\n" << L * U << endl;
+
+	x = Scalar(1);
+	b = A * x;
+	cout << "RHS b :\n" << b << endl;
+	x = Scalar(0);
+	sw::hprblas::SolveCholesky(L, b, x);
+	cout << "result x :\n" << x << endl;
+
+#if 0
 	// save a copy for the verification phase, as our in-place Cholesky factorization is destructive
 	Aorig = A;
 
@@ -180,7 +199,7 @@ try {
 		cout << "Frobenius-norm " << frobenius << endl;
 		cout << setprecision(orig_precision);
 	}
-	
+#endif
 }
 catch (char const* msg) {
 	std::cerr << msg << std::endl;

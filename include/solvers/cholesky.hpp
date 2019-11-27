@@ -9,10 +9,76 @@
 #define POSIT_VERBOSE_OUTPUT
 #define QUIRE_TRACE_ADD
 #include <universal/posit/posit>
+/*
+The Cholesky decomposition of a Hermitian positive-definite matrix A is a decomposition of the form
 
+{\displaystyle \mathbf {A} =\mathbf {LL} ^{*},}{\displaystyle \mathbf {A} =\mathbf {LL} ^{*},}
+where L is a lower triangular matrix with real and positive diagonal entries, 
+and L* denotes the conjugate transpose of L. 
+
+Every Hermitian positive-definite matrix (and thus also every real-valued 
+symmetric positive-definite matrix) has a unique Cholesky decomposition.
+
+If the matrix A is Hermitian and positive semi-definite, then it still has a decomposition 
+of the form A = LL* if the diagonal entries of L are allowed to be zero.
+
+When A has only real entries, L has only real entries as well, 
+and the factorization may be written A = LLT.
+
+The Cholesky decomposition is unique when A is positive definite; 
+there is only one lower triangular matrix L with strictly positive 
+diagonal entries such that A = LL*. However, the decomposition 
+need not be unique when A is positive semidefinite.
+
+The converse holds trivially: if A can be written as LL* for 
+some invertible L, lower triangular or otherwise, 
+then A is Hermitian and positive definite.
+*/
 
 namespace sw {
 namespace hprblas {
+
+// Cholesky decomposition of a matrix, returns false if matrix A is not positive-definite
+template<typename Matrix>
+bool Cholesky(const Matrix& A, Matrix& L) {
+	assert(mtl::mat::num_rows(A) == mtl::mat::num_cols(A)); // assert squareness
+	assert(mtl::mat::num_rows(L) == mtl::mat::num_cols(L)); // assert squareness
+	using Scalar = typename Matrix::value_type;
+	size_t N = mtl::mat::num_rows(A);
+	for (size_t k = 0; k < N; ++k) {
+		Scalar sum = Scalar(0);
+		for (size_t p = 0; p < k; ++p) sum += L[k][p] * L[k][p];
+		Scalar arg = A[k][k] - sum;
+		if (arg < 0) return false; // A is not positive-definite
+		L[k][k] = sqrt(arg);
+		for (size_t i = k + 1; i < N; ++i) {
+			Scalar sum = Scalar(0);
+			for (size_t p = 0; p < k; ++p) sum += L[i][p] * L[k][p];
+			L[i][k] = (A[i][k] - sum) / L[k][k];
+		}
+	}
+	return true; // A is positive-definite
+}
+// SolveCholesky takes a lower-triangular factor, L, of the Cholesky decomposition, and a right hand side vector, b, to produce a result, x.
+template<typename Matrix, typename Vector>
+void SolveCholesky(const Matrix& L, const Vector& b, Vector& x) {
+	assert(mtl::mat::num_rows(L) == mtl::mat::num_cols(L)); // assert squareness
+	assert(mtl::vec::size(b) == mtl::vec::size(x));
+	assert(mtl::mat::num_cols(L) == mtl::vec::size(b));
+	using Scalar = typename Matrix::value_type;
+	long long N = (long long)mtl::mat::num_rows(L);
+	Vector y(N);
+	for (long long i = 0; i < N; ++i) {
+		Scalar sum = Scalar(0);
+		for (long long k = 0; k < i; ++k) sum += L[i][k] * y[k];
+		y[i] = (b[i] - sum) / L[i][i];
+	}
+	for (long long i = N - 1; i >= 0; --i) {
+		Scalar sum = Scalar(0);
+		for (long long k = i + 1; k < N; ++k) sum += L[k][i] * x[k];
+		x[i] = (y[i] - sum) / L[i][i];
+	}
+}
 
 // Cholesky requires the matrix to be symmetric positive-definite
 template<typename Ty>
@@ -22,11 +88,11 @@ void Cholesky(std::vector<Ty>& S, std::vector<Ty>& D) {
 	assert(D.size() == d*d);
 	for (size_t k = 0; k<d; ++k) {
 		Ty sum = 0.;
-		for (size_t p = 0; p<k; ++p)sum += D[k*d + p] * D[k*d + p];
+		for (size_t p = 0; p<k; ++p) sum += D[k*d + p] * D[k*d + p];
 		D[k*d + k] = sqrt(S[k*d + k] - sum);
 		for (size_t i = k + 1; i<d; ++i) {
 			Ty sum = 0.;
-			for (size_t p = 0; p<k; ++p)sum += D[i*d + p] * D[k*d + p];
+			for (size_t p = 0; p<k; ++p) sum += D[i*d + p] * D[k*d + p];
 			D[i*d + k] = (S[i*d + k] - sum) / D[k*d + k];
 		}
 	}
@@ -67,7 +133,7 @@ void SolveCholesky(const std::vector<Ty>& LU, const std::vector<Ty>& b, std::vec
 }
 
 
-// In-place Cholesky factorization of an SPD matrix A, generating the factor UT and the diagonal
+// In-place Cholesky factorization of an SPD matrix A, generating the lower triangular matrix L in place of A, and the diagonal
 template<typename Matrix, typename Vector>
 bool CholeskyFactorization(Matrix& A, Vector& diagonal) {
 	using Scalar = typename Matrix::value_type;
