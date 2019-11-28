@@ -1,16 +1,17 @@
 // blocked_matrix.cpp: examples of using blocked matrix operations
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
-// This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
 // warning C4996: 'std::copy::_Unchecked_iterators::_Deprecate': Call to 'std::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct.
 // \mtl4\boost/numeric/mtl/operation/update.hpp(159): warning C4244: 'argument': conversion from 'const double' to 'float', possible loss of data
 #pragma warning( disable : 4996 4244)
 #include "common.hpp"
 #include <hprblas>
-// utilities to generate and print vectors and matrices
-#include "utils/matvec.hpp"
+#include <utils/print_utils.hpp>
+// matrix generators
+#include <generators/matrix_generators.hpp>
 
 template <typename Matrix>
 void fill_and_print(Matrix& A, char name)

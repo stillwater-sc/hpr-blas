@@ -1,6 +1,6 @@
-// HPR-BLAS standard header
+// HPRBLAS standard header
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 #ifndef _HPRBLAS_STANDARD_HEADER_
@@ -58,17 +58,27 @@
 #include "universal/posit/fdp.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////////
-/// math functions
+/// the posit elementary math functions
 #include "universal/posit/math_functions.hpp"
 
-// the underlying matrix/vector machinery
-#include <boost/numeric/mtl/mtl.hpp>
-#include "hprblas.hpp"
+///////////////////////////////////////////////////////////////////////////////////////
+/// useful mathematical property functions
+#include "universal/functions/functions.hpp"
 
-// useful functions
+///////////////////////////////////////////////////////////////////////////////////////
+/// the underlying matrix/vector machinery
+#define MTL_WITH_INITLIST
+#include <boost/numeric/mtl/mtl.hpp>
+
+///////////////////////////////////////////////////////////////////////////////////////
+/// the High-Performance Reproducible Basic Linear Algebra Subroutines
+/// L1, L2, and L3 matrix/vector operations
+#include "hprblas.hpp"
+/// norms (l1, l2, linf, Frobenius) using HPR methods
 #include "norms.hpp"
 
-// linear system solvers
+///////////////////////////////////////////////////////////////////////////////////////
+/// linear system solvers
 #include "solvers/lu_decomposition.hpp"
 #include "solvers/cholesky.hpp"
 #include "solvers/ldlt.hpp"

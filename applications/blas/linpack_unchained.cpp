@@ -3,9 +3,9 @@
 // create an idealized problem where both the input values and the correct answer 
 // are expressible in the numerical vocabulary of the computing environment.
 //
-// Copyright (C) 2017-19 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
-// This file is part of the universal numbers project, which is released under an MIT Open Source license.
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 #pragma warning(disable : 4996)
 #include "common.hpp"
 
@@ -17,8 +17,8 @@
 
 // if you need to configure the posit number system, do it before including <hprblas>
 #include <hprblas>
-// utilities to generate and print vectors and matrices
-#include "utils/matvec.hpp"
+// matrix generators
+#include <generators/matrix_generators.hpp>
 
 using namespace std;
 using namespace sw::unum;
@@ -112,7 +112,7 @@ try {
 			}
 		}
 		else {
-			sw::hprblas::printVector(cout, "Solution vector: ", x);
+			cout << "Solution vector:\n" << x << endl;
 		}
 	}
 

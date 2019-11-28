@@ -1,8 +1,8 @@
 // lu_decomposition.cpp example program comparing float vs posit LU decomposition algorithms
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
-// This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
 #include "common.hpp"
 // configure the posit number system behavior
@@ -11,8 +11,9 @@
 #define HPRBLAS_TRACE_ROUNDING_EVENTS 1
 #include <hprblas>
 #include <mtl_extensions.hpp>
-// utilities to generate and print vectors and matrices
-#include "utils/matvec.hpp"
+// matrix generators
+#include <generators/matrix_generators.hpp>
+#include <utils/print_utils.hpp>
 
 template<typename Matrix, typename Vector>
 void CroutCycle(Matrix& A, Vector& x, const Vector& b)

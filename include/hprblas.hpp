@@ -1,11 +1,9 @@
 #pragma once
-// blas.hpp :  include file containing templated C++ interfaces to BLAS routines
+// hprblas.hpp :  include file containing templated C++ interfaces to High-Performance Reproducible BLAS routines
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
-// This file is part of the universal numbers project, which is released under an MIT Open Source license.
-
-#include <vector>
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 #include <boost/numeric/mtl/mtl.hpp>
 
 namespace sw {
@@ -182,7 +180,7 @@ T cabs(T z) {
 
 // print a vector
 template<typename Vector>
-void print(std::ostream& ostr, size_t n, Vector& x, size_t incx = 1) {
+void strided_print(std::ostream& ostr, size_t n, Vector& x, size_t incx = 1) {
 	size_t cnt, ix;
 	for (cnt = 0, ix = 0; cnt < n && ix < x.size(); ++cnt, ix += incx) {
 		cnt == 0 ? ostr << "[" << x[ix] : ostr << ", " << x[ix];
@@ -538,5 +536,5 @@ Matrix bfmm(const Matrix& A, const Matrix& B, unsigned blockSize) {
 	return C;
 }
 
-} // namespace blas
+} // namespace hprblas
 } // namespace sw
