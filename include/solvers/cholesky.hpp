@@ -3,7 +3,7 @@
 //
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
-// This file is part of the universal numbers project, which is released under an MIT Open Source license.
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 #include <vector>
 #define POSIT_VERBOSE_OUTPUT
 #define QUIRE_TRACE_ADD

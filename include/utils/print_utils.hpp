@@ -1,9 +1,9 @@
 #pragma once
 // print_utils.hpp :  include file containing templated utilities to work with vectors and matrices
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
-// This file is part of the universal numbers project, which is released under an MIT Open Source license.
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
 
 // These functions print matrices and vectors in a nice format

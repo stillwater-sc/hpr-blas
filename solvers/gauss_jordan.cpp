@@ -14,8 +14,9 @@
 #define HPRBLAS_TRACE_ROUNDING_EVENTS 0
 #include <hprblas>
 #include <mtl_extensions.hpp>
-// utilities to generate and print vectors and matrices
-#include "utils/matvec.hpp"
+// matrix generators
+#include <generators/matrix_generators.hpp>
+#include <utils/print_utils.hpp>
 
 template<typename Scalar>
 void GenerateNumericalAnalysisTestCase(const std::string& header, unsigned N, bool verbose = false) {
@@ -89,9 +90,7 @@ try {
 	using sp = boost::multiprecision::cpp_bin_float_single;
 	using dp = boost::multiprecision::cpp_bin_float_double;
 	using qp = boost::multiprecision::cpp_bin_float_quad;
-	constexpr size_t nbits = 64;
-	constexpr size_t es = 3;
-	constexpr size_t capacity = 10;
+
 
 	unsigned N = 5; 
 	GenerateNumericalAnalysisTestCase< posit<32, 2> >("posit<32,2>", N);

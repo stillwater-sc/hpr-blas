@@ -2,7 +2,7 @@
 //
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
-// This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 #include <hprblas>
 #include <chrono>
 

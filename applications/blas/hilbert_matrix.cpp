@@ -19,8 +19,8 @@
 // to capture all the possible bits, set this to 1 
 #define POSIT_ROUNDING_ERROR_FREE_IO_FORMAT 0
 #include <hprblas>
-// utilities to generate and print vectors and matrices
-#include "utils/matvec.hpp"
+// matrix generators
+#include <generators/matrix_generators.hpp>
 
 // define a true 256-bit IEEE floating point type
 constexpr size_t bits_in_octand = 113 + 128;

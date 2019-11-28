@@ -1,8 +1,8 @@
 // fused_mm.cpp: example program to demonstrate BLAS L# Reproducible Matrix-Matrix product
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
-// This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
 // warning C4996: 'std::copy::_Unchecked_iterators::_Deprecate': Call to 'std::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
 #pragma warning(disable : 4996) 
@@ -10,8 +10,9 @@
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #include <hprblas>
-// utilities to generate and print vectors and matrices
-#include "utils/matvec.hpp"
+// matrix generators
+#include <generators/matrix_generators.hpp>
+#include <utils/print_utils.hpp>
 
 int main(int argc, char** argv)
 try {

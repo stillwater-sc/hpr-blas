@@ -1,14 +1,15 @@
 // binomial_coefficients.cpp: example program to test binomial coefficients for Hilbert matrix generation
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
-// This file is part of the universal numbers project, which is released under an MIT Open Source license.
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
 #include <iostream>
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #include <hprblas>
-#include <utils/matvec.hpp>
+// matrix generators
+#include <generators/matrix_generators.hpp>
 
 int main() 
 try {

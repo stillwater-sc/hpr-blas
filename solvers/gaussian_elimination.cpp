@@ -1,8 +1,8 @@
-// l3_fused_lu.cpp example program comparing float vs posit LU Decomposition equation solver
+// gaussian_elimination.cpp: example program comparing float vs posit Gaussian Elimination (LU Decomposition) equation solver
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
-// This file is part of the universal numbers project, which is released under an MIT Open Source license.
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
 #include <chrono>
 #ifdef _WINDOWS

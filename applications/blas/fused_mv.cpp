@@ -1,17 +1,12 @@
-// l2_fused_mv.cpp example program to demonstrate BLAS L2 Reproducible Matrix-Vector product
+// fused_mv.cpp: example program to demonstrate BLAS L2 Reproducible Matrix-Vector product
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
-// This file is part of the universal numbers project, which is released under an MIT Open Source license.
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #include <hprblas>
-// matrix/vector helpers
-#include <utils/vector_utils.hpp>
-#include <utils/matrix_utils.hpp>
-#include <utils/print_utils.hpp>
-
 
 int main(int argc, char** argv)
 try {
@@ -21,6 +16,20 @@ try {
 	using namespace sw::hprblas;
 
 	int nrOfFailedTestCases = 0;
+
+	using Scalar = posit<32, 2>;
+	using Matrix = mtl::dense2D<Scalar>;
+	using Vector = mtl::dense_vector<Scalar>;
+	size_t m = 5;
+	size_t n = 4;
+	size_t N = m * n;
+	Matrix A(N, N);
+	laplacian_setup(A, m, n);
+	Vector x(N), b(N);
+	x = 1;
+	matvec(b, A, x);
+	cout << "Matrix A:\n" << A << endl;
+	cout << "Scaled vector:\n" << b << endl;
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
