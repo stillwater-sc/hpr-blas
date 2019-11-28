@@ -11,16 +11,10 @@
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #include <hprblas>
-// utilities to generate and print vectors and matrices
-#include "utils/matvec.hpp"
+// matrix generators
+#include <generators/matrix_generators.hpp>
+#include <utils/print_utils.hpp>
 
-// can the ratio a/b be represented exactly
-bool isRepresentable(int a, int b) {
-	if (b == 0) return false;
-	while (b % 2 == 0) { b /= 2; }
-	while (b % 5 == 0) { b /= 5; }
-	return a % b == 0;
-}
 
 #ifdef LOCAL
 // The following compact LU factorization schemes are described
@@ -173,7 +167,7 @@ void SolveDoolittle(const std::vector<Ty>& LU, const std::vector<Ty>& b, std::ve
 #endif
 
 void GenerateTestCase(int a, int b) {
-	std::cout << std::setw(3) << a << "/" << std::setw(3) << b << (isRepresentable(a, b) ? " is    " : " is not") << " representable " << (a / double(b)) << std::endl;
+	std::cout << std::setw(3) << a << "/" << std::setw(3) << b << (sw::hprblas::isRepresentable(a, b) ? " is    " : " is not") << " representable " << (a / double(b)) << std::endl;
 }
 
 void EnumerateTestCases() {

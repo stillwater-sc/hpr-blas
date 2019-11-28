@@ -11,6 +11,14 @@
 namespace sw {
 namespace hprblas {
 
+// can the ratio a/b be represented exactly
+bool isRepresentable(int a, int b) {
+	if (b == 0) return false;
+	while (b % 2 == 0) { b /= 2; }
+	while (b % 5 == 0) { b /= 5; }
+	return a % b == 0;
+}
+
 // fill a dense matrix with random values between [lowerbound, upperbound]
 template <typename Matrix>
 void uniform_rand(Matrix& A, double lowerbound = 0.0, double upperbound = 1.0)
