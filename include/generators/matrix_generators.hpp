@@ -3,21 +3,13 @@
 //
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
-// This file is part of the universal numbers project, which is released under an MIT Open Source license.
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 #include <cstdint>
 #include <random>
 #include <algorithm>
 
 namespace sw {
 namespace hprblas {
-
-// can the ratio a/b be represented exactly
-bool isRepresentable(int a, int b) {
-	if (b == 0) return false;
-	while (b % 2 == 0) { b /= 2; }
-	while (b % 5 == 0) { b /= 5; }
-	return a % b == 0;
-}
 
 // fill a dense matrix with random values between [lowerbound, upperbound]
 template <typename Matrix>

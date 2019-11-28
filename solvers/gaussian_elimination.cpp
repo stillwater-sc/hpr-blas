@@ -166,8 +166,9 @@ void SolveDoolittle(const std::vector<Ty>& LU, const std::vector<Ty>& b, std::ve
 
 #endif
 
+#include <universal/functions/isrepresentable.hpp>
 void GenerateTestCase(int a, int b) {
-	std::cout << std::setw(3) << a << "/" << std::setw(3) << b << (sw::hprblas::isRepresentable(a, b) ? " is    " : " is not") << " representable " << (a / double(b)) << std::endl;
+	std::cout << std::setw(3) << a << "/" << std::setw(3) << b << (sw::unum::isRepresentable(a, b) ? " is    " : " is not") << " representable " << (a / double(b)) << std::endl;
 }
 
 void EnumerateTestCases() {

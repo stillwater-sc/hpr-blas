@@ -1,6 +1,6 @@
-// HPR-BLAS standard header
+// HPRBLAS standard header
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 #ifndef _HPRBLAS_STANDARD_HEADER_
@@ -58,8 +58,12 @@
 #include "universal/posit/fdp.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////////
-/// math functions
+/// the posit elementary math functions
 #include "universal/posit/math_functions.hpp"
+
+///////////////////////////////////////////////////////////////////////////////////////
+/// useful mathematical property functions
+#include "universal/functions/functions.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /// the underlying matrix/vector machinery
