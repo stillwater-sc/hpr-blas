@@ -13,178 +13,17 @@
 #include <hprblas>
 // matrix generators
 #include <generators/matrix_generators.hpp>
-#include <utils/print_utils.hpp>
-
-
-#ifdef LOCAL
-// The following compact LU factorization schemes are described
-// in Dahlquist, Bjorck, Anderson 1974 "Numerical Methods".
-//
-// S and D are d by d matrices.  However, they are stored in
-// memory as 1D arrays of length d*d.  Array indices are in
-// the C style such that the first element of array A is A[0]
-// and the last element is A[d*d-1].
-//
-// These routines are written with separate source S and
-// destination D matrices so the source matrix can be retained
-// if desired.  However, the compact schemes were designed to
-// perform in-place computations to save memory.  In
-// other words, S and D can be the SAME matrix.  
-
-// Crout implements an in-place LU decomposition, that is, S and D can be the same
-// Crout uses unit diagonals for the upper triangle
-template<typename Ty>
-void Crout(std::vector<Ty>& S, std::vector<Ty>& D) {
-	size_t d = size_t(std::sqrt(S.size()));
-	assert(S.size() == d*d);
-	assert(D.size() == d*d);
-	for (size_t k = 0; k < d; ++k) {
-		for (size_t i = k; i < d; ++i) {
-			Ty sum = 0.;
-			for (size_t p = 0; p < k; ++p) sum += D[i*d + p] * D[p*d + k];
-			D[i*d + k] = S[i*d + k] - sum; // not dividing by diagonals
-		}
-		for (size_t j = k + 1; j < d; ++j) {
-			Ty sum = 0.;
-			for (size_t p = 0; p < k; ++p) sum += D[k*d + p] * D[p*d + j];
-			D[k*d + j] = (S[k*d + j] - sum) / D[k*d + k];
-		}
-	}
-}
-
-// SolveCrout takes an LU decomposition, LU, and a right hand side vector, b, and produces a result, x.
-template<typename Ty>
-void SolveCrout(const std::vector<Ty>& LU, const std::vector<Ty>& b, std::vector<Ty>& x) {
-	int d = (int)b.size();
-	std::vector<Ty> y(d);
-	for (int i = 0; i < d; ++i) {
-		Ty sum = 0.0;
-		for (int k = 0; k < i; ++k) sum += LU[i*d + k] * y[k];
-		y[i] = (b[i] - sum) / LU[i*d + i];
-
-	}
-	for (int i = d - 1; i >= 0; --i) {
-		Ty sum = 0.0;
-		for (int k = i + 1; k < d; ++k) {
-			//cout << "lu[] = " << LU[i*d+k] << " x[" << k << "] = " << x[k] << endl;
-			sum += LU[i*d + k] * x[k];
-		}
-		//cout << "sum " << sum << endl;
-		x[i] = (y[i] - sum); // not dividing by diagonals
-	}
-}
-
-template<size_t nbits, size_t es, size_t capacity = 10>
-void CroutFDP(std::vector< sw::unum::posit<nbits, es> >& S, std::vector< sw::unum::posit<nbits, es> >& D) {
-	size_t d = size_t(std::sqrt(S.size()));
-	assert(S.size() == d*d);
-	assert(D.size() == d*d);
-	using namespace sw::unum;
-	for (int k = 0; k < d; ++k) {
-		for (int i = k; i < d; ++i) {
-			quire<nbits, es, capacity> q = 0.0;
-			//for (int p = 0; p < k; ++p) q += D[i*d + p] * D[p*d + k];   if we had expression templates for the quire
-			for (int p = 0; p < k; ++p) q += quire_mul(D[i*d + p], D[p*d + k]);
-			posit<nbits, es> sum;
-			sum.convert(q.to_value());     // one and only rounding step of the fused-dot product
-			D[i*d + k] = S[i*d + k] - sum; // not dividing by diagonals
-		}
-		for (int j = k + 1; j < d; ++j) {
-			quire<nbits, es, capacity> q = 0.0;
-			//for (int p = 0; p < k; ++p) q += D[k*d + p] * D[p*d + j];   if we had expression templates for the quire
-			for (int p = 0; p < k; ++p) q += quire_mul(D[k*d + p], D[p*d + j]);
-			posit<nbits, es> sum;
-			sum.convert(q.to_value());   // one and only rounding step of the fused-dot product
-			D[k*d + j] = (S[k*d + j] - sum) / D[k*d + k];
-		}
-	}
-}
-
-// SolveCrout takes an LU decomposition, LU, and a right hand side vector, b, and produces a result, x.
-template<size_t nbits, size_t es, size_t capacity = 10>
-void SolveCroutFDP(const std::vector< sw::unum::posit<nbits, es> >& LU, const std::vector< sw::unum::posit<nbits, es> >& b, std::vector< sw::unum::posit<nbits, es> >& x) {
-	using namespace sw::unum;
-	int d = int(b.size());
-	std::vector< posit<nbits, es> > y(d);
-	for (int i = 0; i < d; ++i) {
-		quire<nbits, es, capacity> q = 0.0;
-		// for (int k = 0; k < i; ++k) q += LU[i*d + k] * y[k];   if we had expression templates for the quire
-		for (int k = 0; k < i; ++k) q += quire_mul(LU[i*d + k], y[k]);
-		posit<nbits, es> sum;
-		sum.convert(q.to_value());   // one and only rounding step of the fused-dot product
-		y[i] = (b[i] - sum) / LU[i*d + i];
-	}
-	for (int i = d - 1; i >= 0; --i) {
-		quire<nbits, es, capacity> q = 0.0;
-		// for (int k = i + 1; k < d; ++k) q += LU[i*d + k] * x[k];   if we had expression templates for the quire
-		for (int k = i + 1; k < d; ++k) {
-			//cout << "lu[] = " << LU[i*d + k] << " x[" << k << "] = " << x[k] << endl;
-			q += quire_mul(LU[i*d + k], x[k]);
-		}
-		posit<nbits, es> sum;
-		sum.convert(q.to_value());   // one and only rounding step of the fused-dot product
-		//cout << "sum " << sum << endl;
-		x[i] = (y[i] - sum); // not dividing by diagonals
-	}
-}
-
-// Doolittle uses unit diagonals for the lower triangle
-template<typename Ty>
-void Doolittle(std::vector<Ty>& S, std::vector<Ty>& D) {
-	size_t d = size_t(std::sqrt(S.size()));
-	assert(S.size() == d*d);
-	assert(D.size() == d*d);
-	for (size_t k = 0; k < d; ++k) {
-		for (size_t j = k; j < d; ++j) {
-			Ty sum = 0.;
-			for (size_t p = 0; p < k; ++p) sum += D[k*d + p] * D[p*d + j];
-			D[k*d + j] = (S[k*d + j] - sum); // not dividing by diagonals
-		}
-		for (size_t i = k + 1; i < d; ++i) {
-			Ty sum = 0.;
-			for (size_t p = 0; p < k; ++p) sum += D[i*d + p] * D[p*d + k];
-			D[i*d + k] = (S[i*d + k] - sum) / D[k*d + k];
-		}
-	}
-}
-// SolveDoolittle takes an LU decomposition, LU, and a right hand side vector, b, and produces a result, x.
-template<typename Ty>
-void SolveDoolittle(const std::vector<Ty>& LU, const std::vector<Ty>& b, std::vector<Ty>& x) {
-	int d = (int)b.size();
-	std::vector<Ty> y(d);
-	for (int i = 0; i < d; ++i) {
-		Ty sum = 0.;
-		for (int k = 0; k < i; ++k)sum += LU[i*d + k] * y[k];
-		y[i] = (b[i] - sum); // not dividing by diagonals
-	}
-	for (int i = d - 1; i >= 0; --i) {
-		Ty sum = 0.;
-		for (int k = i + 1; k < d; ++k)sum += LU[i*d + k] * x[k];
-		x[i] = (y[i] - sum) / LU[i*d + i];
-	}
-}
-
-#endif
-
+// utilities
 #include <universal/functions/isrepresentable.hpp>
-void GenerateTestCase(int a, int b) {
-	std::cout << std::setw(3) << a << "/" << std::setw(3) << b << (sw::unum::isRepresentable(a, b) ? " is    " : " is not") << " representable " << (a / double(b)) << std::endl;
-}
-
-void EnumerateTestCases() {
-	for (int i = 0; i < 30; i += 3) {
-		for (int j = 0; j < 70; j += 7) {
-			GenerateTestCase(i, j);
-		}
-	}
-}
+#include <utils/print_utils.hpp>
 
 template<size_t nbits, size_t es, size_t capacity = 10>
 void ComparePositDecompositions(mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& x, mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& b) {
+	assert(mtl::mat::num_rows(A) == mtl::mat::num_cols(A));
+
 	using namespace sw::hprblas;
-	size_t d = A.num_cols();
-	assert(A.num_rows() == d);
-	mtl::mat::dense2D< sw::unum::posit<nbits, es> > LU(d*d);
+	size_t N = mtl::mat::num_cols(A);
+	mtl::mat::dense2D< sw::unum::posit<nbits, es> > LU(N,N);
 
 	{
 		using namespace std::chrono;
@@ -194,7 +33,7 @@ void ComparePositDecompositions(mtl::mat::dense2D< sw::unum::posit<nbits, es> >&
 		duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
 		double elapsed = time_span.count();
 		std::cout << "Crout took " << elapsed << " seconds." << std::endl;
-		std::cout << "Performance " << (uint32_t)(d*d*d / (1000 * elapsed)) << " KOPS/s" << std::endl;
+		std::cout << "Performance " << (uint32_t)(N*N*N / (1000 * elapsed)) << " KOPS/s" << std::endl;
 
 		SolveCrout(LU, b, x);
 		printMatrix(std::cout, "Crout LU", LU);
@@ -248,9 +87,9 @@ void ComparePositDecompositions(mtl::mat::dense2D< sw::unum::posit<nbits, es> >&
 template<typename Matrix, typename Vector>
 void CompareIEEEDecompositions(Matrix& A, Vector& x, Vector& b) {
 	using namespace sw::hprblas;
-	size_t d = A.num_cols();
-	assert(A.num_rows() == d);
-	Matrix LU(d*d);
+	assert(mtl::mat::num_rows(A) == mtl::mat::num_cols(A));
+	size_t N = A.num_cols();
+	Matrix LU(N,N);
 
 	{
 		using namespace std::chrono;
@@ -260,7 +99,7 @@ void CompareIEEEDecompositions(Matrix& A, Vector& x, Vector& b) {
 		duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
 		double elapsed = time_span.count();
 		std::cout << "Crout took " << elapsed << " seconds." << std::endl;
-		std::cout << "Performance " << (uint32_t)(d*d*d / (1000 * elapsed)) << " KOPS/s" << std::endl;
+		std::cout << "Performance " << (uint32_t)(N*N*N / (1000 * elapsed)) << " KOPS/s" << std::endl;
 
 		SolveCrout(LU, b, x);
 		printMatrix(std::cout, "Crout LU", LU);
@@ -371,7 +210,7 @@ try {
 	float epsplus  = 1.0f + eps;
 
 	// We want to solve the system Ax=b
-	int d = 5;
+	int N = 5;
 
 	{
 		// IEEE input data set up
@@ -390,7 +229,7 @@ try {
 			{ 4.0, 3.0, 2.0, 1.0, 0.0 },
 			{ 5.0, 4.0, 3.0, 2.0, 1.0 },
 		};
-		mtl::mat::dense2D<IEEEType> Aieee(d*d);
+		mtl::mat::dense2D<IEEEType> Aieee(N,N);
 		Aieee = Lieee * Uieee;   // construct the A matrix to solve
 		printMatrix(cout, "L", Lieee);
 		printMatrix(cout, "U", Uieee);
@@ -404,7 +243,7 @@ try {
 			epsplus,
 			epsplus
 		};
-		mtl::vec::dense_vector<IEEEType> bieee(d);
+		mtl::vec::dense_vector<IEEEType> bieee(N);
 		bieee = Aieee * xieee;   // construct the right hand side
 		printVector(cout, "b", bieee);
 		cout << "LinearSolve regular dot product" << endl;
@@ -435,7 +274,7 @@ try {
 			{ 4.0, 3.0, 2.0, 1.0, 0.0 },
 			{ 5.0, 4.0, 3.0, 2.0, 1.0 },
 		};
-		mtl::mat::dense2D<PositType> Aposit(d*d);
+		mtl::mat::dense2D<PositType> Aposit(N,N);
 		Aposit = fmm(Lposit, Uposit);   // construct the A matrix to solve
 		printMatrix(cout, "L", Lposit);
 		printMatrix(cout, "U", Uposit);
@@ -448,7 +287,7 @@ try {
 			epsplus,
 			epsplus
 		};
-		mtl::vec::dense_vector<PositType> bposit(d);
+		mtl::vec::dense_vector<PositType> bposit(N);
 		bposit = fmv(Aposit, xposit);   // construct the right hand side
 		printVector(cout, "b", bposit);
 		cout << endl << ">>>>>>>>>>>>>>>>" << endl;
@@ -467,7 +306,6 @@ try {
 	cout << "1.0 - FLT_EPSILON = " << setprecision(17) << epsminus << " converts to " << posit<27, 1>(epsminus) << endl;
 	cout << "1.0 + FLT_EPSILON = " << setprecision(17) << epsplus << " converts to " << posit<27, 1>(epsplus) << endl;
 #endif
-
 
 	return EXIT_SUCCESS;
 }
