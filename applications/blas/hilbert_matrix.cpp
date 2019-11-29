@@ -21,6 +21,7 @@
 #include <hprblas>
 // matrix generators
 #include <generators/matrix_generators.hpp>
+#include <utils/print_utils.hpp>
 
 // define a true 256-bit IEEE floating point type
 constexpr size_t bits_in_octand = 113 + 128;
@@ -33,7 +34,7 @@ using op = cpp_bin_float_octand;
 
 // Generate a Hilbert matrix and inverse test cycle
 template<typename Scalar>
-void GenerateHilbertMatrixTest(size_t N, bool printA = false, bool printB = false) {
+void HilbertMatrixTest(size_t N, bool printA = false, bool printB = false) {
 	using namespace std;
 	using namespace mtl;
 	using namespace sw::hprblas;
@@ -91,21 +92,21 @@ void EnumerateHilbertMatrices() {
 	cout << "posits\n";
 	//	GenerateHilbertMatrixTest< posit< 56, 3> >(N);    // these are commented out as they are too small to capture the dynamic range of the Hilbert * inv(Hilbert) calculation
 	//	GenerateHilbertMatrixTest< posit< 64, 3> >(N);
-	GenerateHilbertMatrixTest< posit< 80, 3> >(N);
-	GenerateHilbertMatrixTest< posit< 96, 3> >(N);
-	GenerateHilbertMatrixTest< posit<128, 4> >(N);
-	GenerateHilbertMatrixTest< posit<256, 5> >(N);
+	HilbertMatrixTest< posit< 80, 3> >(N);
+	HilbertMatrixTest< posit< 96, 3> >(N);
+	HilbertMatrixTest< posit<128, 4> >(N);
+	HilbertMatrixTest< posit<256, 5> >(N);
 
 	cout << "IEEE floating point\n";
 	//	GenerateHilbertMatrixTest<sp>(N, true, true);
 	//	GenerateHilbertMatrixTest<dp>(N);
-	GenerateHilbertMatrixTest<qp>(N);
-	GenerateHilbertMatrixTest<op>(N);
+	HilbertMatrixTest<qp>(N);
+	HilbertMatrixTest<op>(N);
 }
 
 // Generate scaling factors for a sequence of Hilbert matrix sizes constrained by [2..upperbound]
 template<typename IntegerType>
-void CalculateHilbertMatrixScalingFactors(IntegerType upperbound = 30) {
+void EnumerateHilbertMatrixScalingFactors(IntegerType upperbound = 30) {
 /*
 Scaling factors for a collection of Hilbert matrices
 N is a size_t
@@ -197,7 +198,8 @@ void HilbertInverseTest(size_t N) {
 	Matrix B(N, N), C(N, N);
 	B = H * Hinv;
 	cout << B << endl;
-	C = B / scale;
+	C = B / Scalar(scale);
+	// C = B / scale; this causes a compilation warning due to implicit conversion of scale to double which yields the warning loss of accuracy
 	cout << C << endl;
 
 	// Calculate the inverse via Cholesky
@@ -217,15 +219,21 @@ try {
 
 	int nrOfFailedTestCases = 0;
 
-	//using IntegerType = sw::unum::integer<128>;
-	//CalculateHilbertMatrixScalingFactors(IntegerType(30));
+	using IntegerType = sw::unum::integer<128>;
+	EnumerateHilbertMatrixScalingFactors(IntegerType(30));
 	
-	// EnumerateHilbertMatrices();
+	//EnumerateHilbertMatrices();
+	// N = 5 is the largest Hilbert matrix you can represent with floats
+	HilbertMatrixTest< float >(5);
+	// N = 9 is the largest Hilbert matrix you can represent with doubles
+	HilbertMatrixTest< double >(9);
 
 	// can't go higher than N = 21 as the Hilbert matrix generator is using size_t as scaling factor type
+	// TODO: generalize to arbitrary type: for that you will need a generalized
+	// integer<nbits> -> Scalar conversion layer
 	size_t N = 5;
 	HilbertInverseTest<double>(N);
-//	HilbertInverseTest<posit<32, 2>>(N);
+	HilbertInverseTest<posit<32, 2>>(N);
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
