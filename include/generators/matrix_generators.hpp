@@ -8,6 +8,7 @@
 #include <random>
 #include <algorithm>
 #include <boost/numeric/mtl/mtl.hpp>
+#include <universal/functions/binomial.hpp>
 
 namespace sw {
 namespace hprblas {
@@ -356,9 +357,9 @@ void GenerateHilbertMatrixInverse(mtl::mat::dense2D<Scalar>& m, Scalar scale = S
 		for (int j = 1; j <= N; ++j) {
 			Scalar sign = ((i + j) % 2) ? Scalar(-1) : Scalar(1);
 			Scalar factor1 = Scalar(i + j - 1);
-			Scalar factor2 = Scalar(BinomialCoefficient<uint64_t>(N + i - 1, N - j));
-			Scalar factor3 = Scalar(BinomialCoefficient<uint64_t>(N + j - 1, N - i));
-			Scalar factor4 = Scalar(BinomialCoefficient<uint64_t>(i + j - 2, i - 1));
+			Scalar factor2 = Scalar(sw::function::BinomialCoefficient<uint64_t>(N + i - 1, N - j));
+			Scalar factor3 = Scalar(sw::function::BinomialCoefficient<uint64_t>(N + j - 1, N - i));
+			Scalar factor4 = Scalar(sw::function::BinomialCoefficient<uint64_t>(i + j - 2, i - 1));
 			m[i - 1][j - 1] = Scalar(sign * factor1 * factor2 * factor3 * factor4 * factor4);
 			/* for tracing dynamic range failures
 			std::cout << "element " << i << "," << j << std::endl;
