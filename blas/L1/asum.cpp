@@ -10,15 +10,28 @@
 using namespace std;
 using namespace sw::unum;
 
+template<typename Real, typename Vector>
+void myFunction(int N) {
+	Vector v(N);
+	v = Real(1.0);
+	cout << 5 * v << endl;
+}
+
 int main(int argc, char** argv)
 try {
-	//constexpr size_t nbits = 16;
-	//constexpr size_t es = 1;
-	//constexpr size_t vecSize = 32;
+	constexpr size_t nbits = 20;
+	constexpr size_t es = 1;
 
 	int nrOfFailedTestCases = 0;
 
 	cout << "ASUM is " << 1 << endl;
+
+	using namespace mtl;
+	using Real = posit<nbits, es>;
+	using Vector = mtl::dense_vector<Real>;
+
+	myFunction<Real, Vector>(10);
+	myFunction<double, Vector>(10);
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
