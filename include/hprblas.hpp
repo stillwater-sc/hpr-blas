@@ -11,9 +11,20 @@ namespace hprblas {
 
 // LEVEL 1 BLAS operators
 
-// sum of magnitudes of the vector elements
+// 1-norm of a vector: sum of magnitudes of the vector elements, default increment stride is 1
 template<typename Vector>
-typename Vector::value_type asum(size_t n, const Vector& x, size_t incx) {
+typename Vector::value_type asum(size_t n, const Vector& x, size_t incx = 1) {
+	typename Vector::value_type sum = 0;
+	size_t ix;
+	for (ix = 0; ix < n; ix += incx) {
+		sum += (x[ix] < 0 ? -x[ix] : x[ix]);
+	}
+	return sum;
+}
+
+// sum of the vector elements, default increment stride is 1
+template<typename Vector>
+typename Vector::value_type sum(size_t n, const Vector& x, size_t incx = 1) {
 	typename Vector::value_type sum = 0;
 	size_t ix;
 	for (ix = 0; ix < n; ix += incx) {

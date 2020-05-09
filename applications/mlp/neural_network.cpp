@@ -3,22 +3,54 @@
 // Copyright (C) 2017-2018 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
-
 #include "common.hpp"
-
+// include the posit number system
 #include <universal/posit/posit>
 #define MTL_WITH_INITLIST 1
 #include <boost/numeric/mtl/mtl.hpp>
 
-// Turn it off for now
-#undef USE_POSIT
-
 template<size_t nbits, size_t es>
-sw::unum::posit<nbits, es> Sigmoid(sw::unum::posit<nbits, es>& x, bool derivative = false) {
+sw::unum::posit<nbits, es> Sigmoid_(sw::unum::posit<nbits, es>& x, bool derivative = false) {
 	if (derivative) return x*(1-x);
 	return (1);
 }
 
+
+template<typename Scalar>
+Scalar sigmoid(Scalar x) {
+	return (1.0f / (1.0f + exp(-x)));
+}
+
+template<typename Vector, typename Scalar>
+Scalar f_theta(Scalar x, Scalar b, const Vector& V, const Vector& W) {
+	double result = b;
+	for (int i = 0; i < N; ++i) {
+		result += V[i] * sigmoid(c[i] + W[i] * x);
+	}
+	return result;
+}
+
+template<typename Vector, typename Scalar>
+void train(Scalar x, Scalar y, Vector& W, Vector& V, Vector& c) {
+	for (int i = 0; i < size(W); ++i) {
+		W[i] = W[i] - epsilon * 2 * (f_theta(x) - y) * V[i] * x *
+			(1 - sigmoid(c[i] + W[i] * x)) * sigmoid(c[i] + W[i] * x);
+	}
+	for (int i = 0; i < size(V); ++i) {
+		V[i] = V[i] - epsilon * 2 * (f_theta(x) - y) * sigmoid(c[i] + W[i] * x);
+	}
+	b = b - epsilon * 2 * (f_theta(x) - y);
+	for (int i = 0; i < size(c); ++i) {
+		c[i] = c[i] - epsilon * 2 * (f_theta(x) - y) * V[i] *
+			(1 - sigmoid(c[i] + W[i] * x)) * sigmoid(c[i] + W[i] * x);
+	}
+}
+
+// Multi-Level Perceptron
+// one input layer
+// one hidden layer with NrOfNeurons. 
+// A \(sigmoid\\) function as activation function
+// one output layer
 int main(int argc, char** argv)
 try {
 	using namespace std;
@@ -29,15 +61,11 @@ try {
 	const size_t es = 1;
 	const size_t vecSize = 32;
 
-#ifdef USE_POSIT
-	using Ty     = sw::unum::posit<8, 0>;
-	using Matrix = mtl::dense2D< Ty >;
-	using Vector = mtl::dense_vector< Ty >;
-#else
-	using Ty     = float;
-	using Matrix = mtl::dense2D<float>;
-	using Vector = mtl::dense_vector<float>;
-#endif
+	using Scalar = float;
+	using Matrix = mtl::dense2D<Scalar>;
+	using Vector = mtl::dense_vector<Scalar>;
+	using Pair   = std::pair<Scalar, Scalar>;
+	using VoP    = mtl::dense_vector<Pair>;
 
 #if defined(MTL_WITH_INITLIST) && defined(MTL_WITH_AUTO) && defined(MTL_WITH_RANGEDFOR)
 	Matrix X = {
@@ -48,43 +76,71 @@ try {
 	};
 #endif
 
-	// output data
-	Vector y = { 0.0f, 1.0f, 1.0f, 0.0f };
+	constexpr int NrOfTrainingSamples = 20;
+	constexpr int NrOfNeurons = 5;
+	constexpr float epsilon = 0.05f;
+	constexpr int epoch = 50000;
 
-	cout << "Weights are    :\n" << X << endl;
-	cout << "Training values: " << y << endl;
-#if 0
-	// synapse layers: syn0 = 2*np.random.random((3,4)) - 1
-	Matrix synapse_L0(3,4);
-	Matrix synapse_L1(4,1);
+	Vector c(NrOfNeurons), W(NrOfNeurons), V(NrOfNeurons);
+	c = W = V = 0;
+	Scalar b = 0;
 
-    constexpr int TRAINING_STEPS     = 50000;
-    constexpr int REPORTING_INTERVAL = 10000;
+	// fill initial state with random values
+	srand((unsigned int)time(NULL));
+	for (int i = 0; i < NrOfNeurons; i++) {
+		W[i] = Scalar(2 * rand() / RAND_MAX - 1);
+		V[i] = Scalar(2 * rand() / RAND_MAX - 1);
+		c[i] = Scalar(2 * rand() / RAND_MAX - 1);
+	}
+	VoP trainingSet(NrOfTrainingSamples);
 
-	// training 
-	for ( int j = 0; j < TRAINING_STEPS; j++ ) {
-		Matrix l0 = X;
-		Matrix l1 = Sigmoid<nbits, es>(dot(l0, synapse_L0));
-		Matrix l2 = Sigmoid<nbits, es>(dot(l1, synapse_L1));
-
-		Vector l2_error = y - level_2;
-
-		if (j % REPORTING_INTERVAL == 0) {
-			cout << "Error: " << Mean(Abs(l2_error)) << '\n';
-		}
-
-		l2_delta = l2_error * Sigmoid<nbits, es>(l2, true);
-		l1_error = l2_delta.dot(Transpose(synapse_L1));
-		l1_delta = l1_error * Sigmoid<nbits, es>(l1, true);
-
-		// update weights
-		synapse_L1 += dot(Transpose(l1), l2_delta);
-		synapse_L0 += dot(Transpose(l0), l1_delta);
+	for (int i = 0; i < NrOfTrainingSamples; i++) {
+		trainingSet[i] = make_pair(i * 2 * m_pi / NrOfTrainingSamples, sin(i * m_2_pi / NrOfTrainingSamples));
 	}
 
-	cout << "Output after training\n";
-	cout << l2 << endl;
-#endif
+	// train for epoch number of cycles
+	for (int k = 0; k < epoch; ++k) {
+		for (int i = 0; i < NrOfTrainingSamples; i++) {
+			auto x = trainingSet[i].first;
+			auto y = trainingSet[i].second;
+			train(x,y, W, V, c);
+		}
+		std::cout << k << "\r";
+	}
+
+	// Plot the results
+	int nrVisualSamples = 1000;
+	Vector x(nrVisualSamples);
+	Vector y1(nrVisualSamples), y2(nrVisualSamples);
+
+	auto scaling_factor = m_2pi / nrVisualSamples;
+	for (int i = 0; i < nrVisualSamples; i++) {
+		x[i] =  i * scaling_factor;
+		y1[i] = sin(i * scaling_factor);
+		y2[i] = f_theta(Scalar(i * scaling_factor), b, V, W);
+	}
+
+	FILE * gp = _popen("gnuplot", "w");
+	fprintf(gp, "set terminal wxt size 600,400 \n");
+	fprintf(gp, "set grid \n");
+	fprintf(gp, "set title '%s' \n", "f(x) = sin (x)");
+	fprintf(gp, "set style line 1 lt 3 pt 7 ps 0.1 lc rgb 'green' lw 1 \n");
+	fprintf(gp, "set style line 2 lt 3 pt 7 ps 0.1 lc rgb 'red' lw 1 \n");
+	fprintf(gp, "plot '-' w p ls 1, '-' w p ls 2 \n");
+
+	// Exact f(x) = sin(x) -> Green Graph
+	for (int k = 0; k < nrVisualSamples; ++k) {
+		fprintf(gp, "%f %f \n", x[k], y1[k]);
+	}
+	fprintf(gp, "e\n");
+
+	//Neural Network Approximate f(x) = sin(x) -> Red Graph
+	for (int k = 0; k < nrVisualSamples; ++k) {
+		fprintf(gp, "%f %f \n", x[k], y2[k]);
+	}
+	fprintf(gp, "e\n");
+
+	fflush(gp);
 
 	return EXIT_SUCCESS;
 }
