@@ -14,9 +14,9 @@ unset(HPR_BLAS_LIBRARIES )
 unset(HPR_BLAS_CXX_DEFINITIONS )
 unset(HPR_BLAS_INCLUDE_DIRS )
 
-set(HPR_BLAS_VERSION 1)
 set(HPR_BLAS_MAJOR_VERSION 0)
 set(HPR_BLAS_MINOR_VERSION 1)
+set(HPR_BLAS_PATCH_VERSION 1)
 
 if (MSVC)
     add_definitions(/wd4522) # multiple assignment ops for single type, to be investigated further if avoidable
@@ -27,6 +27,7 @@ if (USE_ASSERTS)
 endif()
 
 if(EXISTS ${HPR_BLAS_DIR}/include/hprblas.hpp)
+	message(STATUS " HPR_BLAS was found: ${HPR_BLAS_DIR}")
 	list(APPEND HPR_BLAS_INCLUDE_DIRS "${HPR_BLAS_DIR}/include")
 else()
 	message(ERROR " HPR_BLAS was not found")
