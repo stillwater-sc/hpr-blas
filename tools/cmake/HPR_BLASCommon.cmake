@@ -12,7 +12,7 @@
 
 unset(HPR_BLAS_LIBRARIES )
 unset(HPR_BLAS_CXX_DEFINITIONS )
-unset(HPR_BLAS_INCLUDE_DIRS )
+unset(HPR_BLAS_INCLUDE_DIR )
 
 set(HPR_BLAS_MAJOR_VERSION 0)
 set(HPR_BLAS_MINOR_VERSION 1)
@@ -27,8 +27,7 @@ if (USE_ASSERTS)
 endif()
 
 if(EXISTS ${HPR_BLAS_DIR}/include/hprblas.hpp)
-	message(STATUS " HPR_BLAS was found: ${HPR_BLAS_DIR}")
-	list(APPEND HPR_BLAS_INCLUDE_DIRS "${HPR_BLAS_DIR}/include")
+	list(APPEND HPR_BLAS_INCLUDE_DIR "${HPR_BLAS_DIR}/include")
 else()
 	message(ERROR " HPR_BLAS was not found")
 	# assuming a dev tree where the repos are stored along side each other, i.e.
