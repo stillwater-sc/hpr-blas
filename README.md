@@ -1,4 +1,7 @@
 # HPR-BLAS (pronounced hyper-blas)
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ac548d4ded9a4a6fa6ef90556c3abefc)](https://app.codacy.com/gh/stillwater-sc/hpr-blas?utm_source=github.com&utm_medium=referral&utm_content=stillwater-sc/hpr-blas&utm_campaign=Badge_Grade_Dashboard)
+
 Hyper-BLAS: High-Performance Reproducible BLAS using posit arithmetic and user controlled rounding
 
 # Introduction
