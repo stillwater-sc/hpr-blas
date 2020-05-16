@@ -9,6 +9,8 @@
 #define MTL_WITH_INITLIST 1
 #include <boost/numeric/mtl/mtl.hpp>
 
+#undef NOW
+#ifdef NOW
 template<size_t nbits, size_t es>
 sw::unum::posit<nbits, es> Sigmoid_(sw::unum::posit<nbits, es>& x, bool derivative = false) {
 	if (derivative) return x*(1-x);
@@ -168,3 +170,7 @@ catch (...) {
 	std::cerr << "Caught unknown exception" << std::endl;
 	return EXIT_FAILURE;
 }
+
+#else
+int main() {}
+#endif

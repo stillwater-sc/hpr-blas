@@ -47,6 +47,8 @@ option(HPR_BLAS_CMAKE_TRACE "Tracing CMake results, i.e. printing variable setti
 option(HPR_BLAS_ENABLE_TESTS "Enable the build and run of tests." ON)
 option(HPR_BLAS_VERBOSE_TESTS "Always print test output, otherwise only errors. Only relevant when tests enabled." OFF)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 macro(trace_variable variable)
     if (HPR_BLAS_CMAKE_TRACE)
         message(STATUS "${variable} = ${${variable}}")
@@ -98,9 +100,9 @@ message(STATUS "HPR-BLAS INCLUDE DIR " ${HPR_BLAS_INCLUDE_DIR})
 # Configure the compiler options
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-message(STATUS "C++14 support has been enabled by default")
+message(STATUS "C++17 support has been enabled by default")
 
-macro (compile_all testing prefix)
+macro (compile_all testing prefix folder)
     # cycle through the sources
     # For the according directories, we assume that each cpp file is a separate test
     # and create a executable target and an associated test target for that file
@@ -110,8 +112,10 @@ macro (compile_all testing prefix)
         set(test_name ${prefix}_${test})
         # message(STATUS "Add test ${test_name} from source ${new_source}.")
         add_executable (${test_name} ${new_source})
+	    #message(STATUS "args: ${testing} - ${prefix} - ${folder}")
+	    set_target_properties(${test_name} PROPERTIES FOLDER ${folder})
         if (${testing} STREQUAL "true")
-	    if (HPR_BLAS_CMAKE_TRACE)
+			if (HPR_BLAS_CMAKE_TRACE)
                 message(STATUS "testing: ${test_name} ${RUNTIME_OUTPUT_DIRECTORY}/${test_name}")
             endif()
             add_test(${test_name} ${RUNTIME_OUTPUT_DIRECTORY}/${test_name})
@@ -136,6 +140,7 @@ else()
 endif()
 
 add_subdirectory("tools/benchmark")
+add_subdirectory("tools/characterization")
 add_subdirectory("tools/matrix_generation")
 add_subdirectory("blas")
 add_subdirectory("applications")

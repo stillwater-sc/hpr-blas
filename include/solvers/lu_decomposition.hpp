@@ -102,7 +102,7 @@ void CroutFDP(mtl::dense2D< sw::unum::posit<nbits, es> >& S, mtl::dense2D< sw::u
 			D[i][k] = S[i][k] - sum; // not dividing by diagonals
 
 #if HPRBLAS_TRACE_ROUNDING_EVENTS
-			quire<nbits, es, capacity> qsum = sum;
+			quire<nbits, es, capacity> qsum(sum);
 			q -= qsum;
 			if (!q.iszero()) {
 				sw::unum::posit<nbits, es> roundingError;
@@ -121,7 +121,7 @@ void CroutFDP(mtl::dense2D< sw::unum::posit<nbits, es> >& S, mtl::dense2D< sw::u
 			D[k][j] = (S[k][j] - sum) / D[k][k];
 
 #if HPRBLAS_TRACE_ROUNDING_EVENTS
-			quire<nbits, es, capacity> qsum = sum;
+			quire<nbits, es, capacity> qsum(sum);
 			q -= qsum;
 			if (!q.iszero()) {
 				sw::unum::posit<nbits, es> roundingError;

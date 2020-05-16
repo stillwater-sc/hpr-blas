@@ -1,3 +1,3 @@
 file (GLOB SOURCES "./*.cpp")
 
-compile_all("true" "mlp" "${SOURCES}")
+compile_all("true" "mlp" "Applications/DNN" "${SOURCES}")

@@ -90,7 +90,7 @@ template<typename Vector, size_t capacity = 10>
 typename Vector::value_type fdp_stride(size_t n, const Vector& x, size_t incx, const Vector& y, size_t incy) {
 	constexpr size_t nbits = Vector::value_type::nbits;
 	constexpr size_t es = Vector::value_type::es;
-	sw::unum::quire<nbits, es, capacity> q = 0;
+	sw::unum::quire<nbits, es, capacity> q(0);
 	size_t ix, iy;
 	for (ix = 0, iy = 0; ix < n && iy < n; ix = ix + incx, iy = iy + incy) {
 		q += sw::unum::quire_mul(x[ix], y[iy]);
@@ -106,7 +106,7 @@ template<typename Vector, size_t capacity = 10>
 typename Vector::value_type fdp(const Vector& x, const Vector& y) {
 	constexpr size_t nbits = Vector::value_type::nbits;
 	constexpr size_t es = Vector::value_type::es;
-	sw::unum::quire<nbits, es, capacity> q = 0;
+	sw::unum::quire<nbits, es, capacity> q(0);
 	size_t ix, iy, n = size(x);
 	for (ix = 0, iy = 0; ix < n && iy < n; ++ix, ++iy) {
 		q += sw::unum::quire_mul(x[ix], y[iy]);
@@ -221,7 +221,7 @@ void matvec(mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& b, const mtl::
 	size_t nr = size(b);
 	size_t nc = size(x);
 	for (size_t i = 0; i < nr; ++i) {
-		sw::unum::quire<nbits, es> q = 0;
+		sw::unum::quire<nbits, es> q(0);
 		for (size_t j = 0; j < nc; ++j) {
 			q += sw::unum::quire_mul(A[i][j], x[j]);
 		}
@@ -261,7 +261,7 @@ mtl::vec::dense_vector< sw::unum::posit<nbits, es> > fmv(const mtl::mat::dense2D
 	size_t nr = size(b);
 	size_t nc = size(x);
 	for (size_t i = 0; i < nr; ++i) {
-		sw::unum::quire<nbits, es> q = 0;
+		sw::unum::quire<nbits, es> q(0);
 		for (size_t j = 0; j < nc; ++j) {
 			q += sw::unum::quire_mul(A[i][j], x[j]);
 		}
@@ -308,7 +308,7 @@ void matmul(mtl::mat::dense2D< sw::unum::posit<nbits, es> >& C, const mtl::mat::
 
 	for (size_t i = 0; i < nr; ++i) {
 		for (size_t j = 0; j < nc; ++j) {
-			sw::unum::quire<nbits, es> q = 0;
+			sw::unum::quire<nbits, es> q(0);
 			for (size_t k = 0; k < nk; ++k) {
 				q += sw::unum::quire_mul(A[i][k], B[k][j]);
 			}
@@ -329,7 +329,7 @@ mtl::mat::dense2D< sw::unum::posit<nbits, es> > fmm(const mtl::mat::dense2D< sw:
 
 	for (size_t i = 0; i < nr; ++i) {
 		for (size_t j = 0; j < nc; ++j) {
-			sw::unum::quire<nbits, es> q = 0;
+			sw::unum::quire<nbits, es> q(0);
 			for (size_t k = 0; k < nk; ++k) {
 				q += sw::unum::quire_mul(A[i][k], B[k][j]);
 			}

@@ -1,4 +1,8 @@
-add_library(hprblas_c_api STATIC hprblas_c_api.cpp)
+set(lib_name hprblas_c_api)
+set(folder Libraries)
+
+add_library(${lib_name} STATIC hprblas_c_api.cpp)
+set_target_properties(${lib_name} PROPERTIES FOLDER ${folder})
 
 if(C_API_LIB_PIC)
   if(CMAKE_COMPILER_IS_GNUCXX OR MINGW OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -6,7 +10,7 @@ if(C_API_LIB_PIC)
   endif()
 endif()
 
-install(TARGETS hprblas_c_api DESTINATION lib)
+install(TARGETS ${lib_name} DESTINATION lib)
 install(FILES hprblas_c_api.h DESTINATION include)
 
 # TODO: for adaptive precision algorithms there are hundreds of valuable posit configurations that the C++ version supports

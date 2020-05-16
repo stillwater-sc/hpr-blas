@@ -24,7 +24,7 @@ try {
 	size_t n = 4;
 	size_t N = m * n;
 	Matrix A(N, N);
-	laplacian_setup(A, m, n);
+	laplacian_setup(A, (unsigned int)m, (unsigned int)n);
 	Vector x(N), b(N);
 	x = 1;
 	matvec(b, A, x);
