@@ -7,9 +7,13 @@
 // warning C4996: 'std::copy::_Unchecked_iterators::_Deprecate': Call to 'std::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct.
 #pragma warning( disable : 4996)
 #include "common.hpp"
+#define POSIT_FAST_POSIT_16_1 1
+#define POSIT_FAST_POSIT_32_2 1
+#include <universal/posit/posit>
 #include <hprblas>
 // matrix generators
 #include <generators/matrix_generators.hpp>
+
 
 template<typename Ty>
 void MeasureMatrixMultiplyPerformance(const std::string& metric) {
@@ -55,12 +59,11 @@ try {
 	using namespace mtl;
 
 	// a 32-bit float and a <27,1> posit have the same number of significand bits around 1.0
-	constexpr size_t nbits = 27;
-	constexpr size_t es = 2;
+	constexpr size_t nbits = 16;
+	constexpr size_t es = 1;
 	constexpr size_t capacity = 10;
 
 	using IEEEType=float;
-	using PositType=posit<nbits, es>;
 	cout << dynamic_range(posit<nbits, es>()) << endl;
 
 	float eps = std::numeric_limits<IEEEType>::epsilon();
@@ -73,14 +76,15 @@ try {
 
 	MeasureMatrixMultiplyPerformance<float>("spFLOPS");
 	MeasureMatrixMultiplyPerformance<double>("dpFLOPS");
-	MeasureMatrixMultiplyPerformance<PositType>("p27.2POPS");
+	MeasureMatrixMultiplyPerformance<posit<16, 1>>("p16.1POPS");
+	//MeasureMatrixMultiplyPerformance<posit<16, 1>>("p27.2POPS");
+	MeasureMatrixMultiplyPerformance<posit<32, 2>>("p32.2POPS");
 
-	dense_vector<PositType> p_sixteen(16);
+	dense_vector<posit<32,2>> p_sixteen(16);
 	cout << "size of p_sixteen is " << size(p_sixteen) << endl;
 
 	std::vector<IEEEType> f_sixteen(16);
 	cout << "size of f_sixteen is " << std::size(f_sixteen) << endl;
-
 
 	return EXIT_SUCCESS;
 }

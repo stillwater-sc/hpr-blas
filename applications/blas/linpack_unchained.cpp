@@ -84,8 +84,16 @@ try {
 		// Termination criterion: r < 1e-6 * b or N iterations
 		itl::noisy_iteration<Scalar>       iter(b, 500, 1.e-6);
 
-		// Solve Ax == b with left preconditioner P
-		itl::bicgstab(A, x, b, P, iter);
+		try {
+			// Solve Ax == b with left preconditioner P
+			itl::bicgstab(A, x, b, P, iter);
+		}
+		catch (const std::runtime_error& e) {
+			cerr << "caught solver exception: " << e.what() << endl;
+		}
+		catch (...) {
+			cerr << "caught unknown exception using bicgstab" << endl;
+		}
 
 		return 0;
 

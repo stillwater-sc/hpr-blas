@@ -336,8 +336,6 @@ Result sum(Slice<matrix4x4_simd> data, Slice<uint32_t> indices) {
 	assert(element_size == 16 * sizeof(int));
 
 	Result result;
-	const auto begin = data.begin();
-	const auto end = data.end();
 	__m256i simd_sum{ 0 };
 
 	for (auto idx : indices) {
@@ -394,8 +392,6 @@ Result sum(Slice<unique_matrix4x4> data, Slice<uint32_t> indices) {
 	assert(element_size == 16 * sizeof(int));
 
 	Result result;
-	const auto begin = indices.begin();
-	const auto end = indices.end();
 	for (uint32_t idx : indices) {
 		auto const& nums = data[idx].ptr->nums;
 		result.sum += nums[0]; result.sum += nums[1]; result.sum += nums[2]; result.sum += nums[3];
@@ -595,7 +591,7 @@ Result sum(Slice<T> data_slice, Slice<uint32_t> indices, size_t elements_to_read
 }
 
 template<typename T, typename OP>
-void run(ofstream& json, std::string type_name, Slice<T> full_data, Slice<uint32_t> indices, Slice<size_t> block_sizes, Slice<size_t> bytes_to_read_slice, Slice<size_t> num_threads, size_t num_loops, OP op){
+void run(ofstream& json, const std::string& type_name, Slice<T> full_data, Slice<uint32_t> indices, Slice<size_t> block_sizes, Slice<size_t> bytes_to_read_slice, Slice<size_t> num_threads, size_t num_loops, OP op){
 	if (!block_sizes.is_empty() && block_sizes.size() != bytes_to_read_slice.size())
 		std::abort();
 
@@ -653,7 +649,7 @@ void run(ofstream& json, std::string type_name, Slice<T> full_data, Slice<uint32
 					// many data slices, no indices
 					data_slices = generate_slices(full_data, thread_count, elements_per_block);
 				}
-				else if (!indices.is_empty()) {
+				else {
 					// many data slices, new indices
 					data_slices = generate_slices(full_data, thread_count, elements_per_block);
 					auto len = data_slices[0].size();
@@ -751,7 +747,7 @@ void run(ofstream& json, std::string type_name, Slice<T> full_data, Slice<uint32
 template<typename T>
 void run_suite(
 	ofstream & json, 
-	std::string type_str,
+	const std::string& type_str,
 	size_t num_loops,
 	size_t num_threads,
 	size_t bytes_to_generate,
