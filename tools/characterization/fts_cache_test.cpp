@@ -829,7 +829,7 @@ int main()
 	size_t bytes_to_generate = GIGA;
 
 	size_t num_loops = 12;
-	size_t num_threads = 4;
+	size_t num_threads = 16;
 
 	constexpr size_t BLOCK_COUNT = 8;
 	std::array<size_t, BLOCK_COUNT> block_sizes_arr = { L1_CORE / 2, L1_CORE, L2_CORE / 2, L2_CORE, L3_CORE / 2, L3_CORE, L3_CORE * 12, MEGA * 64 };
