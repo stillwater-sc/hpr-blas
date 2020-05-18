@@ -27,7 +27,7 @@ public:
 		const mtl::dense2D<Ty>& P
 	) : A(A), C(C), Q(Q), R(R), P0(P),
 		m(num_rows(C)), n(num_rows(A)), dt(dt), initialized(false),
-		I(n, n), x_hat(n)
+		I(n, n), x_hat(n), t(0), t0(0)
 	{
 		I = mtl::mat::identity2D(m,n); // I.setIdentity();
 	}

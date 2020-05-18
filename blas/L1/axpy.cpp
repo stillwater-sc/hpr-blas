@@ -15,7 +15,7 @@
  */
 
 template<typename Element, typename Vector>
-void axpy_test(std::string tag, int vecSize, Element x_value, Element y_value)
+void axpy_test(const std::string& tag, int vecSize, Element x_value, Element y_value)
 {
 	Vector X(vecSize), Y(vecSize), AXPY(vecSize);
 	X = x_value;

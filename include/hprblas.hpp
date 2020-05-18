@@ -356,8 +356,8 @@ template<typename Matrix>
 void subBlockMM(Matrix& C_partial, const Matrix& A, unsigned Ai, unsigned Aj, const Matrix& B, unsigned Bi, unsigned Bj) {
 	assert(mtl::mat::num_rows(C_partial) == mtl::mat::num_cols(C_partial));
 	using Scalar = typename Matrix::value_type;
-	constexpr size_t nbits = Scalar::nbits;
-	constexpr size_t es = Scalar::es;
+//	constexpr size_t nbits = Scalar::nbits;
+//	constexpr size_t es = Scalar::es;
 
 	unsigned aRows = unsigned(mtl::mat::num_rows(A));
 	unsigned aCols = unsigned(mtl::mat::num_cols(A));

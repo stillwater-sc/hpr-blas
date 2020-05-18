@@ -79,12 +79,10 @@ void BenchmarkMorton() {
 
 template<typename Scalar>
 void NumericalAttributes() {
-	Scalar eps = std::numeric_limits<Scalar>::epsilon();
-	Scalar epsminus = Scalar(1.0) - eps;
-	Scalar epsplus = Scalar(1.0) + eps;
+	Scalar epsilon = std::numeric_limits<Scalar>::epsilon();
 	Scalar max_exp = std::numeric_limits<Scalar>::max_exponent;
 	Scalar min_exp = std::numeric_limits<Scalar>::min_exponent;
-	std::cout << " epsilon " << eps << " min exp " << min_exp << " max exp " << max_exp << std::endl;
+	std::cout << " epsilon " << epsilon << " min exp " << min_exp << " max exp " << max_exp << std::endl;
 }
 
 int main(int argc, char** argv)
