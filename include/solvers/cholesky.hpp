@@ -345,7 +345,7 @@ void cholsl(const Matrix& A, Matrix& Ainv) {
 template<typename Matrix>
 Matrix Inverse(const Matrix& A) {
 	assert(mtl::mat::num_rows(A) == mtl::mat::num_cols(A)); // assert squareness
-	using Scalar = Matrix::value_type;
+	using Scalar = typename Matrix::value_type;
 	int N = int(mtl::mat::num_cols(A));
 	mtl::vec::dense_vector<Scalar> diagonal(N);
 	Matrix Ainv(N, N);

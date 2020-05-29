@@ -140,7 +140,7 @@ else()
 endif()
 
 add_subdirectory("tools/benchmark")
-add_subdirectory("tools/characterization")
+#add_subdirectory("tools/characterization")
 add_subdirectory("tools/matrix_generation")
 add_subdirectory("blas")
 add_subdirectory("applications")

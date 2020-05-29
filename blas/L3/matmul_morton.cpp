@@ -9,6 +9,7 @@
 #include "common.hpp"
 #include <hprblas>
 // utilities to generate and print vectors and matrices
+#include <generators/matrix_generators.hpp>
 #include "utils/matvec.hpp"
 
 template<typename Scalar, size_t n = 10>

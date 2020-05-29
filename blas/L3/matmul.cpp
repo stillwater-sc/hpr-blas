@@ -84,7 +84,7 @@ try {
 	cout << "size of p_sixteen is " << size(p_sixteen) << endl;
 
 	std::vector<IEEEType> f_sixteen(16);
-	cout << "size of f_sixteen is " << std::size(f_sixteen) << endl;
+	cout << "size of f_sixteen is " << size(f_sixteen) << endl;
 
 	return EXIT_SUCCESS;
 }

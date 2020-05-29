@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cmake -DMTL_ROOT=$MTL_ROOT -DUNIVERSAL_ROOT=$UNIVERSAL_ROOT ..

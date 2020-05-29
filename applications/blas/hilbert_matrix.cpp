@@ -10,7 +10,9 @@
 #include <universal/integer/integer>
 
 // enable INITLISTs with MTL vectors and matrices
+#ifndef MTL_WITH_INITLIST
 #define MTL_WITH_INITLIST
+#endif
 // enable the following define to show the intermediate steps in the fused-dot product
 // #define POSIT_VERBOSE_OUTPUT
 #define QUIRE_TRACE_ADD

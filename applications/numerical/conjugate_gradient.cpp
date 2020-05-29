@@ -1,6 +1,6 @@
 // conjugate_gradient.cpp: example program showing the conjugate gradient algorithm using posit arithmetic
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include <hprblas>

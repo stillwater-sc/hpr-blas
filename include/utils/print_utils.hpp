@@ -13,6 +13,7 @@ namespace hprblas {
 // printVector pretty prints a vector
 template<typename Vector>
 void printVector(std::ostream& ostr, const std::string& name, const Vector& v) {
+	using namespace mtl;
 	size_t d = size(v);
 	ostr << "Vector: " << name << " is of size " << d << " elements" << std::endl;
 	std::streamsize old_prec = ostr.precision();
@@ -24,6 +25,7 @@ void printVector(std::ostream& ostr, const std::string& name, const Vector& v) {
 // printMatrix pretty prints a 2D dense matrix
 template<typename Matrix>
 void printMatrix(std::ostream& ostr, const std::string& name, const Matrix& M, int precision = 17, bool hex = false) {
+	using namespace mtl;
 	size_t d = num_rows(M);
 	ostr << "Matrix: " << name << " is " << d << "x" << d << std::endl;
 	std::streamsize old_prec = ostr.precision();
@@ -46,6 +48,7 @@ void printMatrix(std::ostream& ostr, const std::string& name, const Matrix& M, i
 // printMatrix pretty prints a 2D dense matrix that is represented by an STL vector
 template<typename Ty>
 void printMatrix(std::ostream& ostr, const std::string& name, const std::vector<Ty>& M) {
+	using namespace mtl;
 	size_t d = size(M);
 	ostr << "Matrix: " << name << " is " << d << "x" << d << std::endl;
 	std::streamsize old_prec = ostr.precision();

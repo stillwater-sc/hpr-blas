@@ -29,6 +29,7 @@ constexpr double pi = 3.14159265358979323846;  // best practice for C++
 
 template<typename Vector>
 void FillDescending(Vector& vec, typename Vector::value_type start) {
+	using namespace mtl;
 	size_t n = size(vec);
 	//std::cout << "Nr of samples to generate is " << n << std::endl;
 	for (size_t i = 0; i < n; ++i) {
@@ -39,6 +40,7 @@ void FillDescending(Vector& vec, typename Vector::value_type start) {
 
 template<typename Vector>
 void FillAscending(Vector& vec, typename Vector::value_type start) {
+	using namespace mtl;
 	size_t n = size(vec);
 	//std::cout << "Nr of samples to generate is " << n << std::endl;
 	size_t r = n;
@@ -52,6 +54,7 @@ int main(int argc, char** argv)
 try {
 	using namespace std;
 	using namespace std::chrono;
+	using namespace mtl;
 	using namespace sw::unum;
 	using namespace sw::hprblas;
 
@@ -63,7 +66,7 @@ try {
 
 	{
 		using Posit = posit<nbits, es>;
-		vector<Posit> px(vecSize), py(vecSize);
+		std::vector<Posit> px(vecSize), py(vecSize);
 
 		FillDescending(px, 0.25*maxpos<nbits, es>());
 		FillAscending(py, 0.25*maxpos<nbits, es>());
@@ -84,7 +87,7 @@ try {
 
 	{
 		using Scalar = posit<2*nbits, es+1>;
-		vector<Scalar> px(vecSize), py(vecSize);
+		std::vector<Scalar> px(vecSize), py(vecSize);
 
 		FillDescending(px, 0.25*maxpos<nbits, es>());
 		FillAscending(py, 0.25*maxpos<nbits, es>());
@@ -105,7 +108,7 @@ try {
 
 	{
 		using Scalar = float;
-		vector<Scalar> px(vecSize), py(vecSize);
+		std::vector<Scalar> px(vecSize), py(vecSize);
 
 		FillDescending(px, float(0.25*maxpos<nbits, es>()));
 		FillAscending(py, float(0.25*maxpos<nbits, es>()));
