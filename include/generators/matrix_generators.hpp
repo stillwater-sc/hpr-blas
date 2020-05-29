@@ -340,7 +340,7 @@ size_t GenerateHilbertMatrix(mtl::mat::dense2D<Scalar>& M, bool bScale = true) {
 	assert(M.num_rows() == M.num_cols());
 	size_t N = M.num_rows();
 	size_t lcm = HilbertScalingFactor(N); // always calculate the Least Common Multiplier
-	Scalar scale = bScale ? lcm : Scalar(1);
+	Scalar scale = bScale ? Scalar(lcm) : Scalar(1);
 	for (int i = 1; i <= N; ++i) {
 		for (int j = 1; j <= N; ++j) {
 			M[i - 1][j - 1] = scale / Scalar(i + j - 1);

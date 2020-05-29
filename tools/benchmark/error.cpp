@@ -16,7 +16,7 @@
 // matrix generators
 #include <generators/matrix_generators.hpp>
 
-template<typename Scalar>
+template<typename Scalar, typename Vector>
 void GenerateNumericalAnalysisTestCase(const std::string& header, unsigned N, bool verbose = false) {
 	using namespace std;
 	using namespace mtl;
@@ -25,37 +25,39 @@ void GenerateNumericalAnalysisTestCase(const std::string& header, unsigned N, bo
 
 	std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n" << header << std::endl;
 
-
 	// calculate the numerical error caused by the linear algebra computation
-	Vector e(N), eprime(N), eabsolute(N), erelative(N);
+	Vector e(N), eprime(N), eabsolute(N), erelative(N), I(N);
 	e = Scalar(1);
+	I = Scalar(1);
 	// TODO: it is not clear that for posits this would be a fused matrix-vector operation
 	matvec(eprime, I, e);
-	printVector(cout, "reference vector", e);
-	printVector(cout, "error vector", eprime);
+	cout << "reference vector : " << e << '\n';
+	cout << "error vector     : " << eprime << '\n';
 	// absolute error
 	eabsolute = e - eprime;
-	printVector(cout, "absolute error vector", eabsolute);
-	cout << "L1 norm   " << hex_format(l1_norm(eabsolute)) << "  " << l1_norm(eabsolute) << endl;
-	cout << "L2 norm   " << hex_format(l2_norm(eabsolute)) << "  " << l2_norm(eabsolute) << endl;
-	cout << "Linf norm " << hex_format(linf_norm(eabsolute)) << "  " << linf_norm(eabsolute) << endl;
+	cout << "absolute error vector : " << eabsolute << '\n';
+	cout << "L1 norm   " << hex_format(l1_norm(eabsolute)) << "  " << l1_norm(eabsolute) << '\n';
+	cout << "L2 norm   " << hex_format(l2_norm(eabsolute)) << "  " << l2_norm(eabsolute) << '\n';
+	cout << "Linf norm " << hex_format(linf_norm(eabsolute)) << "  " << linf_norm(eabsolute) << '\n';
 
 	// relative error
 	cout << "relative error\n";
 	Scalar relative_error;
 	relative_error = l1_norm(eabsolute) / l1_norm(e);
-	cout << "L1 norm   " << hex_format(relative_error) << "  " << relative_error << endl;
+	cout << "L1 norm   " << hex_format(relative_error) << "  " << relative_error << '\n';
 	relative_error = l2_norm(eabsolute) / l2_norm(e);
-	cout << "L2 norm   " << hex_format(relative_error) << "  " << relative_error << endl;
+	cout << "L2 norm   " << hex_format(relative_error) << "  " << relative_error << '\n';
 	relative_error = linf_norm(eabsolute) / linf_norm(e);
-	cout << "Linf norm " << hex_format(relative_error) << "  " << relative_error << endl;
+	cout << "Linf norm " << hex_format(relative_error) << "  " << relative_error << '\n';
 
 	// error volume
 	cout << "error bounding box volume\n";
-	cout << "Measured in Euclidean distance    : " << error_volume(linf_norm(eabsolute), N, false) << endl;
-	cout << "Measured in ULPs                  : " << error_volume(linf_norm(eabsolute), N, true) << " ulps^" << N << endl;
+	cout << "Measured in Euclidean distance    : " << error_volume(linf_norm(eabsolute), N, false) << '\n';
+	cout << "Measured in ULPs                  : " << error_volume(linf_norm(eabsolute), N, true) << " ulps^" << N << '\n';
 	Scalar ulp = numeric_limits<Scalar>::epsilon();
-	cout << "L-infinitiy norm measured in ULPs : " << linf_norm(eabsolute) / ulp << " ulps" << endl;
+	cout << "L-infinitiy norm measured in ULPs : " << linf_norm(eabsolute) / ulp << " ulps" << '\n';
+
+	cout << endl;
 }
 
 // Benchmark Suite runner for numerical error analysis measurements
@@ -106,7 +108,7 @@ try {
 	// TODO: this is not clear that for posits this would be a fused matrix multiply
 	matmul(I, H, Hinv);
 
-
+	GenerateNumericalAnalysisTestCase<Scalar, Vector>("testing", 10, true);
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
