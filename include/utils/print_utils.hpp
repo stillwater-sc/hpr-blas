@@ -13,7 +13,6 @@ namespace hprblas {
 // printVector pretty prints a vector
 template<typename Vector>
 void printVector(std::ostream& ostr, const std::string& name, const Vector& v) {
-	using namespace mtl;
 	size_t d = size(v);
 	ostr << "Vector: " << name << " is of size " << d << " elements" << std::endl;
 	std::streamsize old_prec = ostr.precision();

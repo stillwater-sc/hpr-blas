@@ -56,7 +56,7 @@ try {
 	using namespace std;
 	using namespace sw::unum;
 	using namespace sw::hprblas;
-	using namespace mtl;
+	//using namespace mtl;  both sw::unum and mtl:: contain a size() operator, we can break that ambiguity by not pulling in mtl:: explicitely
 
 	// a 32-bit float and a <27,1> posit have the same number of significand bits around 1.0
 	constexpr size_t nbits = 16;
@@ -80,7 +80,7 @@ try {
 	//MeasureMatrixMultiplyPerformance<posit<16, 1>>("p27.2POPS");
 	MeasureMatrixMultiplyPerformance<posit<32, 2>>("p32.2POPS");
 
-	dense_vector<posit<32,2>> p_sixteen(16);
+	mtl::dense_vector<posit<32,2>> p_sixteen(16);
 	cout << "size of p_sixteen is " << size(p_sixteen) << endl;
 
 	std::vector<IEEEType> f_sixteen(16);

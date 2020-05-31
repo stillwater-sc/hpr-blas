@@ -39,7 +39,7 @@ try {
 	// using an inefficient linear form
 	Matrix I1(N, N);
 	I1 = sw::hprblas::fmm(H, Hinv);
-	Scalar lcm = HilbertScalingFactor(N);
+	Scalar lcm = Scalar(HilbertScalingFactor(N));
 	I1 = I1 / lcm;
 	printMatrix(cout, "H * H^-1", I1);
 

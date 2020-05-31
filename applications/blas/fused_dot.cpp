@@ -29,7 +29,6 @@ constexpr double pi = 3.14159265358979323846;  // best practice for C++
 
 template<typename Vector>
 void FillDescending(Vector& vec, typename Vector::value_type start) {
-	using namespace mtl;
 	size_t n = size(vec);
 	//std::cout << "Nr of samples to generate is " << n << std::endl;
 	for (size_t i = 0; i < n; ++i) {
@@ -40,7 +39,6 @@ void FillDescending(Vector& vec, typename Vector::value_type start) {
 
 template<typename Vector>
 void FillAscending(Vector& vec, typename Vector::value_type start) {
-	using namespace mtl;
 	size_t n = size(vec);
 	//std::cout << "Nr of samples to generate is " << n << std::endl;
 	size_t r = n;
