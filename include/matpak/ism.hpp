@@ -1,5 +1,5 @@
 #pragma once
-// hprblas.hpp :  include file containing templated C++ interfaces to High-Performance Reproducible BLAS routines
+// ism.hpp : Check if a nxn matrix is an M-matrix
 //
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
@@ -28,50 +28,46 @@ function y=ismmat(M)
 %
 % ---------------------------------------------------------------------- %
 
-y=0;
+	y=0;
 
-[m,n]=size(M);
+	[m,n]=size(M);
 
-% Square?
-if m~=n
-y=0;
-return
-end
-I=eye(n);
+	% Square?
+	if m~=n
+	  y=0;
+	  return
+	end
+	I=eye(n);
 
-% Check if Z-matrix (all off diag. entries are <=0)
-%Z=M-diag(diag(M));
-%if prod(prod(Z<=0))~=1
-%    y=0;
-%    return
-%end
+	% Check if Z-matrix (all off diag. entries are <=0)
+	%Z=M-diag(diag(M));
+	%if prod(prod(Z<=0))~=1
+	%    y=0;
+	%    return
+	%end
 
-if ~iszmat(M)
-y=0;
-return
-end
+	if ~iszmat(M)
+	  y=0;
+	  return
+	end
 
-% Check if invertible
-if det(M)==0
-y=0;
-return
-end
+	% Check if invertible
+	if det(M)==0
+	  y=0;
+	  return
+	end
 
-% Check if specRadius(I-D^{-1}M)<1  <==> M-matrix
-D=diag(diag(M));
-D=inv(D);
-if max(abs(eigs(I-D*M)))<1
-y=1;
-end
+	% Check if specRadius(I-D^{-1}M)<1  <==> M-matrix
+	D=diag(diag(M));
+	D=inv(D);
+	if max(abs(eigs(I-D*M)))<1
+	  y=1;
+	end
 
 end
  */
 
-
-#include <boost/numeric/mtl/mtl.hpp>
-
-namespace sw {
-namespace hprblas {
+namespace sw { namespace hprblas {
 
 // TEST IF MATRIX IS AN M-Matrix
 
@@ -90,6 +86,5 @@ bool ism(const Matrix& A) {
     
     
     
-    
-} // namespace hprblas
-} // namespace sw
+}} // namespace sw::hprblas
+

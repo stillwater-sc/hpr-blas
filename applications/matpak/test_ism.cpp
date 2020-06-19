@@ -1,23 +1,28 @@
+// ism.cpp: test to validate that a matrix is an M matrix
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
-// This file is part of the universal numbers project, which is released under an MIT Open Source license.
+// This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
+#include <boost/numeric/mtl/mtl.hpp>
+#include <hprblas>
+#include <matpak/ism.hpp>
 
-// enable the mathematical constants in cmath: old-style preprocessor magic which isn't best practice anymore
-#include "common.hpp"
+// Selects posits or floats
+#define USE_POSIT 1
 
-
-
-// Turn it off for now
-#define USE_POSIT
+template<typename Matrix>
+bool isMatrixAnMMatrix(const Matrix& A) {
+	return false;
+}
 
 int main(int argc, char** argv)
 try {
-	const size_t nbits = 16;
-	const size_t es = 1;
-	const size_t vecSize = 32;
+	using namespace std;
+	using namespace mtl;
+	using namespace sw::unum;
+	using namespace sw::hprblas;
 
-#ifdef USE_POSIT
+#if USE_POSIT
 	using Ty     = sw::unum::posit<8, 0>;
 	using Matrix = mtl::dense2D< Ty >;
 	using Vector = mtl::dense_vector< Ty >;
@@ -27,26 +32,19 @@ try {
 	using Vector = mtl::dense_vector<float>;
 #endif
 
-  int n = 3; // Number of states
-  int m = 1; // Number of measurements
+	constexpr int n = 3; // Number of states
 
-  double dt = 1.0/30; // Time step
-
-  mtl::dense2D<Ty> A(n, n); // System dynamics matrix
+	mtl::dense2D<Ty> A(n, n); // System dynamics matrix
     
-  A = 1;
+	A = 1;  // create identity matrix
 
-  if(ism(A)){
-      cout << "A is an M-matrix" << A << '\n';
-  }
-  else{
-      cout << "Failed" << '\n';
-  }
+	if (sw::hprblas::ism(A)) {
+		cout << "A is an M-matrix\n" << A << '\n';
+	} else {
+		cout << "A is not an M-Matrix\n" << A << '\n';
+	}
 
-    
-    
-
-  return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }
 catch (char const* msg) {
 	std::cerr << msg << std::endl;
