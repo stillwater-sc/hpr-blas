@@ -65,7 +65,7 @@ typename Vector::value_type dot(size_t n, const Vector& x, size_t incx, const Ve
 	using namespace mtl;
 	typename Vector::value_type product = 0;
 	size_t cnt, ix, iy;
-	for (cnt = 0, ix = 0, iy = 0; cnt < n && ix < size(x) && iy < size(y); ++cnt, ix += incx, iy += incy) {
+	for (cnt = 0, ix = 0, iy = 0; cnt < n && ix < mtl::size(x) && iy < mtl::size(y); ++cnt, ix += incx, iy += incy) {
 		product += x[ix] * y[iy];
 	}
 	return product;
@@ -76,7 +76,7 @@ typename Vector::value_type dot(const Vector& x, const Vector& y) {
 	using namespace mtl;
 	typename Vector::value_type product = 0;
 	size_t cnt, ix, iy;
-	for (cnt = 0, ix = 0, iy = 0; cnt < size(x); ++cnt, ++ix, ++iy) {
+	for (cnt = 0, ix = 0, iy = 0; cnt < mtl::size(x); ++cnt, ++ix, ++iy) {
 		product += x[ix] * y[iy];
 	}
 	return product;
