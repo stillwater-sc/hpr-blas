@@ -4,8 +4,8 @@
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 #include <iostream>
-#define MTL_WITH_INITLIST
-//#define MTL_WITH_AUTO
+// #define MTL_WITH_INITLIST
+// #define MTL_WITH_AUTO
 //#define MTL_WITH_RANGEDFOR
 #include <hprblas>
 #include <matpak/ism.hpp>
@@ -62,7 +62,7 @@ try {
 
 	{
 		using namespace mtl;
-		
+
 		vec::dense_vector<int> v{ 2, 3, 4 };
 		mat::dense2D<int> A{ {1, 2}, {3, 4} };
 

@@ -2,7 +2,7 @@
 
 Digital Signal Processing examples, Kalman filter
 
-# Kalman filter
+# Header
 
 This is a linear Kalman filter using [MTL4](http://www.simunova.com). 
 Based on the algorithm presented in the paper [An Introduction to the Kalman Filter](http://www.cs.unc.edu/~welch/media/pdf/kalman_intro.pdf).

@@ -5,14 +5,7 @@
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 /*
-% ---------------------------------------------------------------------- %
-% MATLAB Version:        9.2.0.556344 (R2017a).  Update 04/30/2017       %
-% Prev. Version:         9.1.0.441655 (R2016b)                           %
-% Purpose:               Check if nxn matrix  is M-matrix      %
-% Author:                James Quinlan                                   %
-% Modified:              James Quinlan 2017-07-18                        %
-% Notes:
-% ---------------------------------------------------------------------- %
+
 
 function y=ismmat(M)
 %
@@ -71,20 +64,19 @@ namespace sw { namespace hprblas {
 
 // TEST IF MATRIX IS AN M-Matrix
 
-// sum of magnitudes of the vector elements
+//
 template<typename Matrix>
 bool ism(const Matrix& A) {
     bool is_m_matrix = false;
-    
+
     // body
-    
-    
+
+
     // Return
     return is_m_matrix;
 }
-    
-    
-    
-    
-}} // namespace sw::hprblas
 
+
+
+
+}} // namespace sw::hprblas
