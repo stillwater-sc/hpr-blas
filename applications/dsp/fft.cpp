@@ -28,12 +28,12 @@ log_e(10)		M_LN10		2.30258509299404568402
 
 constexpr double PI = 3.141592653589793238460;  // best practice for C++
 
-using value_type = double;
-using Complex = std::complex<value_type>;
+using Scalar = double;
+using Complex = std::complex<Scalar>;
 using Samples = mtl::dense_vector<Complex>;
 
 #include <valarray>
-// Cooley–Tukey FFT (in-place, divide-and-conquer)
+// Cooley-Tukey FFT (in-place, divide-and-conquer)
 // Higher memory requirements and redundancy although more intuitive
 void fft_dac(std::valarray<Complex>& x)
 {
@@ -140,7 +140,7 @@ try {
 		weights[i] = 0.5f;
 	}
 
-	value_type initial_value[] = { 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0 };
+	Scalar initial_value[] = { 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0 };
 	Samples data(initial_value);
 
 	// forward fft
