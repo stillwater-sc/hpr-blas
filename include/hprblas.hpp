@@ -4,10 +4,10 @@
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
+#include <universal/posit/posit>
 #include <boost/numeric/mtl/mtl.hpp>
 
-namespace sw {
-namespace hprblas {
+namespace sw { namespace hprblas {
 
 // LEVEL 1 BLAS operators
 
@@ -36,6 +36,7 @@ typename Vector::value_type sum(size_t n, const Vector& x, size_t incx = 1) {
 // a time x plus y
 template<typename Scalar, typename Vector>
 void axpy(size_t n, Scalar a, const Vector& x, size_t incx, Vector& y, size_t incy) {
+	using namespace mtl;
 	size_t cnt, ix, iy;
 	for (cnt = 0, ix = 0, iy = 0; cnt < n && ix < size(x) && iy < size(y); ++cnt, ix += incx, iy += incy) {
 		y[iy] += a * x[ix];
@@ -45,11 +46,15 @@ void axpy(size_t n, Scalar a, const Vector& x, size_t incx, Vector& y, size_t in
 // vector copy
 template<typename Vector>
 void copy(size_t n, const Vector& x, size_t incx, Vector& y, size_t incy) {
+	using namespace mtl;
 	size_t cnt, ix, iy;
 	for (cnt = 0, ix = 0, iy = 0; cnt < n && ix < size(x) && iy < size(y); ++cnt, ix += incx, iy += incy) {
 		y[iy] = x[ix];
 	}
 }
+
+// adapter for STL vectors
+//template<typename Scalar> auto size(const std::vector<Scalar>& v) { return v.size(); }
 
 // dot product: the operator vector::x[index] is limited to uint32_t, so the arguments are limited to uint32_t as well
 // The library does support arbitrary posit configuration conversions, but to simplify the 
@@ -57,9 +62,10 @@ void copy(size_t n, const Vector& x, size_t incx, Vector& y, size_t incy) {
 // TODO: investigate if the vector<> index is always a 32bit entity?
 template<typename Vector>
 typename Vector::value_type dot(size_t n, const Vector& x, size_t incx, const Vector& y, size_t incy) {
+	using namespace mtl;
 	typename Vector::value_type product = 0;
 	size_t cnt, ix, iy;
-	for (cnt = 0, ix = 0, iy = 0; cnt < n && ix < size(x) && iy < size(y); ++cnt, ix += incx, iy += incy) {
+	for (cnt = 0, ix = 0, iy = 0; cnt < n && ix < mtl::size(x) && iy < mtl::size(y); ++cnt, ix += incx, iy += incy) {
 		product += x[ix] * y[iy];
 	}
 	return product;
@@ -67,9 +73,10 @@ typename Vector::value_type dot(size_t n, const Vector& x, size_t incx, const Ve
 // specialized dot product
 template<typename Vector>
 typename Vector::value_type dot(const Vector& x, const Vector& y) {
+	using namespace mtl;
 	typename Vector::value_type product = 0;
 	size_t cnt, ix, iy;
-	for (cnt = 0, ix = 0, iy = 0; cnt < size(x); ++cnt, ++ix, ++iy) {
+	for (cnt = 0, ix = 0, iy = 0; cnt < mtl::size(x); ++cnt, ++ix, ++iy) {
 		product += x[ix] * y[iy];
 	}
 	return product;
@@ -104,10 +111,11 @@ typename Vector::value_type fdp_stride(size_t n, const Vector& x, size_t incx, c
 // with the option to control capacity bits in the quire
 template<typename Vector, size_t capacity = 10>
 typename Vector::value_type fdp(const Vector& x, const Vector& y) {
+	using namespace mtl;
 	constexpr size_t nbits = Vector::value_type::nbits;
 	constexpr size_t es = Vector::value_type::es;
 	sw::unum::quire<nbits, es, capacity> q(0);
-	size_t ix, iy, n = size(x);
+	size_t ix, iy, n = mtl::size(x);
 	for (ix = 0, iy = 0; ix < n && iy < n; ++ix, ++iy) {
 		q += sw::unum::quire_mul(x[ix], y[iy]);
 	}
@@ -119,6 +127,7 @@ typename Vector::value_type fdp(const Vector& x, const Vector& y) {
 // rotation of points in the plane
 template<typename Rotation, typename Vector>
 void rot(size_t n, Vector& x, size_t incx, Vector& y, size_t incy, Rotation c, Rotation s) {
+	using namespace mtl;
 	// x_i = c*x_i + s*y_i
 	// y_i = c*y_i - s*x_i
 	size_t cnt, ix, iy;
@@ -139,6 +148,7 @@ void rotg(T& a, T& b, T& c, T&s) {
 // scale a vector
 template<typename Scalar, typename Vector>
 void scale(size_t n, Scalar a, Vector& x, size_t incx) {
+	using namespace mtl;
 	size_t cnt, ix;
 	for (cnt = 0, ix = 0; cnt < n && ix < size(x); ix += incx) {
 		x[ix] *= a;
@@ -148,6 +158,7 @@ void scale(size_t n, Scalar a, Vector& x, size_t incx) {
 // swap two vectors
 template<typename Vector>
 void swap(size_t n, Vector& x, size_t incx, Vector& y, size_t incy) {
+	using namespace mtl;
 	size_t cnt, ix, iy;
 	for (cnt = 0, ix = 0, iy = 0; cnt < n && ix < size(x) && iy < size(y); ++cnt, ix += incx, iy += incy) {
 		typename Vector::value_type tmp = x[ix];
@@ -159,6 +170,7 @@ void swap(size_t n, Vector& x, size_t incx, Vector& y, size_t incy) {
 // find the index of the element with maximum absolute value
 template<typename Vector>
 size_t amax(size_t n, const Vector& x, size_t incx) {
+	using namespace mtl;
 	typename Vector::value_type running_max = -INFINITY;
 	size_t ix, index;
 	for (ix = 0; ix < size(x); ix += incx) {
@@ -173,6 +185,7 @@ size_t amax(size_t n, const Vector& x, size_t incx) {
 // find the index of the element with minimum absolute value
 template<typename Vector>
 size_t amin(size_t n, const Vector& x, size_t incx) {
+	using namespace mtl;
 	typename Vector::value_type running_min = INFINITY;
 	size_t ix, index;
 	for (ix = 0; ix < size(x); ix += incx) {
@@ -192,6 +205,7 @@ T cabs(T z) {
 // print a vector
 template<typename Vector>
 void strided_print(std::ostream& ostr, size_t n, Vector& x, size_t incx = 1) {
+	using namespace mtl;
 	size_t cnt, ix;
 	for (cnt = 0, ix = 0; cnt < n && ix < size(x); ++cnt, ix += incx) {
 		cnt == 0 ? ostr << "[" << x[ix] : ostr << ", " << x[ix];
@@ -211,6 +225,7 @@ void matvec(Vector& b, const Matrix& A, const Vector& x) {
 // Matrix-vector product: b = A * x, posit specialized
 template<size_t nbits, size_t es>
 void matvec(mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& b, const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& x) {
+	using namespace mtl;
 	// preconditions
 	assert(A.num_cols() == size(x));
 	assert(size(b) == size(x));
@@ -251,6 +266,7 @@ void matvec(mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& b, const mtl::
 // A times x = b fused matrix-vector product
 template<size_t nbits, size_t es>
 mtl::vec::dense_vector< sw::unum::posit<nbits, es> > fmv(const mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, const mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& x) {
+	using namespace mtl;
 	// preconditions
 	assert(A.num_cols() == size(x));
 	mtl::vec::dense_vector< sw::unum::posit<nbits, es> > b(size(x));

@@ -41,7 +41,8 @@ try {
 	constexpr int d = 5;
 	vector< posit<nbits, es> > v1 = { 1.0, 2.0, 3.0, 4.0, 5.0 };
 	vector< posit<nbits, es> > v2(d);
-	posit<nbits, es> alpha = minpos<nbits, es>();
+	posit<nbits, es> alpha;
+	minpos(alpha); // set alpha to minpos
 
 	cout << "AXPY is " << endl;
 	printStridedVector(cout, d, v1, 1); cout << endl;

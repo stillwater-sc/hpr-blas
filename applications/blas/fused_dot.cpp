@@ -29,7 +29,8 @@ constexpr double pi = 3.14159265358979323846;  // best practice for C++
 
 template<typename Vector>
 void FillDescending(Vector& vec, typename Vector::value_type start) {
-	size_t n = size(vec);
+	using namespace mtl;
+	size_t n = mtl::size(vec);
 	//std::cout << "Nr of samples to generate is " << n << std::endl;
 	for (size_t i = 0; i < n; ++i) {
 		vec[i] = start;
@@ -39,7 +40,8 @@ void FillDescending(Vector& vec, typename Vector::value_type start) {
 
 template<typename Vector>
 void FillAscending(Vector& vec, typename Vector::value_type start) {
-	size_t n = size(vec);
+	using namespace mtl;
+	size_t n = mtl::size(vec);
 	//std::cout << "Nr of samples to generate is " << n << std::endl;
 	size_t r = n;
 	for (size_t i = 0; i < n; ++i) {
@@ -64,10 +66,12 @@ try {
 
 	{
 		using Posit = posit<nbits, es>;
+		Posit pmaxpos;
 		std::vector<Posit> px(vecSize), py(vecSize);
 
-		FillDescending(px, 0.25*maxpos<nbits, es>());
-		FillAscending(py, 0.25*maxpos<nbits, es>());
+		maxpos(pmaxpos);
+		FillDescending(px, 0.25*pmaxpos);
+		FillAscending(py, 0.25*pmaxpos);
 
 		printVector(cout, "px", px);
 		printVector(cout, "px", py);
@@ -85,10 +89,12 @@ try {
 
 	{
 		using Scalar = posit<2*nbits, es+1>;
+		Scalar pmaxpos;
 		std::vector<Scalar> px(vecSize), py(vecSize);
 
-		FillDescending(px, 0.25*maxpos<nbits, es>());
-		FillAscending(py, 0.25*maxpos<nbits, es>());
+		maxpos(pmaxpos);
+		FillDescending(px, 0.25*pmaxpos);
+		FillAscending(py, 0.25*pmaxpos);
 
 //		printVector(cout, "px", px);
 //		printVector(cout, "px", py);
@@ -108,8 +114,10 @@ try {
 		using Scalar = float;
 		std::vector<Scalar> px(vecSize), py(vecSize);
 
-		FillDescending(px, float(0.25*maxpos<nbits, es>()));
-		FillAscending(py, float(0.25*maxpos<nbits, es>()));
+		posit<32,2> pmaxpos;
+		maxpos(pmaxpos);
+		FillDescending(px, float(0.25*pmaxpos));
+		FillAscending(py, float(0.25*pmaxpos));
 
 		//		printVector(cout, "px", px);
 		//		printVector(cout, "px", py);

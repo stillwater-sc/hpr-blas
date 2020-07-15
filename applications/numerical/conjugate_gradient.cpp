@@ -209,8 +209,9 @@ try {
 		constexpr size_t nbits = 16;
 		constexpr size_t es = 1;
 		using Real = posit<nbits,es>;
+		Real pminpos; minpos(pminpos);
 		cout << "type: " << typeid(Real).name() << endl;
-		cout << "minpos : " << minpos<nbits, es>() << endl;
+		cout << "minpos : " << pminpos << endl;
 		Real epsilon = Real(accuracy);
 		CGdriver(N, epsilon);
 	}
@@ -227,8 +228,9 @@ try {
 		constexpr size_t nbits = 16;
 		constexpr size_t es = 1;
 		using Real = posit<nbits, es>;
+		Real pminpos; minpos(pminpos);
 		cout << "type: " << typeid(Real).name() << endl;
-		cout << "minpos : " << minpos<nbits, es>() << endl;
+		cout << "minpos : " << pminpos << endl;
 		Real epsilon = Real(accuracy);
 		CGdriver(N, epsilon);
 		fdpCGdriver(N, epsilon);

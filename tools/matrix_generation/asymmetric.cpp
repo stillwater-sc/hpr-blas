@@ -31,10 +31,9 @@ try {
 	uniform_random_orthogonal_Heiberger(Q);
 	cout << Q << endl;
 
-	Scalar p;
-	minpos<nbits, es>(p);
-	cout << "minpos<32,2> = " << p << endl;
-	cout << "minpos<32,2> = " << setw(52) << setprecision(52) << std::fixed << p << endl;
+	Scalar pminpos;
+	cout << "minpos<32,2> = " << minpos(pminpos) << endl;
+	cout << "minpos<32,2> = " << setw(52) << setprecision(52) << std::fixed << pminpos << endl;
 
 	cout << Q << endl;
 
