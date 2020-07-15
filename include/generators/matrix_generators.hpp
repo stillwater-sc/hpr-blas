@@ -47,6 +47,14 @@ void uniform_rand(Matrix& A, double lowerbound = 0.0, double upperbound = 1.0)
 	}
 }
 
+// create a dense matrix with random values between [lowerbound, upperbound]
+template<typename Scalar>
+mtl::mat::dense2D<Scalar> uniform_rand(size_t m, size_t n, double lowerbound = 0.0, double upperbound = 1.0) {
+	mtl::mat::dense2D<Scalar> A(m, n);
+	uniform_rand(A, lowerbound, upperbound);
+	return A;
+}
+
 // fill a dense MTL matrix with random values between [lowerbound, upperbound]
 template <typename Matrix>
 void uniform_rand_sorted(Matrix& A, double lowerbound = 0.0, double upperbound = 1.0)
@@ -92,13 +100,13 @@ void uniform_rand_sorted(Matrix& A, double lowerbound = 0.0, double upperbound =
 		q2 -= q1;
 		convert(q2.to_value(), p);
 //				std::cout << "Residual is: " << double(p) << std::endl;
-		if (p.iszero()) p = one;
+//		if (p.iszero()) p = one;
 		v[r*num_cols(A) + lastElement] = p;
 	}
 
 
 	// inserters add to the elements, so we need to set the value to 0 before we begin
-	A = 0.0;
+	A = 0;
 	{ // extra block unfortunately needed for VS2013
 		// Create inserter for matrix m
 		mtl::mat::inserter<Matrix> ins(A, num_cols(A));

@@ -1,4 +1,4 @@
-// asymmetric.cpp: asymmetric matrix generation 
+// uniform_random.cpp: uniform random matrix generator test
 //
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
@@ -25,18 +25,18 @@ try {
 //	using Scalar = double;
 	using Matrix = mtl::mat::dense2D< Scalar >;
 
-	constexpr size_t N = 5;
-	Matrix Q(N,N);
+	constexpr size_t m = 5;
+	constexpr size_t n = 4;
+	Matrix A(m,n);
 
-	uniform_random_orthogonal_Heiberger(Q);
-	cout << Q << endl;
+	uniform_rand(A);
+	cout << "uniform random        :\n" << A << endl;
 
-	Scalar p;
-	minpos<nbits, es>(p);
-	cout << "minpos<32,2> = " << p << endl;
-	cout << "minpos<32,2> = " << setw(52) << setprecision(52) << std::fixed << p << endl;
+	auto B = uniform_rand<Scalar>(m, n, -1.0, 1.0);
+	cout << "uniform random(-1,1)  :\n" << B << endl;
 
-	cout << Q << endl;
+	uniform_rand_sorted(A);
+	cout << "uniform random sorted :\n" << A << endl;
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }
