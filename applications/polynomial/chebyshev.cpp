@@ -6,6 +6,7 @@
 #include <boost/multiprecision/cpp_bin_float.hpp>
 #include <hprblas>
 
+
 // define a true 256-bit IEEE floating point type
 constexpr size_t bits_in_octand = 113 + 128;
 using cpp_bin_float_octand = boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<bits_in_octand, boost::multiprecision::backends::digit_base_2, void, boost::int16_t, -16382, 16383>, boost::multiprecision::expression_template_option::et_off>;
@@ -52,6 +53,8 @@ try {
 	chebyshev_nodes(10, args, nodes);
 	cout << setprecision(numeric_limits<qp>::digits10);
 //	dumpPair(args, nodes);
+
+	mtl::vec::cos(args);
 
 	dumpVector(nodes);
 

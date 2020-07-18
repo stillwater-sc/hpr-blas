@@ -77,6 +77,11 @@ try {
 	sum first row = 3
 	sum first column = 4
 	*/
+
+	{
+		mat::dense2D<int> A{ {1, 2}, {3, 4} };
+		cout << trans(A) << endl;
+	}
 	return EXIT_SUCCESS;
 }
 catch (char const* msg) {
