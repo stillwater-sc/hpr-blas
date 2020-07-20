@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <hprblas>
-#include <matpak/toeplitz.hpp>
+#include <matpak/hankel.hpp>
 
 
 int main ()
@@ -17,7 +17,7 @@ int main ()
 		using Vector = mtl::vec::dense_vector< Scalar >;
 		Vector c{1,2, 3, 4};
 		Vector r{1, 5, 6, 7, 8};
-		auto A = toeplitz(c,r);
+		auto A = hankel(c,r);
 		std::cout <<  A << std::endl;
  	}
 
