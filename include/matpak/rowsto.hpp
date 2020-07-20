@@ -1,14 +1,11 @@
-/*
+#pragma once
 // rowsto.hpp : Generates a random m x n row stochastic matrix
 //
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
-*/
-
 #include <cstdint>
 #include <random>
-
 
 namespace sw { namespace hprblas { namespace matpak {
 
@@ -26,8 +23,8 @@ Matrix rowsto(size_t m, size_t n) {
     // "Filter" MT engine's output to generate pseudo-random double values,
     // **uniformly distributed** on the closed interval [lowerbound, upperbound].
     // (Note that the range is [inclusive, inclusive].)
-    constexpr long lowerbound = 0;
-    constexpr long upperbound =  10;
+    constexpr double lowerbound = 0;
+    constexpr double upperbound =  10;
 
     std::uniform_real_distribution<double> dist{ lowerbound, upperbound };
     // Pattern to generate pseudo-random number.

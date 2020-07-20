@@ -117,7 +117,7 @@ void ifft(Samples& x)
 	x = mtl::conj(x);
 
 	// scale the numbers
-	Complex scale = size(x);
+	Complex scale = Complex(double(size(x)));
 	x /= scale;
 }
 

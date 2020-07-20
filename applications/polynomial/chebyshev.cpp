@@ -6,7 +6,6 @@
 #include <boost/multiprecision/cpp_bin_float.hpp>
 #include <hprblas>
 
-
 // define a true 256-bit IEEE floating point type
 constexpr size_t bits_in_octand = 113 + 128;
 using cpp_bin_float_octand = boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<bits_in_octand, boost::multiprecision::backends::digit_base_2, void, boost::int16_t, -16382, 16383>, boost::multiprecision::expression_template_option::et_off>;
@@ -17,30 +16,39 @@ using qp = boost::multiprecision::cpp_bin_float_quad;
 using op = cpp_bin_float_octand;
 
 // generate the Chebyshev nodes in the interval (-1, 1)
-template<typename Real>
-void chebyshev_nodes(size_t nrOfNodes, std::vector<Real>& args, std::vector<Real>& v) {
-	Real pi = Real(3.14159265358979323846);  // TODO: this is limited to native type accuracy
+template<typename Vector>
+void chebyshev_nodes(Vector& args, Vector& v) {
+	typedef typename Vector::value_type value_type;
+	size_t nrOfNodes = size(args);
+	if (size(v) != size(args)) { 
+		std::cerr << "chebyshev_nodes: vectors must be the same size\n"; 
+		return;
+	}
+	value_type pi = value_type(3.14159265358979323846);  // TODO: this is limited to native type accuracy
 	for (size_t k = 1; k <= nrOfNodes; ++k) {
-		Real numerator = (2 * k - 1) * pi;
-		Real denominator = 2 * nrOfNodes;
-		Real arg = numerator / denominator; // better would be to use cospi arguments, so we side step radian round-off
-		args.push_back(arg);
-		v.push_back(cos(arg));
+		value_type numerator = (2 * k - 1) * pi;
+		value_type denominator = 2 * nrOfNodes;
+		value_type arg = numerator / denominator; // better would be to use cospi arguments, so we side step radian round-off
+		args[k] =arg;
+		v[k] = cos(arg);
 	}
 }
 
-template<typename Real>
-void dumpVector(std::vector<Real>& v) {
-	for (auto value : v) {
-		std::cout << value << std::endl;
-	}
-}
-
-template<typename Real>
-void dumpPair(std::vector<Real>& args, std::vector<Real>& nodes) {
-	for (size_t i = 0; i < args.size(); ++i) {
+template<typename Vector>
+void dumpPair(const Vector& args, const Vector& nodes) {
+	for (size_t i = 0; i < size(args) && i < size(nodes); ++i) {
 		std::cout << args[i] << " : " << nodes[i] << std::endl;
 	}
+}
+
+template<typename Scalar>
+std::ostream& operator<<(std::ostream& ostr, const std::vector<Scalar>& vec) {
+	ostr << "[ ";
+	for (auto v : vec) {
+		ostr << v << " ";
+	}
+	ostr << "]";
+	return ostr;
 }
 
 int main(int argc, char** argv)
@@ -49,14 +57,14 @@ try {
 	using namespace sw::unum;
 
 	using Real = qp;
-	vector<Real> args, nodes;
-	chebyshev_nodes(10, args, nodes);
+	mtl::vec::dense_vector<Real> args(10), nodes(10);
+	chebyshev_nodes(args, nodes);
 	cout << setprecision(numeric_limits<qp>::digits10);
-//	dumpPair(args, nodes);
+	dumpPair(args, nodes);
 
 	mtl::vec::cos(args);
 
-	dumpVector(nodes);
+	cout << nodes << endl;
 
 	return EXIT_SUCCESS;
 }

@@ -1,4 +1,4 @@
-/*
+#pragma once
 // toeplitz.hpp : Generate Toeplitz matrix
 // CALL toeplitz(c,r) where c = column & r = row
 //
@@ -6,7 +6,6 @@
 // Author: James Quinlan
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
-*/
 
 namespace sw { namespace hprblas { namespace matpak {
 
@@ -16,8 +15,8 @@ mtl::dense2D<typename Vector::value_type> toeplitz(const Vector&c, const Vector&
 
     using Matrix = mtl::dense2D<value_type>;
  
-    int m = num_rows(c);
-    int n = num_rows(r);
+    size_t m = num_rows(c);
+	size_t n = num_rows(r);
 
     Matrix A(m,n);
 
