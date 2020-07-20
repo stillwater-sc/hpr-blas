@@ -1,5 +1,5 @@
 /*
-// fliplr.hpp : Flip matix in left/right direction.
+// flipud.hpp : Flip matrix in up/down direction.
 //
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 // Author: James Quinlan
@@ -10,7 +10,7 @@
 namespace sw { namespace hprblas { namespace matpak {
 
 template<typename Matrix>
-Matrix  fliplr(const Matrix&A) {
+Matrix flipud(const Matrix&A) {
     typedef typename Matrix::value_type value_type;
 
     unsigned r = num_rows(A);
@@ -18,8 +18,8 @@ Matrix  fliplr(const Matrix&A) {
 
     Matrix B(r,c);
 
-    for(size_t i = 0; i < c; ++i){
-        B[mtl::iall][i] = A[mtl::iall][c - i - 1];
+    for(size_t i = 0; i < r; ++i){
+        B[i][mtl::iall] = A[r - i - 1][mtl::iall];
     }
     return B;
 }

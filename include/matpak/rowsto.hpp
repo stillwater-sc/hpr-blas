@@ -41,12 +41,9 @@ Matrix rowsto(size_t m, size_t n) {
             A[i][j] = value_type(dist(engine));
         }
         value_type x = mtl::sum(A[i][mtl::iall]);
-        for( j = 0;  j < n-1; ++j) {
+        for( j = 0;  j < n; ++j) {
              A[i][j] = A[i][j]/x;
         }
-        // Fudging the last entry to ensure exactly = 1
-        A[i][n-1] = 0;
-        A[i][n-1] = 1 - mtl::sum(A[i][mtl::iall]);
     }
     return A;
 }

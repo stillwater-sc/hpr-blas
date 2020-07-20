@@ -2,8 +2,7 @@
 
 #include <hprblas>
 #include <matpak/rowsto.hpp>
-
-//#include <boost/numeric/mtl/mtl.hpp>
+#include <matpak/isequal.hpp>
 
 int main ()
 {
@@ -11,15 +10,15 @@ int main ()
 	using namespace mtl;
 	using namespace sw::unum;
 	using namespace sw::hprblas;
-	cout << setprecision(20);
+	using namespace sw::hprblas::matpak;
+	cout << setprecision(5);
 	{
 		using Scalar = double;
 		using Matrix = mtl::mat::dense2D< Scalar >;
-		Matrix A = sw::hprblas::matpak::rowsto< Matrix >(5,5);   //
-		std::cout <<  A << std::endl;
-		for (size_t i=0;i<5;++i){
-			cout << sum(A[i][iall])<<endl;
-		}
+		Matrix A = rowsto< Matrix >(5,5);   //
+		Matrix B = rowsto< Matrix >(5,5);   //
+
+		std::cout <<  isequal(A,B) << std::endl;
 	}
 
 	{
@@ -28,11 +27,10 @@ int main ()
 
 		using Scalar = posit<nbits, es>;
 		using Matrix = mtl::mat::dense2D< Scalar >;
-		Matrix A = sw::hprblas::matpak::rowsto< Matrix >(5,5);   //
-		std::cout <<  A << std::endl;
-		for (size_t i=0;i<5;++i){
-			cout << sum(A[i][iall])<<endl;
-		}
+		//Matrix A = rowsto< Matrix >(5,5);   //
+		//std::cout <<  A << std::endl;
+		//fliplr(A);
+		//std::cout <<  A << std::endl;
 	}
 
 	return 0;
