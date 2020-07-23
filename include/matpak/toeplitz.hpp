@@ -14,7 +14,7 @@ mtl::dense2D<typename Vector::value_type> toeplitz(const Vector&c, const Vector&
     typedef typename Vector::value_type value_type;
 
     using Matrix = mtl::dense2D<value_type>;
- 
+
     size_t m = num_rows(c);
 	size_t n = num_rows(r);
 

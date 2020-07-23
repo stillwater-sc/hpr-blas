@@ -1,5 +1,4 @@
-#prama once
-
+#pragma once
 // hankel.hpp : Generate Hankel matrix
 // CALL hankel(c,r) where c = column & r = row
 //
