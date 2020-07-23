@@ -1,10 +1,29 @@
-# examples/estimation
+# Matrix Utility Package
 
-Digital Signal Processing examples, Kalman filter
+MATPAK is a matrix utility package and is part of the HPRBLAS project.  Some functions make use of [MTL4](http://www.simunova.com).  
 
-# Header
+MATPAK contains replicates several standard MATLAB functions such as `fliplr`, `flipup`, `toeplitz`, `hankel`, and  `rot90`.   Other functions included are to facilitate research on centrosymmetric matrices.   
 
-This is a linear Kalman filter using [MTL4](http://www.simunova.com). 
-Based on the algorithm presented in the paper [An Introduction to the Kalman Filter](http://www.cs.unc.edu/~welch/media/pdf/kalman_intro.pdf).
+# Contents
 
-It is a demonstration of the benefits of custom posit configurations and the error-free linear algebra.
+ei - Standard basis element.  `ei(i,n)`  
+fliplr - Flip matrix elements left/right  
+flipud - Flip matrix up/down  
+hankel - Generate hankel matrix  
+isequal - determines if two matrices are equal (logical)  
+ism - determines if a matrix is an M-matrix (logical)  
+rot90 - Rotates a matrix 90 degrees counterclockwise  
+rowsto - Generates a row stochastic matrix  
+toeplitz - Generates a Toeplitz matrix    
+
+
+
+# Details
+```
+// Generate 3rd standard basis element from \R^7.
+Vector ei(3,7); // Returns [0, 0, 1, 0, 0, 0, 0]
+```
+
+```
+adsf
+```

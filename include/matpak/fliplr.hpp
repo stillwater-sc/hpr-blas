@@ -9,7 +9,7 @@
 namespace sw { namespace hprblas { namespace matpak {
 
 template<typename Matrix>
-Matrix  fliplr(const Matrix&A) {
+Matrix fliplr(const Matrix&A) {
 	typedef typename Matrix::value_type value_type;
 	typedef typename Matrix::size_type  size_type;
 

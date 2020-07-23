@@ -1,5 +1,11 @@
-#include <iostream>
+// hankel.cpp : Test Hankel matrix (test hankel.hpp)
+//
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
+// Author: James Quinlan
+//
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
+#include <iostream>
 #include <hprblas>
 #include <matpak/hankel.hpp>
 

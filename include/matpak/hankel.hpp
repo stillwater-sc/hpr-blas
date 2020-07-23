@@ -1,4 +1,4 @@
-/*
+#pragma once
 // hankel.hpp : Generate Hankel matrix
 // CALL hankel(c,r) where c = column & r = row
 //
@@ -6,7 +6,7 @@
 // Author: James Quinlan
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
-*/
+
 #include <matpak/toeplitz.hpp>
 #include <matpak/rot90.hpp>
 
