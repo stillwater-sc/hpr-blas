@@ -12,14 +12,32 @@ int main ()
 	using namespace sw::hprblas;
 	using namespace sw::hprblas::matpak;
 	cout << setprecision(5);
+/*
 	{
 		using Scalar = double;
 		using Matrix = mtl::mat::dense2D< Scalar >;
 		Matrix A = rowsto< Matrix >(5,5);   //
 		Matrix B = rowsto< Matrix >(5,5);   //
 
+		// B = A;
+
 		std::cout <<  isequal(A,B) << std::endl;
 	}
+
+
+
+	{
+		using Scalar = double;
+		using Matrix = mtl::mat::dense2D< Scalar >;
+		Matrix A = rowsto< Matrix >(5,5);   //
+		Matrix B = rowsto< Matrix >(5,5);   //
+
+		// B = A;
+
+		std::cout <<  eq(A,B).first << std::endl;
+	}
+
+
 
 	{
 		constexpr size_t nbits = 32;
@@ -32,6 +50,6 @@ int main ()
 		//fliplr(A);
 		//std::cout <<  A << std::endl;
 	}
-
+*/
 	return 0;
 }
