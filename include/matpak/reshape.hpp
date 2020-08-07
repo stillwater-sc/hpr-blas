@@ -1,5 +1,6 @@
 #pragma once
-// isequal.hpp : A == B (are two matrices equal)
+// reshape.hpp : Maps m x n --> r x c where mn = rc.
+//				 reshape is row-wise.
 //
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 // Author: James Quinlan
