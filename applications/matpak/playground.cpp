@@ -45,10 +45,13 @@ try {
 	using namespace sw::unum;
 	using namespace sw::hprblas;
 
-	using Matrix = mtl::dense2D<float>;
+	/// Short-cut to define parameters with unsigned and defaults otherwise
+	typedef mtl::mat::parameters<col_major, index::c_index, mtl::non_fixed::dimensions, false, unsigned> column_matrix;
+	using Matrix = mtl::dense2D<float, column_matrix > ;
 
 	Matrix A(2, 2), B(2, 2);
 
+	A.elements();
 	auto result = eq(A, B);
 	if (result.second) {
 		cout << result.first << endl;
