@@ -10,9 +10,21 @@
 // #define MTL_WITH_RANGEDFOR
 #include <hprblas>
 
+/*
+		this fails:
+		template<typename Matrix>
+std::pair<mtl::mat::dense2D<bool>, bool> eq(const Matrix& A, const Matrix& B, const typename Matrix::value::type tolerance = 0.00000000000001) {
+}
+with error
+error C2893: Failed to specialize function template 'std::pair<mtl::mat::dense2D<bool,mtl::mat::parameters<mtl::tag::row_major,mtl::index::c_index,mtl::non_fixed::dimensions,false,size_t>>,bool> eq(const Matrix &,const Matrix &,const Matrix::value::type)'
+note: With the following template arguments:
+note: 'Matrix=Matrix'
+error C3536: 'result': cannot be used before it is initialized
+
+ */
 // check if two matrices are the same
 template<typename Matrix>
-std::pair<mtl::mat::dense2D<bool>, bool> eq(const Matrix& A, const Matrix& B) {
+std::pair<mtl::mat::dense2D<bool>, bool> eq(const Matrix& A, const Matrix& B, const double tolerance = 0.00000000000001) {
 	typedef typename Matrix::value_type value_type;
 	
 	size_t ar = num_rows(A);
@@ -45,14 +57,21 @@ try {
 	using namespace sw::unum;
 	using namespace sw::hprblas;
 
-	/// Short-cut to define parameters with unsigned and defaults otherwise
-	typedef mtl::mat::parameters<col_major, index::c_index, mtl::non_fixed::dimensions, false, unsigned> column_matrix;
-	using Matrix = mtl::dense2D<float, column_matrix > ;
+	using Scalar = posit<64,2>;
+	/// define a col_major matrix parameter
+	typedef mtl::mat::parameters<col_major> column_order;
+	using Matrix = mtl::dense2D<Scalar, column_order > ;
 
-	Matrix A(2, 2), B(2, 2);
-
-	A.elements();
-	auto result = eq(A, B);
+	constexpr size_t m = 10;
+	constexpr size_t n = 10;
+	Matrix A(m, n), B(m, n);
+	A = 1;
+	double tolerance = 0.0001;
+	B = 1.0 + 10 * tolerance;
+	cout << A << endl;
+	cout << B << endl;
+	
+	auto result = eq(A, B, tolerance);
 	if (result.second) {
 		cout << result.first << endl;
 	}
