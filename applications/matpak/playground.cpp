@@ -70,6 +70,10 @@ try {
 	B = 1.0 + 10 * tolerance;
 	cout << A << endl;
 	cout << B << endl;
+
+	auto column = A[iall];
+	cout << typeid(column).name() << endl;
+//	cout << column << endl;
 	
 	auto result = eq(A, B, tolerance);
 	if (result.second) {
