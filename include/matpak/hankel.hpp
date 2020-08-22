@@ -20,10 +20,8 @@ mtl::dense2D<typename Vector::value_type> hankel(const Vector&c, const Vector&r)
 
     auto A = toeplitz(c,r);
 
-    // std::cout << A << std::endl;
-    // auto B = rot90(A);
+    auto B = rot90(A);
 
-
-    return A; // return Hankel matrix
+    return B; // return Hankel matrix
 }
 }}} // namespace sw::hprblas::matpak
