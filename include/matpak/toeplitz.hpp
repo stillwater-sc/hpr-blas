@@ -18,12 +18,18 @@ mtl::dense2D<typename Vector::value_type> toeplitz(const Vector&c, const Vector&
     size_t m = num_rows(c);
 	size_t n = num_rows(r);
 
+	if (c[0]!=r[0]){
+		std::cout <<
+		"Warning: First element of input column does not match first element of input row." <<
+		"\n\nColumn wins diagonal conflict.\n";
+	}
+
     Matrix A(m,n);
 
     for(size_t i = 0; i< m; ++i){
         for(size_t j = 0; j< n; ++j){
             if(i==j){
-                A[i][j]=r[0];
+                A[i][j]=c[0];
             }else if(i < j){
                 A[i][j] = r[j - i ];
             }else{ // i >j

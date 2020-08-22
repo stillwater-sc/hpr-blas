@@ -4,7 +4,7 @@ MATPAK is a matrix utility package and is part of the HPRBLAS project.  Some fun
 
 MATPAK contains replicates several standard MATLAB functions such as `fliplr`, `flipup`, `toeplitz`, `hankel`, and  `rot90`.   Other functions included are to facilitate research on centrosymmetric matrices.   
 
-# Contents
+# Contents in Brief
 
 ei - Standard basis element.  `ei(i,n)`  
 fliplr - Flip matrix elements left/right  
@@ -18,7 +18,7 @@ toeplitz - Generates a Toeplitz matrix
 
 
 
-# Details
+# Contents in Detail
 ```
 // Generate 3rd standard basis element from \R^7.
 Vector ei(3,7); // Returns [0, 0, 1, 0, 0, 0, 0]
@@ -27,3 +27,13 @@ Vector ei(3,7); // Returns [0, 0, 1, 0, 0, 0, 0]
 ```
 adsf
 ```
+
+
+
+main()
+
+
+qr(A, Matrix& Q, Matrix& R){
+
+
+}

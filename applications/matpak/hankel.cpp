@@ -21,8 +21,8 @@ int main ()
 	{
 		using Scalar = double;
 		using Vector = mtl::vec::dense_vector< Scalar >;
-		Vector c{1,2, 3, 4};
-		Vector r{1, 5, 6, 7, 8};
+		Vector c{1, 2, 3, 4, 5};
+		Vector r{7, 5, 6, 7, 8};
 		auto A = hankel(c,r);
 		std::cout <<  A << std::endl;
  	}
