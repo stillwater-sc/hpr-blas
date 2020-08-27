@@ -25,8 +25,6 @@ bool isequal(const Matrix&A, const Matrix&B, const typename Matrix::value_type& 
         return false;
 	}
 
-
-
     if (ra!=rb || ca!=cb){
         return false;
     }else{
@@ -34,7 +32,10 @@ bool isequal(const Matrix&A, const Matrix&B, const typename Matrix::value_type& 
 	        for(size_t j = 0; j < ca; ++j){
 	        	if(abs(A[i][j]-B[i][j]) > tolerance){
 	                return false;
-	            }
+	            }else{
+					std::cout << A[i][j] << " " << B[i][j] << " ";
+					std::cout << abs(A[i][j]-B[i][j]) << std::endl;
+				}
 	        }
 	    }
     }
