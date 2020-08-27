@@ -2,6 +2,7 @@
 // rowsto.hpp : Generates a random m x n row stochastic matrix
 //
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
+// Author: James Quinlan
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 #include <cstdint>
