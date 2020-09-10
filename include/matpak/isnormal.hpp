@@ -17,4 +17,4 @@ bool isnormal(const Matrix&A, const typename Matrix::value_type& tolerance = 0.0
      return isequal(A_transpose*A, A*A_transpose, tolerance);
 }
 
-}}} // namespace sw::hprblas::matpak
+}}}

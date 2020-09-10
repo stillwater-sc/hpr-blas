@@ -37,7 +37,7 @@ mtl::dense2D<typename Vector::value_type> toeplitz(const Vector&c, const Vector&
             }
         }
     }
-
+    
     return A;
 }
-}}} // namespace sw::hprblas::matpak
+}}}

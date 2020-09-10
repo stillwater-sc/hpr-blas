@@ -6,14 +6,12 @@
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
-#include<universal/posit/posit_fwd.hpp>
 namespace sw { namespace hprblas { namespace matpak {
 
 template<typename Scalar>
 mtl::vec::dense_vector<Scalar> ek(size_t i, size_t n ) {
     mtl::vec::dense_vector<Scalar> v(n, Scalar(0));
-	v[i]=1;
+	v[i] = 1;
     return v;
 }
-
-}}} // namespace sw::hprblas::matpak
+}}}

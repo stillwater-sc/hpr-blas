@@ -12,7 +12,7 @@ template<typename Matrix>
 Matrix flipud(const Matrix&A) {
     typedef typename Matrix::value_type value_type;
 	typedef typename Matrix::size_type size_type;
-
+    
     size_type r = num_rows(A);
 	size_type c = num_cols(A);
 
@@ -23,4 +23,4 @@ Matrix flipud(const Matrix&A) {
     }
     return B;
 }
-}}} // namespace sw::hprblas::matpak
+}}}

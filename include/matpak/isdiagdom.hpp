@@ -1,30 +1,31 @@
 #pragma once
-// iscentro.hpp : Determine if matrix is centrosymmetric
+// isdiagdom.hpp : Determine if matrix is diagonally dominant
 //
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 // Author: James Quinlan
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
-#include <matpak/rot90.hpp>
-#include <matpak/isequal.hpp>
-
 namespace sw { namespace hprblas { namespace matpak {
 
 template<typename Matrix>
-bool iscentro(const Matrix&A) {
+bool isdiagdom(const Matrix&A) {
     auto m = num_rows(A);
     auto n = num_cols(A);
 
     if (m!=n) return false;
 
-    Matrix I(n,n);
-    I = 1; // Identity matrix
+    int R = 0;
 
-    Matrix J = rot90(I); // Counter-identity
-    Matrix JAJ(m,n);
-    JAJ = J*A*J;
-
-    return isequal(JAJ,A);
+    for(int i=0; i<n; ++i){
+        for(int j=0; j<n; ++j){
+            if(j!=i){
+                R = R+A[i][j];
+            }
+            if(A[i][i]<R) return false;
+            R = 0; 
+        }
+    }
+    return true;
 }
 }}}
