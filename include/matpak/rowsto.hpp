@@ -10,17 +10,16 @@
 
 namespace sw { namespace hprblas { namespace matpak {
 
-//
-// size_t 64-bit unsigned
-//
 template<typename Matrix>
 Matrix rowsto(size_t m, size_t n) {
     typedef typename Matrix::value_type value_type;
 
     // Use random_device to generate a seed for Mersenne twister engine.
     std::random_device rd{};
+    
     // Use Mersenne twister engine to generate pseudo-random numbers.
     std::mt19937 engine{ rd() };
+    
     // "Filter" MT engine's output to generate pseudo-random double values,
     // **uniformly distributed** on the closed interval [lowerbound, upperbound].
     // (Note that the range is [inclusive, inclusive].)
@@ -28,8 +27,6 @@ Matrix rowsto(size_t m, size_t n) {
     constexpr double upperbound =  10;
 
     std::uniform_real_distribution<double> dist{ lowerbound, upperbound };
-    // Pattern to generate pseudo-random number.
-    // double rnd_value = dist(engine);
 
     Matrix A(m,n);
     int i ,j;
@@ -45,4 +42,4 @@ Matrix rowsto(size_t m, size_t n) {
     }
     return A;
 }
-}}} // namespace sw::hprblas::matpak
+}}}

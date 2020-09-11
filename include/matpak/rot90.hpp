@@ -1,5 +1,5 @@
 #pragma once
-// rot90.hpp : Rotate matrix 90 degrees.
+// rot90.hpp : Rotate matrix 90 degrees counter clockwise
 //
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 // Author: James Quinlan
@@ -15,5 +15,4 @@ Matrix rot90(const Matrix&A) {
      Matrix T(mtl::mat::trans(A));
      return flipud(T);
 }
-
-}}} // namespace sw::hprblas::matpak
+}}} 

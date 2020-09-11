@@ -27,5 +27,4 @@ Matrix reshape(Matrix&A, size_t m, size_t n) {
 	Matrix B(m, n, A.elements());
 	return B;
 }
-
-}}} // namespace sw::hprblas::matpak
+}}} 
