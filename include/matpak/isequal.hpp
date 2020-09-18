@@ -18,7 +18,9 @@ bool isequal(const Matrix&A, const Matrix&B, const typename Matrix::value_type& 
 	size_type rb = num_rows(B);
 	size_type cb = num_cols(B);
 
-	if (ra!=rb || ca!=cb){return false};
+	if (ra!=rb || ca!=cb){
+		return false;
+	}
 
 	for(size_type i = 0; i < ra; ++i){
 	   for(size_type j = 0; j < ca; ++j){

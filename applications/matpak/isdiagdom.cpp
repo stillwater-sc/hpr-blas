@@ -38,7 +38,7 @@ int main ()
 					{8, 7, 6, 5},
 					{4, 3, 2, 1}
 				};
-		cout <<  A << endl;
+		 
 
 		cout <<  A << endl;
 	}
@@ -54,8 +54,6 @@ int main ()
 					{8, 7, 6, 5},
 					{4, 3, 2, 1}
 				};
-		cout <<  A << endl;
-		sw::hprblas::matpak::flipud(A);
 		cout <<  A << endl;
 	}
 #endif

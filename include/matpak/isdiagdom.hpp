@@ -15,7 +15,7 @@ bool isdiagdom(const Matrix&A) {
 
     if (m!=n) return false;
 
-    int R = 0;
+    size_t R = 0;
 
     for(int i=0; i<n; ++i){
         for(int j=0; j<n; ++j){
