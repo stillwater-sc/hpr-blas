@@ -16,8 +16,6 @@ template<typename Vector>
 mtl::dense2D<typename Vector::value_type> hankel(const Vector&c, const Vector&r) {
     typedef typename Vector::value_type value_type;
 
-    using Matrix = mtl::dense2D<value_type>;
-
     auto A = toeplitz(c,r);
     auto B = rot90(A);
 
