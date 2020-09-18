@@ -19,7 +19,7 @@ is a nonnegative norm defined such that
 namespace sw {
 namespace hprblas {
 
-// L1-norm = sum of absolute value of each vector element
+// L1-norm = sum of absolute value of each vector element (Manhattan Distance)
 template<typename Vector>
 typename mtl::traits::enable_if_vector<Vector, typename mtl::RealMagnitude<typename mtl::Collection<Vector>::value_type>::type>::type
 inline l1_norm(const Vector& v) {
@@ -58,7 +58,7 @@ sw::unum::posit<nbits, es> l1_norm(const mtl::dense2D<sw::unum::posit<nbits, es>
 	return l1;
 }
 
-// L2-norm = Manhattan distance
+// L2-norm = Euclidean distance
 template<typename Vector>
 typename Vector::value_type l2_norm(const Vector& v) {
 	using Scalar = typename Vector::value_type;
@@ -70,7 +70,7 @@ typename Vector::value_type l2_norm(const Vector& v) {
 	return sqrt(l2);
 }
 
-// L2-norm = Manhattan distance, posit specialized
+// L2-norm = Euclidean distance, posit specialized
 template<size_t nbits, size_t es>
 sw::unum::posit<nbits, es> l2_norm(const mtl::vec::dense_vector<sw::unum::posit<nbits, es> >& v) {
 	using Scalar = sw::unum::posit<nbits,es>;
