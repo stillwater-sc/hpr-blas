@@ -16,5 +16,4 @@ bool isnormal(const Matrix&A, const typename Matrix::value_type& tolerance = 0.0
      Matrix A_transpose(mtl::mat::trans(A));
      return isequal(A_transpose*A, A*A_transpose, tolerance);
 }
-
 }}}
