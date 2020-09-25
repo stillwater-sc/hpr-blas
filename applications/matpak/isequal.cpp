@@ -1,8 +1,19 @@
-#include <iostream>
+// isequal.cpp : Are two matrices equal? e.g., A == B
+//
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
+// Author: James Quinlan
+//
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
+
+#include <iostream>
 #include <hprblas>
 #include <matpak/rowsto.hpp>
 #include <matpak/isequal.hpp>
+
+// Selects posits or floats
+#define USE_POSIT 1
+
 
 int main ()
 {

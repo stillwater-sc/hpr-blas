@@ -1,10 +1,19 @@
+// diam.cpp : 
+//  
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
+// Author: James Quinlan
+//
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
+
+
 // Calculate the diameter of a matrix.
 // Functions needed: max, norm, mtl::iall=:
 #include <iostream>
 #include <hprblas>
 #include <matpak/ek.hpp>
 
-
+// Selects posits or floats
+#define USE_POSIT 1
 
 int main ()
 {

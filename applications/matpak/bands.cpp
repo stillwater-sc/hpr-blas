@@ -1,5 +1,6 @@
-// sum.cpp : sum of elements in matrix along dimensions specified
-//            S = sum(A,dim)
+// bands.cpp : extracts banded matrix (e.g., tridiagonal)
+//             from a given matrix A
+//
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 // Author: James Quinlan
 //
@@ -11,10 +12,7 @@
 
 // DEPENDENCIES
 #include <matpak/rowsto.hpp>
-#include <matpak/sum.hpp>
-
-// Selects posits or floats
-#define USE_POSIT 1
+#include <matpak/bands.hpp>
 
 
 int main ()
@@ -28,10 +26,10 @@ int main ()
 	
     cout << setprecision(5);
 
-		constexpr size_t nbits = 32;
-		constexpr size_t es = 2;
-
     /*
+        // --- POSITS ---
+        constexpr size_t nbits = 32;
+		constexpr size_t es = 2;
 		using Scalar = posit<nbits, es>;
 		using Matrix = mtl::mat::dense2D< Scalar >;
 		Matrix A = rowsto< Matrix >(5,5);   //
@@ -40,14 +38,16 @@ int main ()
 		std::cout <<  A << std::endl;
 	 */ 
 
+        // --- FLOATS ---
 		using Scalar = double;
 		using Matrix = mtl::mat::dense2D< Scalar >;
 		Matrix A = rowsto< Matrix >(5,5);   //
-		cout <<  A << endl;
-		cout << "Sum of all elements\n " << sum(A,0) << endl;
-		cout <<  "Column sums = \n" << sum(A,1) << endl;
-        cout <<  "Row sums = \n" << sum(A,2) << endl;
-        cout << "Tensor, Layer sums\n " << sum(A,3) << endl;
+		// cout <<  A << endl;
+		
+        // A = matrix 
+		cout <<  bands(A,v) << endl;
 	 
+
+
 	return 0;
 }

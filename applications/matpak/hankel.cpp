@@ -9,6 +9,8 @@
 #include <hprblas>
 #include <matpak/hankel.hpp>
 
+// Selects posits or floats
+#define USE_POSIT 1
 
 int main ()
 {

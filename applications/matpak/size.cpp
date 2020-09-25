@@ -1,5 +1,6 @@
-// TEMPLATE.cpp : Flip matrix in up/down direction.
-//
+// size.cpp : Calculates the size (or dimensions) of a Matrix
+//            Example: size(A)
+//  
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 // Author: James Quinlan
 //
@@ -27,10 +28,11 @@ int main ()
 
 
 	 
-		constexpr size_t nbits = 32;
-		constexpr size_t es = 2;
+		
 
     /*
+    constexpr size_t nbits = 32;
+		constexpr size_t es = 2;
 		using Scalar = posit<nbits, es>;
 		using Matrix = mtl::mat::dense2D< Scalar >;
 		Matrix A = rowsto< Matrix >(5,5);   //

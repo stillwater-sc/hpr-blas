@@ -9,6 +9,8 @@
 #include <iostream>
 #include <hprblas>
 
+// Selects posits or floats
+#define USE_POSIT 1
 
 int main ()
 {

@@ -4,12 +4,14 @@
 // Author: James Quinlan
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
-#include <iostream>
 
+#include <iostream>
 #include <hprblas>
 #include <matpak/rowsto.hpp>
 #include <matpak/flipud.hpp>
 
+// Selects posits or floats
+#define USE_POSIT 1
 
 int main ()
 {

@@ -1,11 +1,19 @@
-// Reflect Matrix across counter-identity
+// fliptranspose.cpp : Reflect Matrix across counter-identity
+// 		used to create Counter-identity matrix   
+//
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
+// Author: James Quinlan
+//
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
+ 
 #include <iostream>
 #include <hprblas>
 #include <matpak/rowsto.hpp>
 #include <matpak/fliptranspose.hpp>
 
-
+// Selects posits or floats
+#define USE_POSIT 1
 
 int main ()
 {

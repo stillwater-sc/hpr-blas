@@ -1,9 +1,19 @@
-#include <iostream>
+// rot90.cpp : Rotates a matrix 90 degrees couter-clockwise
+//			Notes: used in making counter-identity matrix
+//				   i.e., rot90(eye(n))
+//
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
+// Author: James Quinlan
+//
+// This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
+#include <iostream>
 #include <hprblas>
 #include <matpak/rowsto.hpp>
 #include <matpak/rot90.hpp>
 
+// Selects posits or floats
+#define USE_POSIT 1
 
 int main ()
 {
