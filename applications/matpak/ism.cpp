@@ -3,6 +3,7 @@
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
+
 #include <boost/numeric/mtl/mtl.hpp>
 #include <hprblas>
 #include <matpak/ism.hpp>

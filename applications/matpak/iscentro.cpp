@@ -20,36 +20,31 @@ int main ()
 	using namespace sw::hprblas;
 	using namespace sw::hprblas::matpak;
 	cout << setprecision(5);
-	{
-		using Scalar = double;
-		using Matrix = mtl::mat::dense2D< Scalar >;
-		// Matrix A = rowsto< Matrix >(5,5);   //
-		Matrix A = {
-					{1, 2, 3, 4},
-					{5, 6, 7, 8},
-					{8, 7, 6, 5},
-					{4, 3, 2, 1}
-				};
-		std::cout <<  A << std::endl;
 
-		int x = 0;
-		if(iscentro(A)){
-			x = 1;
-		}
-		std::cout <<  x << std::endl;
+#if USE_POSIT
+    constexpr size_t nbits = 16;
+	constexpr size_t es = 1;
+	using Scalar = posit<nbits, es>;
+	cout << "\n\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
+#else	  
+	using Scalar = double;
+#endif
+
+	using Matrix = mtl::mat::dense2D< Scalar >;
+	// Matrix A = rowsto< Matrix >(5,5);   //
+	Matrix A = {
+				{1, 2, 3, 4},
+				{5, 6, 7, 8},
+				{8, 7, 6, 5},
+				{4, 3, 2, 1}
+			};
+	std::cout <<  A << std::endl;
+
+	int x = 0;
+	if(iscentro(A)){
+		x = 1;
 	}
-
-	{
-		constexpr size_t nbits = 32;
-		constexpr size_t es = 2;
-
-		using Scalar = posit<nbits, es>;
-		using Matrix = mtl::mat::dense2D< Scalar >;
-		//Matrix A = rowsto< Matrix >(5,5);   //
-		//std::cout <<  A << std::endl;
-		//fliplr(A);
-		//std::cout <<  A << std::endl;
-	}
+	std::cout <<  x << std::endl;
 
 	return 0;
 }

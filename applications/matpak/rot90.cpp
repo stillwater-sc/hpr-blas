@@ -23,27 +23,19 @@ int main ()
 	using namespace sw::hprblas;
 	using namespace sw::hprblas::matpak;
 	cout << setprecision(5);
-	{
+
+#if USE_POSIT
+    	constexpr size_t nbits = 32;
+		constexpr size_t es = 2;
+		using Scalar = posit<nbits, es>;
+		cout << "\n\n Using POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
+#else	  
 		using Scalar = double;
-		using Matrix = mtl::mat::dense2D< Scalar >;
+#endif
+
+ 		using Matrix = mtl::mat::dense2D< Scalar >;
 		Matrix A = rowsto< Matrix >(5,5);   //
 		std::cout <<  A << std::endl;
-		//auto B = rot90(A);
-		//auto B = trans(A);
-		//std::cout <<  B << std::endl;
-	}
-
-	{
-		constexpr size_t nbits = 32;
-		constexpr size_t es = 2;
-
-		using Scalar = posit<nbits, es>;
-		using Matrix = mtl::mat::dense2D< Scalar >;
-		//Matrix A = rowsto< Matrix >(5,5);   //
-		//std::cout <<  A << std::endl;
-		//fliplr(A);
-		//std::cout <<  A << std::endl;
-	}
 
 	return 0;
 }

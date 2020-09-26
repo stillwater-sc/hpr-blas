@@ -14,6 +14,8 @@
 #include <matpak/rowsto.hpp>
 #include <matpak/bands.hpp>
 
+// Selects posits or floats
+#define USE_POSIT 1
 
 int main ()
 {
@@ -45,7 +47,7 @@ int main ()
 		// cout <<  A << endl;
 		
         // A = matrix 
-		cout <<  bands(A,v) << endl;
+		// cout <<  bands(A,v) << endl;
 	 
 
 

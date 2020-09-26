@@ -24,19 +24,24 @@ int main ()
 	using namespace sw::hprblas::matpak;
 	cout << setprecision(5);
 
-	{
-		using Scalar = double;
-		using Matrix = mtl::mat::dense2D< Scalar >;
-		Matrix A = rowsto< Matrix >(5,5);   //
-		Matrix B = rowsto< Matrix >(5,5);   //
+#if USE_POSIT
+    constexpr size_t nbits = 16;
+	constexpr size_t es = 1;
+	using Scalar = posit<nbits, es>;
+	cout << "\n\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
+#else	  
+	using Scalar = double;
+#endif
 
-		// B = A;
+	// ----------------------------- //
+	using Matrix = mtl::mat::dense2D< Scalar >;
+	Matrix A = rowsto< Matrix >(5,5);   //
+	Matrix B = rowsto< Matrix >(5,5);   //
 
-		std::cout <<  gt(A, B) << std::endl;
-		auto C = A > B;
-		std::cout <<  C << std::endl;
-	}	
+	// B = A;
+	std::cout <<  gt(A, B) << std::endl;
+	auto C = A > B;
+	std::cout <<  C << std::endl;
 
-	
-	return 0;
+return 0;
 }

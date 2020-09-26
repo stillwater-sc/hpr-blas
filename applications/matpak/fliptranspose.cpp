@@ -23,15 +23,20 @@ int main ()
 	using namespace sw::hprblas;
 	using namespace sw::hprblas::matpak;
 	cout << setprecision(8);
-	{
-		using Scalar = posit<16,1>;
-		// using Scalar = double;
+	
+#if USE_POSIT
+    constexpr size_t nbits = 16;
+	constexpr size_t es = 1;
+	using Scalar = posit<nbits, es>;
+	cout << "\n\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
+#else	  
+	using Scalar = double;
+#endif
 
-		using Matrix = mtl::mat::dense2D< Scalar >;
-		Matrix A = rowsto< Matrix >(5,5);   //
-		std::cout <<  A << std::endl;
-		std::cout <<  fliptranspose(A) << std::endl;
- 	}
+	using Matrix = mtl::mat::dense2D< Scalar >;
+	Matrix A = rowsto< Matrix >(5,5);   //
+	std::cout <<  A << std::endl;
+	std::cout <<  fliptranspose(A) << std::endl;
 
-	return 0;
+//return 0;
 }

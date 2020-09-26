@@ -21,28 +21,21 @@ int main ()
 	using namespace sw::unum;
 	using namespace sw::hprblas;
 	cout << setprecision(20);
-	{
-		using Scalar = double;
-		using Matrix = mtl::mat::dense2D< Scalar >;
-		Matrix A = sw::hprblas::matpak::rowsto< Matrix >(5,5);   //
-		std::cout <<  A << std::endl;
-		for (size_t i=0;i<5;++i){
-			cout << sum(A[i][iall])<<endl;
-		}
+
+#if USE_POSIT
+    constexpr size_t nbits = 32;
+	constexpr size_t es = 2;
+	using Scalar = posit<nbits, es>;
+	cout << "\n\n Using POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
+#else	  
+	using Scalar = double;
+#endif
+
+	using Matrix = mtl::mat::dense2D< Scalar >;
+	Matrix A = sw::hprblas::matpak::rowsto< Matrix >(5,5);   //
+	std::cout <<  A << std::endl;
+	for (size_t i=0;i<5;++i){
+		cout << sum(A[i][iall])<<endl;
 	}
-
-	{
-		constexpr size_t nbits = 32;
-		constexpr size_t es = 2;
-
-		using Scalar = posit<nbits, es>;
-		using Matrix = mtl::mat::dense2D< Scalar >;
-		Matrix A = sw::hprblas::matpak::rowsto< Matrix >(5,5);   //
-		std::cout <<  A << std::endl;
-		for (size_t i=0;i<5;++i){
-			cout << sum(A[i][iall])<<endl;
-		}
-	}
-
 	return 0;
 }
