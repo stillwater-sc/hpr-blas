@@ -26,7 +26,6 @@ Matrix sum(const Matrix&A, const int& dim) {
                 temp_sum += A[i][j];
 	        }
             S[0][j] = temp_sum;
-
         }
         return S;
     }else if(dim == 2){ // Row sums
@@ -39,7 +38,7 @@ Matrix sum(const Matrix&A, const int& dim) {
             S[i][0] = temp_sum;
         }
         return S;
-        }else if(dim == 0){ // Sum All elements
+    }else if(dim == 0){ // Sum All elements
         Matrix S(1,1); 
         value_type temp_sum = 0;
         for(size_type i = 0; i < m; ++i){
@@ -49,7 +48,7 @@ Matrix sum(const Matrix&A, const int& dim) {
         }
         S[0][0] = temp_sum;
         return S;
-    }
+    } // end if
     return Matrix{};
 }
 }}}

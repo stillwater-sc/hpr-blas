@@ -15,9 +15,8 @@ Matrix size(const Matrix&A) {
 	size_type m = num_rows(A);
 	size_type n = num_cols(A);
 
-	// std::cout << m << n << std::endl;
     Matrix C(1,2);
-	C[0][0] = m;
-	C[0][1] = n;
+	C[0][0] = 1;
+	C[0][1] = 1;
 }
 }}}
