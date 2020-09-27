@@ -36,8 +36,7 @@ mtl::dense2D<typename Vector::value_type> toeplitz(const Vector&c, const Vector&
                 A[i][j] = c[i - j];
             }
         }
-    }
-      
+    }    
     return A;
 }
 }}}

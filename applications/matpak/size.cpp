@@ -1,5 +1,6 @@
-// TEMPLATE.cpp : Flip matrix in up/down direction.
-//
+// size.cpp : Calculates the size (or dimensions) of a Matrix
+//            Example: size(A)
+//  
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 // Author: James Quinlan
 //
@@ -8,42 +9,39 @@
 // COMMON LIBRARIES
 #include <iostream>
 #include <hprblas>
-#include <matpak/rowsto.hpp>
-#include <matpak/flipud.hpp>
 
+// DEPENDENCIES
+#include <matpak/rowsto.hpp>
+#include <matpak/size.hpp>
+
+// Selects posits or floats
+#define USE_POSIT 0
 
 int main ()
 {
+    // COMMON NAMESPACES
 	using namespace std;
 	using namespace mtl;
 	using namespace sw::unum;
 	using namespace sw::hprblas;
 	using namespace sw::hprblas::matpak;
-	cout << setprecision(5);
+	
+    cout << setprecision(5);	
 
-    #define numsys = POSIT;
-
-    if (numsys POSIT)
-	{
-		constexpr size_t nbits = 32;
+#if USE_POSIT
+    	constexpr size_t nbits = 32;
 		constexpr size_t es = 2;
-
 		using Scalar = posit<nbits, es>;
 		using Matrix = mtl::mat::dense2D< Scalar >;
-		Matrix A = rowsto< Matrix >(5,5);   //
-		std::cout <<  A << std::endl;
-		fliplr(A);
-		std::cout <<  A << std::endl;
-	}
-    else
-	 {
+#else	  
 		using Scalar = double;
 		using Matrix = mtl::mat::dense2D< Scalar >;
+#endif
+
+
 		Matrix A = rowsto< Matrix >(5,5);   //
-		std::cout <<  A << std::endl;
-		flipud(A);
-		std::cout <<  A << std::endl;
-	}
+		cout << "Matrix A = \n" << A << endl;
+		cout <<  "Size A = " << size(A) << endl;
 
 	return 0;
 }

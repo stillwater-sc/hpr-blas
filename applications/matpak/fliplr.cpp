@@ -5,12 +5,12 @@
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 #include <iostream>
-
 #include <hprblas>
 #include <matpak/rowsto.hpp>
-
 #include <matpak/fliplr.hpp>
 
+// Selects posits or floats
+#define USE_POSIT 1
 
 int main ()
 {
@@ -20,26 +20,22 @@ int main ()
 	using namespace sw::hprblas;
 	using namespace sw::hprblas::matpak;
 	cout << setprecision(5);
-	{
-		using Scalar = double;
-		using Matrix = mtl::mat::dense2D< Scalar >;
-		Matrix A = rowsto< Matrix >(5,5);   //
-		std::cout <<  A << std::endl;
-		auto B = fliplr(A);
-		std::cout <<  B << std::endl;
-	}
+	
+#if USE_POSIT
+    constexpr size_t nbits = 16;
+	constexpr size_t es = 1;
+	using Scalar = posit<nbits, es>;
+	cout << "\n\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
+#else	  
+	using Scalar = double;
+#endif
 
-	{
-		constexpr size_t nbits = 32;
-		constexpr size_t es = 2;
-
-		using Scalar = posit<nbits, es>;
-		using Matrix = mtl::mat::dense2D< Scalar >;
-		//Matrix A = rowsto< Matrix >(5,5);   //
-		//std::cout <<  A << std::endl;
-		//fliplr(A);
-		//std::cout <<  A << std::endl;
-	}
-
-	return 0;
+	// ---
+ 	using Matrix = mtl::mat::dense2D< Scalar >;
+	Matrix A = rowsto< Matrix >(5,5);   //
+	std::cout <<  A << std::endl;
+	auto B = fliplr(A);
+	std::cout <<  B << std::endl;
+	 
+return 0;
 }
