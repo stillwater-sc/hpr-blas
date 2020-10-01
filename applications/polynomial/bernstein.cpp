@@ -1,18 +1,22 @@
-// bernstein.cpp: evaulation of Bernstein polynomials for 2D FIR filter design
+// bernstein.cpp: evaluation of Bernstein polynomials
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
+// Author:
 //
-// This file is part of the universal numbers project, which is released under an MIT Open Source license.
-
+// This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 #include <hprblas>
-
+//#include <polynomials/bernstein.hpp>
 
 int main(int argc, char** argv)
 try {
 	using namespace std;
 	using namespace sw::unum;
 
+	using Scalar = posit<32, 2>;
+	using Matrix = mtl::mat::dense2D<Scalar>;
 
+//	Matrix B = bernstein<Matrix>(5);
+//	cout << B << endl;
 
 	return EXIT_SUCCESS;
 }

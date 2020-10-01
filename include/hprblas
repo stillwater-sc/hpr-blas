@@ -11,55 +11,26 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // enable/disable special posit format I/O
-#if !defined(POSIT_ROUNDING_ERROR_FREE_IO_FORMAT)
+// POSIT_ROUNDING_ERROR_FREE_IO_FORMAT
 // default is to print (long double) values
-#define POSIT_ROUNDING_ERROR_FREE_IO_FORMAT 0
-#endif
+// #define POSIT_ROUNDING_ERROR_FREE_IO_FORMAT 0
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // enable/disable the ability to use literals in binary logic and arithmetic operators
-#if !defined(POSIT_ENABLE_LITERALS)
+// POSIT_ENABLE_LITERALS)
 // default is to enable them
-#define POSIT_ENABLE_LITERALS 1
-#endif
+// #define POSIT_ENABLE_LITERALS 1
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // enable throwing specific exceptions for posit arithmetic errors
 // left to application to enable
-#if !defined(POSIT_THROW_ARITHMETIC_EXCEPTION)
+// POSIT_THROW_ARITHMETIC_EXCEPTION
 // default is to use NaR as a signalling error
-#define POSIT_THROW_ARITHMETIC_EXCEPTION 0
-#endif
+// #define POSIT_THROW_ARITHMETIC_EXCEPTION 0
 
 ////////////////////////////////////////////////////////////////////////////////////////
-/// INCLUDE FILES that make up the library
-#include "universal/posit/posit.hpp"
-#include "universal/posit/numeric_limits.hpp"
-
-// fast specializations for special posit configurations
-// enable fast implementations of the standard posits
-// POSIT_FAST_SPECIALIZATION when set will turn on all fast implementations
-// Each implementation defines a macros POSIT_FAST_POSIT_`nbits`_`es,
-// and includes the fast implementation if set to 1.
-// For example, POSIT_FAST_POSIT_8_0, when set to 1, will enable the fast implementation of posit<8,0>.
-// The individual POSIT_FAST_### macros enable fine grain control over which configurations
-// use fast code.
-#include "universal/posit/specializations.hpp"
-
-#include "universal/posit/posit_manipulators.hpp"
-#include "universal/posit/posit_functions.hpp"
-
-///////////////////////////////////////////////////////////////////////////////////////
-/// the quire that enables user-controlled rounding
-#include "universal/posit/quire.hpp"
-
-///////////////////////////////////////////////////////////////////////////////////////
-/// the posit exact dot product
-#include "universal/posit/fdp.hpp"
-
-///////////////////////////////////////////////////////////////////////////////////////
-/// the posit elementary math functions
-#include "universal/posit/math_functions.hpp"
+/// INCLUDE FILES posit library
+#include <universal/posit/posit>
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /// useful mathematical property functions
