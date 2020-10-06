@@ -13,9 +13,12 @@ bool isdiagdom(const Matrix&A) {
     auto m = num_rows(A);
     auto n = num_cols(A);
 
-    if (m!=n) return false;
+    // Diagonally Dominant is n x n by definition
+    if (m!=n) return false; 
 
-    size_t R = 0;
+    using Scalar = typename Matrix::value_type;
+
+    Scalar R = 0;
 
     for(int i=0; i<n; ++i){
         for(int j=0; j<n; ++j){

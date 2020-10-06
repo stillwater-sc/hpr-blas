@@ -7,7 +7,7 @@
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
-#include <matpak/isequal.hpp>
+#include <matpak/isa/isequal.hpp>
 
 namespace sw { namespace hprblas { namespace matpak {
 

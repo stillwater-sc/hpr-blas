@@ -6,10 +6,10 @@
 
 #include <boost/numeric/mtl/mtl.hpp>
 #include <hprblas>
-#include <matpak/ism.hpp>
+#include <matpak/isa/ism.hpp>
 
 // Selects posits or floats
-#define USE_POSIT 1
+#define USE_POSIT 0
 
 template<typename Matrix>
 bool isMatrixAnMMatrix(const Matrix& A) {

@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <hprblas>
-#include <matpak/iscentro.hpp>
+#include <matpak/isa/iscentro.hpp>
 
 // Selects posits or floats
 #define USE_POSIT 1
@@ -25,7 +25,7 @@ int main ()
     constexpr size_t nbits = 16;
 	constexpr size_t es = 1;
 	using Scalar = posit<nbits, es>;
-	cout << "\n\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
+	cout << "\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
 #else	  
 	using Scalar = double;
 #endif

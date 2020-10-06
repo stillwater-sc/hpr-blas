@@ -1,18 +1,18 @@
-// toeplitz.cpp : Generate Toeplitz matrix
-//		Example: A = toeplitz(c,r); where c and r are vectors
+// checkerboard.cpp: Returns +1 / -1 checkerboard pattern matrix 
 //
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 // Author: James Quinlan
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
-
+// COMMON LIBRARIES
 #include <iostream>
 #include <hprblas>
-#include <matpak/toeplitz.hpp>
+#include <matpak/checkerboard.hpp>
+
 
 // Selects posits or floats
-#define USE_POSIT 1
+#define USE_POSIT 0
 
 int main ()
 {
@@ -21,15 +21,18 @@ int main ()
 	using namespace sw::unum;
 	using namespace sw::hprblas;
 	using namespace sw::hprblas::matpak;
-	
-	cout << setprecision(5);
-	{
-		using Scalar = double;
-		using Vector = mtl::vec::dense_vector< Scalar >;
-		Vector c{1, 2, 3, 4};
-		Vector r{7, 5, 6, 7, 8};
-		auto A = toeplitz(c,r);
-		std::cout <<  A << std::endl;
- 	}
+
+ #if USE_POSIT
+    constexpr size_t nbits = 16;
+	constexpr size_t es = 1;
+	using Scalar = posit<nbits, es>;
+	cout << "\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
+#else	  
+	using Scalar = double;
+#endif
+
+	std::cout << checkerboard(5) << std::endl;
+
 	return 0;
 }
+

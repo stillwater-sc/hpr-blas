@@ -6,7 +6,7 @@
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 
 
-/*
+/* From MATLAB: 
 kron(X,Y) is the Kronecker tensor product of X and Y.
     The result is a large matrix formed by taking all possible
     products between the elements of X and those of Y. For
@@ -26,11 +26,10 @@ kron(X,Y) is the Kronecker tensor product of X and Y.
 // COMMON LIBRARIES
 #include <iostream>
 #include <hprblas>
-#include <matpak/rowsto.hpp>
 #include <matpak/kron.hpp>
 
 // Selects posits or floats
-#define USE_POSIT 1
+#define USE_POSIT 0
 
 int main ()
 {
@@ -45,10 +44,22 @@ int main ()
     constexpr size_t nbits = 16;
 	constexpr size_t es = 1;
 	using Scalar = posit<nbits, es>;
-	cout << "\n\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
+	cout << "\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
 #else	  
 	using Scalar = double;
 #endif
+
+		using Matrix = mtl::mat::dense2D< Scalar >;
+		Matrix A = {
+				{1, 2, 3},
+				{4, 5, 6}
+			}; 
+        Matrix B = {
+				{1, 2, 3},
+				{4, 5, 6},
+				{7, 8, 9}
+			};
+	std::cout << kron(A,B) << std::endl;
 
 	return 0;
 }

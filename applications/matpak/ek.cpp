@@ -19,20 +19,21 @@ int main ()
 	using namespace sw::unum;
 	using namespace sw::hprblas;
 	using namespace sw::hprblas::matpak;
-	cout << setprecision(5);
 
 #if USE_POSIT
     constexpr size_t nbits = 16;
 	constexpr size_t es = 1;
 	using Scalar = posit<nbits, es>;
-	cout << "\n\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
+	cout << "\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
 #else	  
 	using Scalar = double;
 #endif
 
-		
+
+	// Main Program	
 	auto v = ek<Scalar>(3,8);
+	std::cout << setprecision(5);
 	std::cout <<  v << std::endl;
 
-return 0;
+	return 0;
 }
