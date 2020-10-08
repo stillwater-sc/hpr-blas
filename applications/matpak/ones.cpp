@@ -1,5 +1,4 @@
-// bands.cpp : extracts banded matrix (e.g., tridiagonal)
-//             from a given matrix A
+// ones.cpp : Matrix of all ones
 //
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 // Author: James Quinlan
@@ -11,8 +10,7 @@
 #include <hprblas> // includes mtl
 
 // DEPENDENCIES
-#include <matpak/rowsto.hpp>
-#include <matpak/bands.hpp>
+ #include <matpak/ones.hpp>
 
 // Selects posits or floats
 #define USE_POSIT 1
@@ -43,14 +41,8 @@ int main ()
         // --- FLOATS ---
 		using Scalar = double;
 		using Matrix = mtl::mat::dense2D< Scalar >;
-		Matrix A = rowsto< Matrix >(5,5);   //
+		auto A = Ones<Matrix>(5,7);   //
 		cout <<  A << endl;
-		Matrix v = {{-1,0,1}}; 
-
-        // A = matrix 
-		cout <<  bands(A,v) << endl;
-	 
-
-
+	
 	return 0;
 }

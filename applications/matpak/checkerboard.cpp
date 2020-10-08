@@ -30,8 +30,8 @@ int main ()
 #else	  
 	using Scalar = double;
 #endif
-
-	std::cout << checkerboard(5) << std::endl;
+	using Matrix = mtl::mat::dense2D<Scalar>;
+	std::cout << checkerboard<Matrix>(8) << std::endl;
 
 	return 0;
 }
