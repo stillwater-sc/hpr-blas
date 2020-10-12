@@ -21,6 +21,7 @@ int main ()
 	using namespace sw::unum;
 	using namespace sw::hprblas;
 	using namespace sw::hprblas::matpak;
+	
 	cout << setprecision(5);
 	{
 		using Scalar = double;

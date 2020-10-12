@@ -24,9 +24,7 @@ bool isequal(const Matrix&A, const Matrix&B, const typename Matrix::value_type& 
 
 	for(size_type i = 0; i < ra; ++i){
 	   for(size_type j = 0; j < ca; ++j){
-	      	if(abs(A[i][j]-B[i][j]) > tolerance){
-	            return false;
-	   		}
+	      	if(abs(A[i][j]-B[i][j]) > tolerance) return false;
 	   }
     }
     return true;

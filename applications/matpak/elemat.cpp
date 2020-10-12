@@ -1,5 +1,5 @@
-// rowsto.cpp : Generates row stochastic matrix
-//				
+// elemat.cpp : Elementary Matrix
+//
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 // Author: James Quinlan
 //
@@ -7,12 +7,10 @@
 
 #include <iostream>
 #include <hprblas>
-#include <matpak/rowsto.hpp>
-//#include <boost/numeric/mtl/mtl.hpp>
+#include <matpak/elemat.hpp>
 
 // Selects posits or floats
 #define USE_POSIT 1
-
 
 int main ()
 {
@@ -20,22 +18,35 @@ int main ()
 	using namespace mtl;
 	using namespace sw::unum;
 	using namespace sw::hprblas;
-	cout << setprecision(20);
-
+	using namespace sw::hprblas::matpak;
+	
 #if USE_POSIT
-    constexpr size_t nbits = 32;
-	constexpr size_t es = 2;
+    constexpr size_t nbits = 16;
+	constexpr size_t es = 1;
 	using Scalar = posit<nbits, es>;
 	cout << "\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
 #else	  
 	using Scalar = double;
 #endif
-
+// --------------------------------------------- //
+		
 	using Matrix = mtl::mat::dense2D< Scalar >;
-	Matrix A = sw::hprblas::matpak::rowsto< Matrix >(5,5);   //
+	Matrix A = elemat< Matrix >(8,3,4,2);   //
+    cout << setprecision(5);
 	std::cout <<  A << std::endl;
-	for (size_t i=0;i<5;++i){
-		cout << sum(A[i][iall])<<endl;
-	}
-	return 0;
+
+     Matrix B = {
+				{1, 2, 3},
+				{4, 5, 6},
+				{7, 8, 9}
+			}; 
+
+        Matrix C = {
+				{1, 2, 3},
+				{4, 5, 6},
+				{7, 8, 9}
+			}; 
+        std::cout << B + C << std::endl;
+
+return 0;
 }

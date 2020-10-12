@@ -1,4 +1,4 @@
-// isdiagdom.cpp : Is the matrix A diagonally domainant
+// hadamard.cpp : Hadamard product of A.*B
 //
 // Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
 // Author: James Quinlan
@@ -10,7 +10,7 @@
 #include <hprblas>
 
 // DEPENDENCIES
-#include <matpak/isa/isdiagdom.hpp>
+#include <matpak/hadamard.hpp>
 
 // Selects posits or floats
 #define USE_POSIT 1
@@ -38,11 +38,20 @@ int main ()
 
 		Matrix A = {
 				{10, 2, 3, 4},
-				{5, 26, 7, 8},
+				{5, 7, 6, 2},
 				{8, 7, 30, 5},
-				{4, 3, 2, 11}
+				{1, 1, 7, 41}
 			};
-	cout << "The diagonal domainance of A is: " << isdiagdom(A) << "\n\n" << endl;
+        
+        Matrix B = {
+				{1, 0, 2, 4},
+				{5, 2, 1, 9},
+				{8, 7, 3, 5},
+				{4, 3, 2, 1}
+			};
+
+    Matrix C = hadamard(A,B);
+	cout << "A.*B =  \n" << A << "\n * \n" << B << "\n = \n" << C << "\n\n" << endl;
 
 return 0;
 }

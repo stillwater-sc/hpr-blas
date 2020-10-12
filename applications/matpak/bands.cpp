@@ -8,7 +8,7 @@
 
 // COMMON LIBRARIES
 #include <iostream>
-#include <hprblas>
+#include <hprblas> // includes mtl
 
 // DEPENDENCIES
 #include <matpak/rowsto.hpp>
@@ -44,10 +44,11 @@ int main ()
 		using Scalar = double;
 		using Matrix = mtl::mat::dense2D< Scalar >;
 		Matrix A = rowsto< Matrix >(5,5);   //
-		// cout <<  A << endl;
-		
+		cout <<  A << endl;
+		Matrix v = {{-1,0,1}}; 
+
         // A = matrix 
-		// cout <<  bands(A,v) << endl;
+		cout <<  bands(A,v) << endl;
 	 
 
 

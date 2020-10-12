@@ -67,6 +67,9 @@ Returns a Hankel matrix.
 hankel(c,r) is a non-symmetric Toeplitz matrix having C as its
     first column and R as its first row rotated 90 degrees.
 
+```
+hankel(c,r)
+```
 
 -----------------------
 

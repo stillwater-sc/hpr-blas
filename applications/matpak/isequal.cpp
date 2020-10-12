@@ -9,7 +9,7 @@
 #include <iostream>
 #include <hprblas>
 #include <matpak/rowsto.hpp>
-#include <matpak/isequal.hpp>
+#include <matpak/isa/isequal.hpp>
 
 // Selects posits or floats
 #define USE_POSIT 1
@@ -28,7 +28,7 @@ int main ()
     	constexpr size_t nbits = 32;
 		constexpr size_t es = 2;
 		using Scalar = posit<nbits, es>;
-		cout << "\n\n Using POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
+		cout << "\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
 #else	  
 		using Scalar = double;
 #endif

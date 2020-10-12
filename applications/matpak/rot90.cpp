@@ -28,7 +28,7 @@ int main ()
     	constexpr size_t nbits = 32;
 		constexpr size_t es = 2;
 		using Scalar = posit<nbits, es>;
-		cout << "\n\n Using POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
+		cout << "\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
 #else	  
 		using Scalar = double;
 #endif
