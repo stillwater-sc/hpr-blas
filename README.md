@@ -1,6 +1,7 @@
 # HPR-BLAS (pronounced hyper-blas)
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ac548d4ded9a4a6fa6ef90556c3abefc)](https://app.codacy.com/gh/stillwater-sc/hpr-blas?utm_source=github.com&utm_medium=referral&utm_content=stillwater-sc/hpr-blas&utm_campaign=Badge_Grade_Dashboard)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fstillwater-sc%2Fhpr-blas.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fstillwater-sc%2Fhpr-blas?ref=badge_shield)
 
 Hyper-BLAS: High-Performance Reproducible BLAS using posit arithmetic and user controlled rounding
 
@@ -55,3 +56,7 @@ Below shows a successful cmake configuration.
 ![CMake Configuration](images/cmake-configuration.png)
 
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fstillwater-sc%2Fhpr-blas.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fstillwater-sc%2Fhpr-blas?ref=badge_large)
