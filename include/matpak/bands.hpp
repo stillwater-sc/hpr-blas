@@ -17,7 +17,6 @@ Matrix bands(const Matrix&A, const Matrix&v = {0}) {
     Matrix M(m,n); M = 0;
 
     for(size_t k = 0; k<= N; ++k){
-    
         if(v[0][k] <= 0){ // Sub Diagonals (+Diagonal)
             for( size_t i = abs(v[0][k]);  i <= m ; ++i) {
                 size_t j = i + v[0][k];
