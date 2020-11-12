@@ -13,8 +13,8 @@ int main()
             B[r][c]= (r+1) * 1000 + (c+1) * 100;
         }
         
-    C= kron(A, B);
-    std::cout << "kron(A, B) is\n" << C;
+    //C= kron(A, B);
+    //std::cout << "kron(A, B) is\n" << C;
     
     MTL_THROW_IF(C[0][0] != 12100, mtl::runtime_error("Wrong value in C[0][0]"));
     MTL_THROW_IF(C[3][3] != 48400, mtl::runtime_error("Wrong value in C[3][3]"));

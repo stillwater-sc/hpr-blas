@@ -17,7 +17,58 @@
  2. Should be able to short-circuit.  Assume true, then if element in row
  is false, make 'all' in that row false...no need to check other row entries.
 
- 3. 
+ 3. lambda function - chebfun
+[](){ function body}
+[local variables]() { function body }
+[](x) { return x*x; }
+
+[captures]( params) { function body; }
+
+See https://en.cppreference.com/w/cpp/language/lambda
+
+void any(const Matrix& A, (*f)())
+Matrix operator<(const Matrix& A, const Matrix& B)
+A < B;
+
+Matrix operator<(Matrix& A, Matrix& B)
+Matrix operator+(Matrix& A, Matrix& B)
+
+Matrix operator<(Matrix& A, Matrix& B)
+Matrix operator+(Matrix& A, Matrix& B)
+// matrix element-wise sum
+template<typename Scalar>
+matrix<Scalar> operator+(const matrix<Scalar>& A, const matrix<Scalar>& B) {
+	matrix<Scalar> Sum(A);
+	return Sum += B;
+}
+
+// matrix element-wise sum
+template<typename Scalar>
+matrix<Scalar> operator+(const matrix<Scalar>& A, const matrix<Scalar>& B) {
+	matrix<Scalar> Sum(A);
+	return Sum += B;
+}
+
+
+sw::unum::matrix class?
+// matrix element-wise sum
+	matrix& operator+=(const matrix& rhs) {
+		// check if the matrices are compatible
+		if (_m != rhs._m || _n != rhs._n) {
+			std::cerr << "Element-wise matrix sum received incompatible matrices ("
+				<< _m << ", " << _n << ") += (" << rhs._m << ", " << rhs._n << ")\n";
+			return *this; // return without changing
+		}
+		for (size_type e = 0; e < _m * _n; ++e) {
+			data[e] += rhs.data[e];
+		}
+		return *this;
+	}
+
+ 4. Look at:  include/universal/blas/matrix.hpp
+    See vector.hpp for class template.
+
+
 
 */
 

@@ -22,7 +22,7 @@ If the matrix A is Hermitian and positive semi-definite, then it still has a dec
 of the form A = LL* if the diagonal entries of L are allowed to be zero.
 
 When A has only real entries, L has only real entries as well, 
-and the factorization may be written A = LLT.
+and the factorization may be written A = LL'.
 
 The Cholesky decomposition is unique when A is positive definite; 
 there is only one lower triangular matrix L with strictly positive 
