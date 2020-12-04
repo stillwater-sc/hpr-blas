@@ -35,18 +35,5 @@ int main ()
     cout << setprecision(5);
 	std::cout <<  A << std::endl;
 
-     Matrix B = {
-				{1, 2, 3},
-				{4, 5, 6},
-				{7, 8, 9}
-			}; 
-
-        Matrix C = {
-				{1, 2, 3},
-				{4, 5, 6},
-				{7, 8, 9}
-			}; 
-        std::cout << B + C << std::endl;
-
 return 0;
 }

@@ -49,8 +49,5 @@ int main ()
 
         // A = matrix 
 		cout <<  bands(A,v) << endl;
-	 
-
-
 	return 0;
 }

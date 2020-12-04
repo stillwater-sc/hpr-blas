@@ -22,8 +22,8 @@ int main ()
 	cout << setprecision(5);
 	
 #if USE_POSIT
-    constexpr size_t nbits = 16;
-	constexpr size_t es = 1;
+    constexpr size_t nbits = 32;
+	constexpr size_t es = 2;
 	using Scalar = posit<nbits, es>;
 	cout << "\nUsing POSIT<" << nbits << "," <<  es << ">\n" <<  endl;
 #else	  
