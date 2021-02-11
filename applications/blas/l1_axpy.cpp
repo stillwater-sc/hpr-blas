@@ -6,7 +6,7 @@
 #include "common.hpp"
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
-#include <universal/posit/posit>
+#include <universal/number/posit/posit>
 
 // axpy: a times x plus y
 template<typename scale_T, typename vector_T>
@@ -30,7 +30,7 @@ void printStridedVector(std::ostream& ostr, size_t n, vector_T& x, size_t incx =
 int main(int argc, char** argv)
 try {
 	using namespace std;
-	using namespace sw::unum;
+	using namespace sw::universal;
 
 	constexpr size_t nbits = 16;
 	constexpr size_t es = 1;

@@ -5,14 +5,14 @@
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
 
-#include <universal/posit/posit>
+#include <universal/number/posit/posit>
 
  // generate specific test case that you can trace with the trace conditions in posit.h
  // for most bugs they are traceable with _trace_conversion and _trace_sub
 template<size_t nbits, size_t es, typename Ty>
 void GenerateFMATestCase(Ty a, Ty b, Ty c) {
 	Ty with_fma, without_fma;
-	sw::unum::posit<nbits, es> pa(a), pb(b), pc(c), pref, pfma;
+	sw::universal::posit<nbits, es> pa(a), pb(b), pc(c), pref, pfma;
 
 	++pa;         // perturb a by adding 1 machine epsilon
 	a = Ty(pa);   // and update the input to reflect the new value
@@ -21,7 +21,7 @@ void GenerateFMATestCase(Ty a, Ty b, Ty c) {
 	with_fma = std::fma(a, b, c);
 	without_fma = a*b + c;
 	pref = with_fma;
-	pfma = sw::unum::fma(pa, pb, pc);
+	pfma = sw::universal::fma(pa, pb, pc);
 	std::cout << "posit<" << nbits << "," << es << ">" << std::endl;
 	std::cout << std::setprecision(nbits - 2);
 	std::cout << std::setw(nbits) << a << " * " << std::setw(nbits) << b << " + " << std::setw(nbits) << c << " = " << std::setw(nbits) << without_fma << " not fused" << std::endl;
@@ -35,7 +35,7 @@ void GenerateFMATestCase(Ty a, Ty b, Ty c) {
 int main(int argc, char** argv)
 try {
 	using namespace std;
-	//using namespace sw::unum;   it is more informative to use the namespace explicitely
+	//using namespace sw::universal;   it is more informative to use the namespace explicitely
 
 	int nrOfFailedTestCases = 0;
 

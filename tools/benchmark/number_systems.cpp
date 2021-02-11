@@ -7,7 +7,7 @@
 //#define POSIT_FAST_SPECIALIZATION 1
 #define POSIT_FAST_POSIT_16_1 1
 #define POSIT_FAST_POSIT_32_2 1
-#include <universal/posit/posit>
+#include <universal/number/posit/posit>
 #include <universal/performance/number_system.hpp>
 
 // define a true 256-bit IEEE floating point type
@@ -22,7 +22,7 @@ using op = cpp_bin_float_octand;
 int main(int argc, char** argv)
 try {
 	using namespace std;
-	using namespace sw::unum;
+	using namespace sw::universal;
 
 	cout << "Arithmetic performance comparison" << endl;
 

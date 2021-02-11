@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 try {
 	//using namespace std;
 	using namespace mtl;
-	//using namespace sw::unum;
+	//using namespace sw::universal;
 	using namespace sw::hprblas;
 
 	int nrOfFailedTestCases = 0;
@@ -46,8 +46,8 @@ try {
 		axpy_test<double,Vector>("Double AXPY is ", vecSize, 10.0, -1.0);
 	}
 	{
-		using Vector = mtl::dense_vector<sw::unum::posit<nbits, es>, mtl::vec::parameters<tag::row_major> >;
-		axpy_test<sw::unum::posit<nbits, es>,Vector>("posit<32,2> AXPY is ", vecSize, sw::unum::posit<nbits, es>(10.0), sw::unum::posit<nbits, es>(-1.0));
+		using Vector = mtl::dense_vector<sw::universal::posit<nbits, es>, mtl::vec::parameters<tag::row_major> >;
+		axpy_test<sw::universal::posit<nbits, es>,Vector>("posit<32,2> AXPY is ", vecSize, sw::universal::posit<nbits, es>(10.0), sw::universal::posit<nbits, es>(-1.0));
 	}
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
@@ -56,15 +56,15 @@ catch (char const* msg) {
 	std::cerr << msg << std::endl;
 	return EXIT_FAILURE;
 }
-catch (const posit_arithmetic_exception& err) {
+catch (const sw::universal::posit_arithmetic_exception& err) {
 	std::cerr << "Uncaught posit arithmetic exception: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
-catch (const quire_exception& err) {
+catch (const sw::universal::quire_exception& err) {
 	std::cerr << "Uncaught quire exception: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
-catch (const posit_internal_exception& err) {
+catch (const sw::universal::posit_internal_exception& err) {
 	std::cerr << "Uncaught posit internal exception: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }

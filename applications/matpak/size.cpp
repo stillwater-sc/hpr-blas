@@ -27,7 +27,7 @@ int main ()
     // COMMON NAMESPACES
 	using namespace std;
 	using namespace mtl; using mtl::iall;
-	using namespace sw::unum;
+	using namespace sw::universal;
 	using namespace sw::hprblas;
 	using namespace sw::hprblas::matpak;
 	

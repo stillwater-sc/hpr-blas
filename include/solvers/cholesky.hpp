@@ -7,7 +7,7 @@
 #include <vector>
 #define POSIT_VERBOSE_OUTPUT
 #define QUIRE_TRACE_ADD
-#include <universal/posit/posit>
+#include <universal/number/posit/posit>
 /*
 The Cholesky decomposition of a Hermitian positive-definite matrix A is a decomposition of the form
 

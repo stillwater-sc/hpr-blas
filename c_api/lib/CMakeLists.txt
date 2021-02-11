@@ -1,7 +1,7 @@
 set(lib_name hprblas_c_api)
 set(folder Libraries)
 
-add_library(${lib_name} STATIC hprblas_c_api.cpp)
+add_library(${lib_name} STATIC hprblas_c_api.cpp ../../applications/apf/foreach.cpp)
 set_target_properties(${lib_name} PROPERTIES FOLDER ${folder})
 
 if(C_API_LIB_PIC)

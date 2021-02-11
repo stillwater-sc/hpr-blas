@@ -18,12 +18,12 @@
 #include <utils/print_utils.hpp>
 
 template<size_t nbits, size_t es, size_t capacity = 10>
-void ComparePositDecompositions(mtl::mat::dense2D< sw::unum::posit<nbits, es> >& A, mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& x, mtl::vec::dense_vector< sw::unum::posit<nbits, es> >& b) {
+void ComparePositDecompositions(mtl::mat::dense2D< sw::universal::posit<nbits, es> >& A, mtl::vec::dense_vector< sw::universal::posit<nbits, es> >& x, mtl::vec::dense_vector< sw::universal::posit<nbits, es> >& b) {
 	assert(mtl::mat::num_rows(A) == mtl::mat::num_cols(A));
 
 	using namespace sw::hprblas;
 	size_t N = mtl::mat::num_cols(A);
-	mtl::mat::dense2D< sw::unum::posit<nbits, es> > LU(N,N);
+	mtl::mat::dense2D< sw::universal::posit<nbits, es> > LU(N,N);
 
 	{
 		using namespace std::chrono;
@@ -135,15 +135,15 @@ void CompareIEEEDecompositions(Matrix& A, Vector& x, Vector& b) {
 }
 
 /* TBD
-template<> class std::numeric_limits< sw::unum::posit<28, 1> >
+template<> class std::numeric_limits< sw::universal::posit<28, 1> >
 	: public _Num_float_base
 {	// limits for type posit<28, 1>
 public:
-	typedef sw::unum::posit<28,1> _Ty;
+	typedef sw::universal::posit<28,1> _Ty;
 
 	static constexpr _Ty(min)() _THROW0()
 	{	// return minimum value
-		return (sw::unum::minpos<28,1>());
+		return (sw::universal::minpos<28,1>());
 	}
 
 	static constexpr _Ty(max)() _THROW0()
@@ -201,7 +201,7 @@ public:
 int main(int argc, char** argv)
 try {
 	using namespace std;
-	using namespace sw::unum;
+	using namespace sw::universal;
 	using namespace sw::hprblas;
 
 	using IEEEType = float;

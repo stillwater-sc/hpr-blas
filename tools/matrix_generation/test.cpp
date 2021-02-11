@@ -64,7 +64,7 @@ int eigenvalue_example() {
 
 int main() {
     using namespace std;
-	using namespace sw::unum;
+	using namespace sw::universal;
     using namespace sw::hprblas;
 
 #ifdef MTL_MSVC_BUG_FIX

@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <boost/numeric/mtl/mtl.hpp>
-#include <universal/posit/posit>
+#include <universal/number/posit/posit>
 
 #define  SIZE 25
 

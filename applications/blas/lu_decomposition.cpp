@@ -10,10 +10,10 @@
 #include <typeinfo>
 
 #include <boost/numeric/mtl/mtl.hpp>
-#include <universal/posit/posit>
+#include <universal/number/posit/posit>
 
 using namespace std;
-using namespace sw::unum;
+using namespace sw::universal;
 
 // Turn it off for now
 #define USE_POSIT

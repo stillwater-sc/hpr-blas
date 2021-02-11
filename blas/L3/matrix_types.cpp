@@ -23,7 +23,7 @@ void fill_and_print(Matrix& A, char name)
 
 int main(int argc, char** argv)
 try {
-	using namespace sw::unum;
+	using namespace sw::universal;
 	using namespace sw::hprblas;
 
 #if defined(MTL_WITH_VARIADIC_TEMPLATE) && defined(MTL_WITH_TEMPLATE_ALIAS)

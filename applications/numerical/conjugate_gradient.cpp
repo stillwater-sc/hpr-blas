@@ -60,7 +60,7 @@ unsigned CG(const Matrix& A, const Vector& b, Vector& x, Real epsilon) {
 // Conjugate Gradient algorithm, returns the iteration number of convergence
 template<typename Matrix, typename Vector, typename Real>
 unsigned fdpCG(const Matrix& A, const Vector& b, Vector& x, Real epsilon) {
-	using namespace sw::unum;
+	using namespace sw::universal;
 	//using Real = Vector::value_type;
 	// starting x is provided by calling context
 	unsigned k = 0;
@@ -91,7 +91,7 @@ unsigned fdpCG(const Matrix& A, const Vector& b, Vector& x, Real epsilon) {
 // Conjugate Gradient algorithm, returns the iteration number of convergence
 template<typename Matrix, typename Vector, typename Real>
 unsigned fdp2CG(const Matrix& A, const Vector& b, Vector& x, Real epsilon) {
-	using namespace sw::unum;
+	using namespace sw::universal;
 	//using Real = Vector::value_type;
 	// starting x is provided by calling context
 	unsigned k = 0;
@@ -145,10 +145,10 @@ void CGdriver(unsigned N, Real epsilon) {
 
 // CG with fdp applied to alpha/beta calculation only
 template<size_t nbits, size_t es>
-void fdpCGdriver(unsigned N, sw::unum::posit<nbits,es> epsilon) {
+void fdpCGdriver(unsigned N, sw::universal::posit<nbits,es> epsilon) {
 	using namespace std;
 	using namespace mtl;
-	using Real = sw::unum::posit<nbits, es>;
+	using Real = sw::universal::posit<nbits, es>;
 	using Matrix = mtl::dense2D<Real>;
 	using Vector = mtl::dense_vector<Real>;
 
@@ -171,10 +171,10 @@ void fdpCGdriver(unsigned N, sw::unum::posit<nbits,es> epsilon) {
 
 // CG with fdp applied to alpha/beta and to matvec A * p as well
 template<size_t nbits, size_t es>
-void fdp2CGdriver(unsigned N, sw::unum::posit<nbits, es> epsilon) {
+void fdp2CGdriver(unsigned N, sw::universal::posit<nbits, es> epsilon) {
 	using namespace std;
 	using namespace mtl;
-	using Real = sw::unum::posit<nbits, es>;
+	using Real = sw::universal::posit<nbits, es>;
 	using Matrix = mtl::dense2D<Real>;
 	using Vector = mtl::dense_vector<Real>;
 
@@ -199,7 +199,7 @@ void fdp2CGdriver(unsigned N, sw::unum::posit<nbits, es> epsilon) {
 int main(int argc, char** argv)
 try {
 	using namespace std;
-	using namespace sw::unum;
+	using namespace sw::universal;
 
 	string separation_string = "=================================================================\n";
 	constexpr unsigned N = 10;

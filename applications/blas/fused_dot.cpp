@@ -55,7 +55,7 @@ try {
 	using namespace std;
 	using namespace std::chrono;
 	using namespace mtl;
-	using namespace sw::unum;
+	using namespace sw::universal;
 	using namespace sw::hprblas;
 
 	constexpr size_t nbits = 16;

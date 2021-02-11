@@ -34,7 +34,7 @@ void dumpPair(std::vector<Real>& args, std::vector<Real>& nodes) {
 int main(int argc, char** argv)
 try {
 	using namespace std;
-	using namespace sw::unum;
+	using namespace sw::universal;
 
 	using Real = qp;
 	cout << setprecision(numeric_limits<qp>::digits10);

@@ -13,8 +13,8 @@
 #include <stdint.h>
 
 // standard posit C types
-#include <universal/posit/positctypes.h>
-#include <universal/posit/posit_c_api.h>
+#include <universal/number/posit/positctypes.h>
+#include <universal/number/posit/posit_c_api.h>
 
 #ifdef __cplusplus
 // export a C interface if used by C++ source code

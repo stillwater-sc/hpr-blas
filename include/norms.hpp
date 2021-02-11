@@ -33,7 +33,7 @@ inline l1_norm(const Vector& v) {
 }
 
 template<size_t nbits, size_t es>
-sw::unum::posit<nbits, es> l1_norm(const mtl::dense_vector<sw::unum::posit<nbits, es> > & v) {
+sw::universal::posit<nbits, es> l1_norm(const mtl::dense_vector<sw::universal::posit<nbits, es> > & v) {
 	using Scalar = sw::unum::posit<nbits, es>;
 	sw::unum::quire<nbits, es> q(0);
 	for (unsigned i = 0; i < size(v); ++i) {
@@ -45,7 +45,7 @@ sw::unum::posit<nbits, es> l1_norm(const mtl::dense_vector<sw::unum::posit<nbits
 }
 
 template<size_t nbits, size_t es>
-sw::unum::posit<nbits, es> l1_norm(const mtl::dense2D<sw::unum::posit<nbits, es> > & M) {
+sw::universal::posit<nbits, es> l1_norm(const mtl::dense2D<sw::universal::posit<nbits, es> > & M) {
 	using Scalar = sw::unum::posit<nbits, es>;
 	sw::unum::quire<nbits, es> q(0);
 	for (unsigned i = 0; i < mtl::mat::num_rows(M); ++i) {
@@ -72,7 +72,7 @@ typename Vector::value_type l2_norm(const Vector& v) {
 
 // L2-norm = Euclidean distance, posit specialized
 template<size_t nbits, size_t es>
-sw::unum::posit<nbits, es> l2_norm(const mtl::vec::dense_vector<sw::unum::posit<nbits, es> >& v) {
+sw::universal::posit<nbits, es> l2_norm(const mtl::vec::dense_vector<sw::universal::posit<nbits, es> >& v) {
 	using Scalar = sw::unum::posit<nbits,es>;
 	sw::unum::quire<nbits, es> q(0);
 	for (unsigned i = 0; i < size(v); ++i) {
@@ -126,7 +126,7 @@ typename Matrix::value_type frobenius_norm(const Matrix& M) {
 
 // Frobenius-norm = sqrt of the sum of absolute squares, posit specialized for dense matrices
 template<size_t nbits, size_t es>
-sw::unum::posit<nbits, es> frobenius_norm(const mtl::dense2D<sw::unum::posit<nbits, es> >& M) {
+sw::universal::posit<nbits, es> frobenius_norm(const mtl::dense2D<sw::universal::posit<nbits, es> >& M) {
 	assert(mtl::mat::num_rows(M) == mtl::mat::num_cols(M)); // assuming squareness
 	int N = int(mtl::mat::num_cols(M));
 	sw::unum::quire<nbits, es> q(0);

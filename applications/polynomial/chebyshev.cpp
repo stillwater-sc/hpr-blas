@@ -54,7 +54,7 @@ std::ostream& operator<<(std::ostream& ostr, const std::vector<Scalar>& vec) {
 int main(int argc, char** argv)
 try {
 	using namespace std;
-	using namespace sw::unum;
+	using namespace sw::universal;
 
 	using Real = qp;
 	mtl::vec::dense_vector<Real> args(10), nodes(10);

@@ -40,13 +40,13 @@ void CroutCycle(Matrix& A, Vector& x, const Vector& b)
 }
 
 template<size_t nbits, size_t es, size_t capacity = 10>
-void CroutCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector< sw::unum::posit<nbits, es> >& x, mtl::dense_vector< sw::unum::posit<nbits, es> >& b)
+void CroutCycle(mtl::dense2D< sw::universal::posit<nbits, es> >& A, mtl::dense_vector< sw::universal::posit<nbits, es> >& x, mtl::dense_vector< sw::universal::posit<nbits, es> >& b)
 {
 	using namespace sw::hprblas;
 
 	assert(num_cols(A) == size(b));
 	size_t N = size(b);
-	mtl::dense2D< sw::unum::posit<nbits, es> > LU(N, N);
+	mtl::dense2D< sw::universal::posit<nbits, es> > LU(N, N);
 
 	std::cout << "----------------- Crout cycle ------------------------\n";
 	using namespace std::chrono;
@@ -63,13 +63,13 @@ void CroutCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector
 }
 
 template<size_t nbits, size_t es, size_t capacity = 10>
-void CroutFDPCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vector< sw::unum::posit<nbits, es> >& x, mtl::dense_vector< sw::unum::posit<nbits, es> >& b)
+void CroutFDPCycle(mtl::dense2D< sw::universal::posit<nbits, es> >& A, mtl::dense_vector< sw::universal::posit<nbits, es> >& x, mtl::dense_vector< sw::universal::posit<nbits, es> >& b)
 {
 	using namespace sw::hprblas;
 
 	assert(num_cols(A) == size(b));
 	size_t N = size(b);
-	mtl::dense2D< sw::unum::posit<nbits, es> > LU(N, N);
+	mtl::dense2D< sw::universal::posit<nbits, es> > LU(N, N);
 
 	std::cout << "----------------- Crout FDP cycle --------------------\n";
 	using namespace std::chrono;
@@ -86,11 +86,11 @@ void CroutFDPCycle(mtl::dense2D< sw::unum::posit<nbits, es> >& A, mtl::dense_vec
 }
 
 template<size_t nbits, size_t es, size_t capacity = 10>
-void ComparePositDecompositions(std::vector< sw::unum::posit<nbits, es> >& A, std::vector< sw::unum::posit<nbits, es> >& x, std::vector< sw::unum::posit<nbits, es> >& b) {
+void ComparePositDecompositions(std::vector< sw::universal::posit<nbits, es> >& A, std::vector< sw::universal::posit<nbits, es> >& x, std::vector< sw::universal::posit<nbits, es> >& b) {
 	size_t d = b.size();
 	assert(A.size() == d*d);
 	using namespace sw::hprblas;
-	std::vector< sw::unum::posit<nbits, es> > LU(d*d);
+	std::vector< sw::universal::posit<nbits, es> > LU(d*d);
 
 	{
 		using namespace std::chrono;
@@ -235,7 +235,7 @@ void CompareIEEEDecompositions(std::vector<Ty>& A, std::vector<Ty>& x, std::vect
 template<typename Scalar>
 void TraceDeltas() {
 	using namespace std;
-	using namespace sw::unum;
+	using namespace sw::universal;
 	Scalar eps = std::numeric_limits<Scalar>::epsilon();
 	cout << "       eps : " << posit_format(eps) << " " << eps << endl;
 
@@ -263,7 +263,7 @@ template<typename Scalar>
 void GenerateAndSolveSystemOfLinearEquations(size_t N)
 {
 	using namespace std;
-	using namespace sw::unum;
+	using namespace sw::universal;
 	using namespace mtl;
 	using namespace sw::hprblas;
 
@@ -300,7 +300,7 @@ template<size_t nbits, size_t es>
 void GenerateAndSolveSystemOfLinearEquations(size_t N)
 {
 	using namespace std;
-	using namespace sw::unum;
+	using namespace sw::universal;
 	using namespace mtl;
 	using namespace sw::hprblas;
 
@@ -340,7 +340,7 @@ int main(int argc, char** argv)
 try {
 	using namespace std;
 	using namespace mtl;
-	using namespace sw::unum;
+	using namespace sw::universal;
 	using namespace sw::hprblas;
 
 	// a 32-bit float and a <27,1> posit have the same number of significand bits around 1.0

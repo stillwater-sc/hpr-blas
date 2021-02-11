@@ -28,7 +28,7 @@ try {
 	result = sw::hprblas::dot(vecSize, x, 1, y, 1);
 	cout << "DOT product is " << setprecision(20) << result << endl;
 
-	using Posit = sw::unum::posit<nbits, es>;
+	using Posit = sw::universal::posit<nbits, es>;
 	vector<Posit> px(vecSize), py(vecSize);
 	randomVectorFillAroundOneEPS(vecSize, px);  //	sampleVector("px", px);
 	randomVectorFillAroundOneEPS(vecSize, py);  // 	sampleVector("py", py);

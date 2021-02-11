@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 try {
 	using namespace std;
 	using namespace mtl;
-	using Scalar = sw::unum::posit<32,2>;
+	using Scalar = sw::universal::posit<32,2>;
 	using Matrix = mtl::mat::dense2D<Scalar>;
 	using Vector = mtl::vec::dense_vector<Scalar>;
 

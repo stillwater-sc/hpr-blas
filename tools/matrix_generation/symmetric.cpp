@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 try {
 	using namespace std;
 	using namespace mtl;
-	using namespace sw::unum;
+	using namespace sw::universal;
 	using namespace sw::hprblas;
 
 	int nrOfFailedTestCases = 0;

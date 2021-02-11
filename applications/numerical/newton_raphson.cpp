@@ -140,7 +140,7 @@ std::ostream &operator<<(std::ostream &os,
 int main(int argc, char** argv)
 try {
 	using namespace std;
-	using namespace sw::unum;
+	using namespace sw::universal;
 
 	constexpr size_t nbits = 16;
 	constexpr size_t es = 1;

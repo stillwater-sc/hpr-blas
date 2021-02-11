@@ -12,5 +12,5 @@
 #include <iomanip>
 #include <string>
 
-#include <universal/posit/posit>
+#include <universal/number/posit/posit>
 #include <boost/numeric/mtl/mtl.hpp>

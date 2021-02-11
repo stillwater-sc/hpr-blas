@@ -124,7 +124,7 @@ void ifft(Samples& x)
 int main(int argc, char** argv)
 try {
 	using namespace std;
-	using namespace sw::unum;
+	using namespace sw::universal;
 
 	const size_t nbits = 16;
 	const size_t es = 1;

@@ -8,7 +8,7 @@
 #include <hprblas>
 
 using namespace std;
-using namespace sw::unum;
+using namespace sw::universal;
 
 template<typename Real, typename Vector>
 void myFunction(int N) {

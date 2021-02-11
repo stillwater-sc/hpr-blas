@@ -21,7 +21,7 @@
 #include <generators/matrix_generators.hpp>
 
 using namespace std;
-using namespace sw::unum;
+using namespace sw::universal;
 
 #define BACKEND_MTL 0
 #define BACKEND_EIGEN 1
@@ -103,7 +103,7 @@ try {
 			typedef typename mtl::Collection<Matrix>::size_type     size_type;
 			posit<nbits, es> p, one(1);
 			for (size_type r = 0; r < num_rows(A); ++r) {
-				sw::unum::quire<nbits, es> q, qt;
+				sw::universal::quire<nbits, es> q, qt;
 				for (size_type c = 0; c < num_cols(A); ++c) {
 					p = A[r][c];
 					q += quire_mul(one, p);

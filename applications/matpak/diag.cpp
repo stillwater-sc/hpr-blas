@@ -30,7 +30,7 @@ int main ()
 {
 	using namespace std;
 	using namespace mtl;
-	using namespace sw::unum;
+	using namespace sw::universal;
 	using namespace sw::hprblas;
 	using namespace sw::hprblas::matpak;
 	cout << setprecision(5);
@@ -67,12 +67,12 @@ int main ()
 /Users/equinlan/Dropbox/Research/posits/forks/mtl4/boost/numeric/mtl/operation/matrix_bracket.hpp:32:12: note:
       candidate function (the implicit copy assignment operator) not viable: no known conversion
       from 'typename boost::enable_if<boost::is_integral<unsigned long>, posit<16, 1> >::type'
-      (aka 'sw::unum::posit<16, 1>') to 'const
-      mtl::operations::bracket_proxy<mtl::mat::dense2D<sw::unum::posit<16, 1>,
+      (aka 'sw::universal::posit<16, 1>') to 'const
+      mtl::operations::bracket_proxy<mtl::mat::dense2D<sw::universal::posit<16, 1>,
       mtl::mat::parameters<mtl::tag::row_major, mtl::index::c_index, mtl::non_fixed::dimensions,
-      false, unsigned long> >, mtl::mat::dense2D<sw::unum::posit<16, 1>,
+      false, unsigned long> >, mtl::mat::dense2D<sw::universal::posit<16, 1>,
       mtl::mat::parameters<mtl::tag::row_major, mtl::index::c_index, mtl::non_fixed::dimensions,
-      false, unsigned long> > &, sw::unum::posit<16, 1> &>' for 1st argument
+      false, unsigned long> > &, sw::universal::posit<16, 1> &>' for 1st argument
     struct bracket_proxy
 	*/
 #endif

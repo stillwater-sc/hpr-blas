@@ -1,6 +1,6 @@
 // HPRBLAS standard header
 //
-// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2021 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 #ifndef _HPRBLAS_STANDARD_HEADER_
@@ -30,11 +30,11 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////
 /// INCLUDE FILES posit library
-#include <universal/posit/posit>
+#include <universal/number/posit/posit>
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /// useful mathematical property functions
-#include "universal/functions/functions.hpp"
+#include <universal/functions/functions.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /// the underlying matrix/vector machinery
@@ -46,16 +46,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 /// the High-Performance Reproducible Basic Linear Algebra Subroutines
 /// L1, L2, and L3 matrix/vector operations
-#include "hprblas.hpp"
+#include <hprblas.hpp>
 /// norms (l1, l2, linf, Frobenius) using HPR methods
-#include "norms.hpp"
+#include <norms.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /// linear system solvers
-#include "solvers/lu_decomposition.hpp"
-#include "solvers/cholesky.hpp"
-#include "solvers/ldlt.hpp"
-#include "solvers/gauss_jordan.hpp"
+#include <solvers/lu_decomposition.hpp>
+#include <solvers/cholesky.hpp>
+#include <solvers/ldlt.hpp>
+#include <solvers/gauss_jordan.hpp>
 
 
 #endif

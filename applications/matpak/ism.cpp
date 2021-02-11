@@ -20,11 +20,11 @@ int main(int argc, char** argv)
 try {
 	using namespace std;
 	using namespace mtl;
-	using namespace sw::unum;
+	using namespace sw::universal;
 	using namespace sw::hprblas;
 
 #if USE_POSIT
-	using Ty     = sw::unum::posit<8, 0>;
+	using Ty     = sw::universal::posit<8, 0>;
 	using Matrix = mtl::dense2D< Ty >;
 	using Vector = mtl::dense_vector< Ty >;
 #else

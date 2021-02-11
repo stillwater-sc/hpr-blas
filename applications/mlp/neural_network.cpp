@@ -5,14 +5,14 @@
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include "common.hpp"
 // include the posit number system
-#include <universal/posit/posit>
+#include <universal/number/posit/posit>
 #define MTL_WITH_INITLIST 1
 #include <boost/numeric/mtl/mtl.hpp>
 
 #undef NOW
 #ifdef NOW
 template<size_t nbits, size_t es>
-sw::unum::posit<nbits, es> Sigmoid_(sw::unum::posit<nbits, es>& x, bool derivative = false) {
+sw::universal::posit<nbits, es> Sigmoid_(sw::universal::posit<nbits, es>& x, bool derivative = false) {
 	if (derivative) return x*(1-x);
 	return (1);
 }
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 try {
 	using namespace std;
 	using namespace mtl;
-	using namespace sw::unum;
+	using namespace sw::universal;
 
 	const size_t nbits = 16;
 	const size_t es = 1;

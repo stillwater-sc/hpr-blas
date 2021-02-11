@@ -1,14 +1,14 @@
 // factorial.cpp: example program to demonstrate factorials with arbitrary precision number systems
 //
-// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2021 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include "common.hpp"
 // bring in different number systems
 #include <boost/multiprecision/cpp_int.hpp>
-#include <universal/integer/integer>
+#include <universal/number/integer/integer>
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
-#include <universal/posit/posit>
+#include <universal/number/posit/posit>
 // bring in the factorial function
 #include <universal/functions/factorial.hpp>
 
@@ -17,7 +17,7 @@ try {
 	using namespace std;
 	using namespace boost::multiprecision;
 	using namespace sw::function;
-	using namespace sw::unum;
+	using namespace sw::universal;
 
 	int N = 30;
 	int128_t v = factorial<int128_t>(N);

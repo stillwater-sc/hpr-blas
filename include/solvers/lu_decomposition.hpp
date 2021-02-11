@@ -1,14 +1,14 @@
 #pragma once
 // lu_decomposition.hpp: LU decomposition algorithms and solvers
 //
-// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2021 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 
 #include <vector>
 #define POSIT_VERBOSE_OUTPUT
 #define QUIRE_TRACE_ADD
-#include <universal/posit/posit>
+#include <universal/number/posit/posit>
 
 namespace sw {
 namespace hprblas {
@@ -86,7 +86,7 @@ void SolveCrout(const Matrix& LU, const Vector& b, Vector& x) {
 /// CroutFDP with MTL data structures
 
 template<size_t nbits, size_t es, size_t capacity = 10>
-void CroutFDP(mtl::dense2D< sw::unum::posit<nbits, es> >& S, mtl::dense2D< sw::unum::posit<nbits, es> >& D) {
+void CroutFDP(mtl::dense2D< sw::universal::posit<nbits, es> >& S, mtl::dense2D< sw::universal::posit<nbits, es> >& D) {
 	size_t d = num_rows(S);
 	assert(size(S) == size(D));
 	using namespace sw::unum;
@@ -136,9 +136,9 @@ void CroutFDP(mtl::dense2D< sw::unum::posit<nbits, es> >& S, mtl::dense2D< sw::u
 
 // SolveCrout takes an LU decomposition, LU, and a right hand side vector, b, and produces a result, x.
 template<size_t nbits, size_t es, size_t capacity = 10>
-void SolveCroutFDP(const mtl::dense2D< sw::unum::posit<nbits, es> >& LU, const mtl::dense_vector< sw::unum::posit<nbits, es> >& b, mtl::dense_vector< sw::unum::posit<nbits, es> >& x) 
+void SolveCroutFDP(const mtl::dense2D< sw::universal::posit<nbits, es> >& LU, const mtl::dense_vector< sw::universal::posit<nbits, es> >& b, mtl::dense_vector< sw::universal::posit<nbits, es> >& x)
 {
-	using namespace sw::unum;
+	using namespace sw::universal;
 
 	size_t d = size(b);
 	std::vector< posit<nbits, es> > y(d);

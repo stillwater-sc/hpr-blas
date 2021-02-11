@@ -5,7 +5,7 @@
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
 
-#include <universal/posit/posit>
+#include <universal/number/posit/posit>
 
  // generate specific test case that you can trace with the trace conditions in posit.h
  // for most bugs they are traceable with _trace_conversion and _trace_sub
@@ -14,7 +14,7 @@ template<size_t nbits, size_t es, typename Ty>
 void GenerateFAMTestCase(Ty a, Ty b, Ty c) {
 #if 0
 	Ty with_fam, without_fam;
-	sw::unum::posit<nbits, es> pa(a), pb(b), pc(c), pref, pfam;
+	sw::universal::posit<nbits, es> pa(a), pb(b), pc(c), pref, pfam;
 
 	++pa;         // perturb a by adding 1 machine epsilon
 	a = Ty(pa);   // and update the input to reflect the new value
@@ -24,7 +24,7 @@ void GenerateFAMTestCase(Ty a, Ty b, Ty c) {
 	with_fam = std::fmal(b, c, long double(a)*long double(c));
 	without_fam = (a + b) * c;
 	pref = with_fam;
-	pfam = sw::unum::fam(pa, pb, pc);
+	pfam = sw::universal::fam(pa, pb, pc);
 	std::cout << "posit<" << nbits << "," << es << ">" << std::endl;
 	std::cout << std::setprecision(nbits - 2);
 	std::cout << std::setw(nbits) << a << " * " << std::setw(nbits) << b << " + " << std::setw(nbits) << c << " = " << std::setw(nbits) << without_fam << " not fused" << std::endl;
@@ -40,7 +40,7 @@ void GenerateFAMTestCase(Ty a, Ty b, Ty c) {
 int main(int argc, char** argv)
 try {
 	using namespace std;
-	//using namespace sw::unum;   it is more informative to use the namespace explicitely
+	//using namespace sw::universal;   it is more informative to use the namespace explicitely
 
 	int nrOfFailedTestCases = 0;
 
