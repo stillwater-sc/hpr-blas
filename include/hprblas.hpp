@@ -7,7 +7,8 @@
 #include <universal/number/posit/posit>
 #include <boost/numeric/mtl/mtl.hpp>
 
-namespace sw::hprblas {
+namespace sw {
+namespace hprblas {
 
 // LEVEL 1 BLAS operators
 
@@ -563,4 +564,4 @@ Matrix bfmm(const Matrix& A, const Matrix& B, unsigned blockSize) {
 	return C;
 }
 
-} // namespace sw::hprblas
+}} // namespace sw::hprblas
