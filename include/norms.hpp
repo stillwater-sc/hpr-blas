@@ -34,27 +34,27 @@ inline l1_norm(const Vector& v) {
 
 template<size_t nbits, size_t es>
 sw::universal::posit<nbits, es> l1_norm(const mtl::dense_vector<sw::universal::posit<nbits, es> > & v) {
-	using Scalar = sw::unum::posit<nbits, es>;
-	sw::unum::quire<nbits, es> q(0);
+	using Scalar = sw::universal::posit<nbits, es>;
+	sw::universal::quire<nbits, es> q(0);
 	for (unsigned i = 0; i < size(v); ++i) {
 		q += abs(v[i]);
 	}
 	Scalar l1;
-	sw::unum::convert(q.to_value(), l1);// one and only rounding step of the l1-norm
+	sw::universal::convert(q.to_value(), l1);// one and only rounding step of the l1-norm
 	return l1;
 }
 
 template<size_t nbits, size_t es>
 sw::universal::posit<nbits, es> l1_norm(const mtl::dense2D<sw::universal::posit<nbits, es> > & M) {
-	using Scalar = sw::unum::posit<nbits, es>;
-	sw::unum::quire<nbits, es> q(0);
+	using Scalar = sw::universal::posit<nbits, es>;
+	sw::universal::quire<nbits, es> q(0);
 	for (unsigned i = 0; i < mtl::mat::num_rows(M); ++i) {
 		for (unsigned j = 0; j < mtl::mat::num_cols(M); ++j) {
 			q += abs(M[i][j]);
 		}
 	}
 	Scalar l1;
-	sw::unum::convert(q.to_value(), l1);// one and only rounding step of the l1-norm
+	sw::universal::convert(q.to_value(), l1);// one and only rounding step of the l1-norm
 	return l1;
 }
 
@@ -73,10 +73,10 @@ typename Vector::value_type l2_norm(const Vector& v) {
 // L2-norm = Euclidean distance, posit specialized
 template<size_t nbits, size_t es>
 sw::universal::posit<nbits, es> l2_norm(const mtl::vec::dense_vector<sw::universal::posit<nbits, es> >& v) {
-	using Scalar = sw::unum::posit<nbits,es>;
-	sw::unum::quire<nbits, es> q(0);
+	using Scalar = sw::universal::posit<nbits,es>;
+	sw::universal::quire<nbits, es> q(0);
 	for (unsigned i = 0; i < size(v); ++i) {
-		q += sw::unum::quire_mul(v[i], v[i]);
+		q += sw::universal::quire_mul(v[i], v[i]);
 	}
 	Scalar l2 = Scalar(0);
 	convert(q.to_value(), l2);     // first rounding step of the l2-norm
@@ -129,13 +129,13 @@ template<size_t nbits, size_t es>
 sw::universal::posit<nbits, es> frobenius_norm(const mtl::dense2D<sw::universal::posit<nbits, es> >& M) {
 	assert(mtl::mat::num_rows(M) == mtl::mat::num_cols(M)); // assuming squareness
 	int N = int(mtl::mat::num_cols(M));
-	sw::unum::quire<nbits, es> q(0);
+	sw::universal::quire<nbits, es> q(0);
 	for (int i = 0; i < N; ++i) {
 		for (int j = 0; j < N; ++j) {
-			q += sw::unum::quire_mul(M[i][j], M[i][j]);
+			q += sw::universal::quire_mul(M[i][j], M[i][j]);
 		}
 	}
-	using Scalar = sw::unum::posit<nbits, es>;
+	using Scalar = sw::universal::posit<nbits, es>;
 	Scalar frobenius = Scalar(0);
 	convert(q.to_value(), frobenius);     // first rounding step of the Frobenius-norm
 	return sqrt(frobenius);               // second rounding step of the Frobenius-norm
@@ -146,9 +146,9 @@ template<typename Scalar>
 Scalar error_volume(Scalar Linfinity, unsigned dimensionality, bool measuredInULP = false) {
 	Scalar ulp = std::numeric_limits<Scalar>::epsilon();
 	if (measuredInULP) {
-		return sw::unum::integer_power(Linfinity / ulp, dimensionality);
+		return sw::universal::integer_power(Linfinity / ulp, dimensionality);
 	}
-	return sw::unum::integer_power(Linfinity, dimensionality);
+	return sw::universal::integer_power(Linfinity, dimensionality);
 }
 
 } // namespace hprblas

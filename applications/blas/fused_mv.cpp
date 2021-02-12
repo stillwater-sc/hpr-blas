@@ -8,6 +8,8 @@
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
 #include <hprblas>
 
+using namespace sw::universal;
+
 int main(int argc, char** argv)
 try {
 	using namespace std;

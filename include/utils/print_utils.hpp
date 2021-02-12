@@ -32,7 +32,7 @@ void printMatrix(std::ostream& ostr, const std::string& name, const Matrix& M, i
 	for (size_t i = 0; i<d; ++i) {
 		if (hex) {
 			std::cout << '[';
-			for (size_t j = 0; j < d; ++j) std::cout << " " << sw::unum::hex_format(M[i][j]);
+			for (size_t j = 0; j < d; ++j) std::cout << " " << sw::universal::hex_format(M[i][j]);
 			std::cout << ']';
 		}
 		else {

@@ -44,7 +44,7 @@ catch (char const* msg) {
 	std::cerr << "caught ad hoc exception: " << msg << std::endl;
 	return EXIT_FAILURE;
 }
-catch (posit_arithmetic_exception& err) {
+catch (const sw::universal::posit_arithmetic_exception& err) {
 	std::cerr << "uncaught posit arithmetic exception: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }

@@ -3,8 +3,9 @@
 
 #define MTL_WITH_INITLIST 1
 #include <boost/numeric/mtl/mtl.hpp>
-#include <universal/number/posit/posit>
+//#include <universal/number/posit/posit>
 
+/*
 template<typename Real>
 int countValue(const std::vector<Real>& V, const Real& ref) {
     int c = 0;
@@ -13,6 +14,7 @@ int countValue(const std::vector<Real>& V, const Real& ref) {
     }
     return c;
 }
+*/
 
 int main() {
     using namespace std;

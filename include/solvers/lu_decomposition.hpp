@@ -89,7 +89,7 @@ template<size_t nbits, size_t es, size_t capacity = 10>
 void CroutFDP(mtl::dense2D< sw::universal::posit<nbits, es> >& S, mtl::dense2D< sw::universal::posit<nbits, es> >& D) {
 	size_t d = num_rows(S);
 	assert(size(S) == size(D));
-	using namespace sw::unum;
+	using namespace sw::universal;
 	for (int k = 0; k < d; ++k) {
 		for (int i = k; i < d; ++i) {
 			quire<nbits, es, capacity> q;
@@ -105,7 +105,7 @@ void CroutFDP(mtl::dense2D< sw::universal::posit<nbits, es> >& S, mtl::dense2D< 
 			quire<nbits, es, capacity> qsum(sum);
 			q -= qsum;
 			if (!q.iszero()) {
-				sw::unum::posit<nbits, es> roundingError;
+				sw::universal::posit<nbits, es> roundingError;
 				convert(q.to_value(), roundingError);
 				std::cout << "D[" << i << "," << k << "] rounding error: " << roundingError << std::endl;
 			}
@@ -124,7 +124,7 @@ void CroutFDP(mtl::dense2D< sw::universal::posit<nbits, es> >& S, mtl::dense2D< 
 			quire<nbits, es, capacity> qsum(sum);
 			q -= qsum;
 			if (!q.iszero()) {
-				sw::unum::posit<nbits, es> roundingError;
+				sw::universal::posit<nbits, es> roundingError;
 				convert(q.to_value(), roundingError);
 				std::cout << "D[" << k << "," << j << "] rounding error: " << roundingError << std::endl;
 			}
@@ -213,11 +213,11 @@ void SolveCrout(const std::vector<Ty>& LU, const std::vector<Ty>& b, std::vector
 /// DEPRECATED
 // CroutFDP generates an LU decomposition using fused dot products during factorization
 template<size_t nbits, size_t es, size_t capacity = 10>
-void CroutFDP(std::vector< sw::unum::posit<nbits, es> >& S, std::vector< sw::unum::posit<nbits, es> >& D) {
+void CroutFDP(std::vector< sw::universal::posit<nbits, es> >& S, std::vector< sw::universal::posit<nbits, es> >& D) {
 	size_t d = size_t(std::sqrt(S.size()));
 	assert(S.size() == d * d);
 	assert(D.size() == d * d);
-	using namespace sw::unum;
+	using namespace sw::universal;
 	for (int k = 0; k < d; ++k) {
 		for (int i = k; i < d; ++i) {
 			quire<nbits, es, capacity> q = 0.0;
@@ -241,8 +241,8 @@ void CroutFDP(std::vector< sw::unum::posit<nbits, es> >& S, std::vector< sw::unu
 /// DEPRECATED
 // SolveCrout takes an LU decomposition, LU, and a right hand side vector, b, and produces a result, x.
 template<size_t nbits, size_t es, size_t capacity = 10>
-void SolveCroutFDP(const std::vector< sw::unum::posit<nbits, es> >& LU, const std::vector< sw::unum::posit<nbits, es> >& b, std::vector< sw::unum::posit<nbits, es> >& x) {
-	using namespace sw::unum;
+void SolveCroutFDP(const std::vector< sw::universal::posit<nbits, es> >& LU, const std::vector< sw::universal::posit<nbits, es> >& b, std::vector< sw::universal::posit<nbits, es> >& x) {
+	using namespace sw::universal;
 	int d = int(b.size());
 	std::vector< posit<nbits, es> > y(d);
 	for (int i = 0; i < d; ++i) {

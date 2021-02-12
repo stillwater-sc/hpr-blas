@@ -84,12 +84,12 @@ void uniform_rand_sorted(Matrix& A, double lowerbound = 0.0, double upperbound =
 	sort(v.begin(), v.end(), std::greater<value_type>());
 
 	// for each row minus the last column, calculate the sum of elements without rounding
-	sw::unum::posit<value_type::nbits, value_type::es> one(1), p;
+	sw::universal::posit<value_type::nbits, value_type::es> one(1), p;
 	for (size_type r = 0; r < num_rows(A); ++r) {
-		sw::unum::quire<value_type::nbits, value_type::es> q1, q2;
+		sw::universal::quire<value_type::nbits, value_type::es> q1, q2;
 		size_type lastElement = num_cols(A) - 1;
 		for (size_type c = 0; c < lastElement; ++c) {
-			q1 += sw::unum::quire_mul(one, v[r*num_cols(A) + c]);
+			q1 += sw::universal::quire_mul(one, v[r*num_cols(A) + c]);
 		}
 		// truncate the value in the quire
 		convert(q1.to_value(), p);

@@ -8,6 +8,7 @@
 // utilities to generate and print vectors and matrices
 #include "utils/matvec.hpp"
 
+using namespace sw::universal;
 constexpr double pi = 3.14159265358979323846;  // best practice for C++
 
 /*
