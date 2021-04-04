@@ -1,12 +1,20 @@
+########################################################################
+# CMakeLists.txt
+#
+# Authors: Matthias Moller, Nauman Ahmed, Theodore Omtzigt
+########################################################################
+include(cmake/Banners.cmake)
+print_header()
+
 # Set minimum version of CMake. Since we are using the VERSION option of the
 # project command, we need at least 3.0. To honor the amazing work that
-# the folks at KitWare have done for the open source community, we are
+# the folks at KitWare have done for the open-source community, we are
 # going to specify a recent version. 
-# As of UNIVERSAL v2.0 December 2018
+# As of UNIVERSAL v3.0 December 2019
 # Ubuntu 16.04 LTS runs cmake 3.5.1
 # Ubuntu 18.04 LTS runs cmake 3.10.2
 # container runs cmake 3.7.1
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 
 ####
 ## Enable project() command to manage VERSION variables
@@ -14,8 +22,27 @@ if (POLICY CMP0048)
     cmake_policy(SET CMP0048 NEW)
 endif(POLICY CMP0048)
 
-# Hyper-BLAS: high-performance reproducible linear algebra
-project (hpr-blas VERSION 1.0.0 LANGUAGES C CXX)
+####
+# Set project variables
+if(NOT DEFINED HPR_BLAS_VERSION_MAJOR)
+  set(HPR_BLAS_VERSION_MAJOR 1)
+endif()
+if(NOT DEFINED UNIVERSAL_VERSION_MINOR)
+  set(HPR_BLAS_VERSION_MINOR 10)
+endif()
+if(NOT DEFINED UNIVERSAL_VERSION_PATCH)
+  set(HPR_BLAS_VERSION_PATCH 1)
+endif()
+
+########################################################################
+# Project name
+########################################################################
+# HPR-BLAS: high-performance reproducible linear algebra
+project (hpr-blas 
+	DESCRIPTION "A header only C++ library for High-Performance Reproducible BLAS"
+	VERSION "${HPR_BLAS_VERSION_MAJOR}.${HPR_BLAS_VERSION_MINOR}.${HPR_BLAS_VERSION_PATCH}" 
+	LANGUAGES C CXX
+	HOMEPAGE_URL "https://github.com/stillwater-sc/hpr-blas")
 
 ####
 # Change default build type to Release
@@ -36,6 +63,13 @@ else(NOT CMAKE_BUILD_TYPE)
 	endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif(NOT CMAKE_BUILD_TYPE)
 
+########################################################################
+# We do not support in-source build
+########################################################################
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+  message(FATAL_ERROR "In-source builds are not permitted.\nPlease make a separate folder for building, otherwise type \nmake\nthat will create a ./build folder and will compile in that folder. Cmake has created garbage files/dirs (you may manually remove them):\nCMakeCache.txt CMakeFiles")
+endif()
+
 ####
 # Create the library target
 set(project_library_target_name ${PROJECT_NAME})
@@ -47,6 +81,24 @@ option(HPR_BLAS_CMAKE_TRACE "Tracing CMake results, i.e. printing variable setti
 option(HPR_BLAS_ENABLE_TESTS "Enable the build and run of tests." ON)
 option(HPR_BLAS_VERBOSE_TESTS "Always print test output, otherwise only errors. Only relevant when tests enabled." OFF)
 
+########################################################################
+# Set RPATH on MacOSX
+########################################################################
+if (APPLE)
+  set(CMAKE_MACOSX_RPATH ON)
+  SET(CMAKE_SKIP_BUILD_RPATH FALSE)
+  SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+  SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+  LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+  IF ("${isSystemDir}" STREQUAL "-1")
+    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  ENDIF ()
+endif()
+
+########################################################################
+# Use solution folders for Visual Studio
+########################################################################
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 macro(trace_variable variable)
@@ -54,13 +106,26 @@ macro(trace_variable variable)
         message(STATUS "${variable} = ${${variable}}")
     endif()
 endmacro()
-        
-# TODO: Check whether this is needed for old CMake versions
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake") 
-trace_variable(CMAKE_MODULE_PATH)
+ 
+########################################################################
+# Augment the CMAKE_MODULE_PATH to pick up custom cmake modules
+########################################################################       
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 
-list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake") 
-trace_variable(CMAKE_PREFIX_PATH)
+########################################################################
+# Configure the compiler optimization flags
+########################################################################
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+  include( OptimizeForArchitecture )
+  OptimizeForArchitecture()
+  foreach (flag ${OFA_ARCHITECTURE_FLAGS})
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${flag}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flag}")
+  endforeach()
+endif()
+
+# Global configuration
+include(Config)
 
 # Must be located in root dir, doesn't work in tests
 if (HPR_BLAS_ENABLE_TESTS)
@@ -110,7 +175,7 @@ macro (compile_all testing prefix folder)
         get_filename_component (test ${source} NAME_WE)
         string(REPLACE " " ";" new_source ${source})
         set(test_name ${prefix}_${test})
-        message(STATUS "Add test ${test_name} from source ${new_source}.")
+        #message(STATUS "Add test ${test_name} from source ${new_source}.")
         add_executable (${test_name} ${new_source})
 	#message(STATUS "args: ${testing} - ${prefix} - ${folder}")
 	set_target_properties(${test_name} PROPERTIES FOLDER ${folder})
