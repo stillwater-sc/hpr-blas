@@ -15,33 +15,43 @@ namespace sw
             size_type n = num_rows(A), m = num_cols(A);
             for (size_type i = 0; i < m; ++i)
             {
-                universal::blas::matrix<Scalar> v; // Store i'th column of A (A[(rows 0->n), i'th column])
-                /*
-    Need a function which return's a matrix consisting
-    of i'th column of A (similar to slice in matlab)
-    */
+                universal::blas::matrix<Scalar> v = help(A, 0, n, q);
+
                 if (i > 0)
                 {
-                    /*
-      Need a function similar to slice of a matrix in matlab
-
-      R[(rows 0->i), i'th column] = Q[(rows 0->n, columns 0->i)]' * A[rows 0->n,
-      i'th column] v= A[(rows 0->n), ith column] - Q[(rows 0->n), (column 0->k)]
-      * R[(rows 0->i), i't column]
-      */
+                    R(0, i, i) = transpose(Q(0, n, 0, i)) * A(0, n, i, i);//To solve problem
+                    v = A(0, n, k, k) - Q(0, n, 0, i) * R(0, i, i, i);
                 }
                 R(i, i) = frobenius_norm(v);
-                // i'th column of Q = v/ R(i,i)
+                Q(0, n, i, i) = v / R(i, i);
             }
             return std::make_pair(Q, R);
         }
         template <typename Scalar>
         auto qr(const universal::blas::matrix<Scalar> &A)
         {
+            using size_type = typename universal::blas::matrix<Scalar>::size_type;
             size_type m = num_cols(A), n = num_rows(A);
             universal::blas::matrix<Scalar> Q(n, m), R(n, n);
             qr(A, Q, R);
             return std::make_pair(Q, R);
+        }
+        template <typename Scalar>
+        universal::blas::matrix<Scalar> help(const universal::blas::matrix<Scalar> &A, Scalar rb, Scalar re, Scalar cb, Scalar ce)
+        {
+            using size_type = typename universal::blas::matrix<Scalar>::size_type;
+            universal::blas::matrix<Scalar> B(re - rb + 1, ce - cb + 1);
+            size_type p = 1, q = 1;
+            for (size_type i = rb; i <= re; ++i)
+            {
+                for (size_type j = cb; j <= ce; ++j)
+                {
+                    B(p, q) = A(i, j);
+                    ++q;
+                }
+                ++p;
+            }
+            return B;
         }
 
     } // namespace hprblas
