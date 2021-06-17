@@ -19,11 +19,12 @@ namespace sw
 
                 if (i > 0)
                 {
-                    R(0, i, i) = transpose(Q(0, n, 0, i)) * A(0, n, i, i);//To solve problem
-                    v = A(0, n, k, k) - Q(0, n, 0, i) * R(0, i, i, i);
+                    help(R, 0, i, i, i) = transpose(help(R, 0, n, 0, i)) * help(A, 0, n, i, i);
+                    //Problem => function should change value of the given matrix
+                    v = help(A, 0, n, i, i) - help(Q, 0, n, 0, i) * help(R, 0, i, i, i);
                 }
                 R(i, i) = frobenius_norm(v);
-                Q(0, n, i, i) = v / R(i, i);
+                help(Q, 0, n, i, i) = v / R(i, i);
             }
             return std::make_pair(Q, R);
         }
