@@ -1,10 +1,10 @@
 // conjugate_gradient.cpp: example program showing the conjugate gradient algorithm using posit arithmetic
 //
-// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2021 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include <hprblas>
-#include <universal/number/posit/posit>
+#include <universal/number/posit/posit.hpp>
 #include <boost/multiprecision/cpp_bin_float.hpp>
 
 typedef boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<11, boost::multiprecision::backends::digit_base_2, void, boost::int16_t, -32, 31>, boost::multiprecision::expression_template_option::et_off> cpp_bin_float_half;
@@ -198,10 +198,9 @@ void fdp2CGdriver(unsigned N, sw::universal::posit<nbits, es> epsilon) {
 // CG test program
 int main(int argc, char** argv)
 try {
-	using namespace std;
 	using namespace sw::universal;
 
-	string separation_string = "=================================================================\n";
+	std::string separation_string = "=================================================================\n";
 	constexpr unsigned N = 10;
 	long double accuracy = 1.0e-3;
 
@@ -209,28 +208,28 @@ try {
 		constexpr size_t nbits = 16;
 		constexpr size_t es = 1;
 		using Real = posit<nbits,es>;
-		Real pminpos; minpos(pminpos);
-		cout << "type: " << typeid(Real).name() << endl;
-		cout << "minpos : " << pminpos << endl;
+		Real pminpos(SpecificValue::minpos);
+		std::cout << "type: " << typeid(Real).name() << '\n';
+		std::cout << "minpos : " << pminpos << '\n';
 		Real epsilon = Real(accuracy);
 		CGdriver(N, epsilon);
 	}
 	
-	cout << separation_string;
+	std::cout << separation_string;
 	{
 		using Real = cpp_bin_float_half;
-		cout << "type: " << typeid(Real).name() << endl;
+		std::cout << "type: " << typeid(Real).name() << '\n';
 		Real epsilon = Real(accuracy);
 		CGdriver(N, epsilon);
 	}
-	cout << separation_string;
+	std::cout << separation_string;
 	{
 		constexpr size_t nbits = 16;
 		constexpr size_t es = 1;
 		using Real = posit<nbits, es>;
-		Real pminpos; minpos(pminpos);
-		cout << "type: " << typeid(Real).name() << endl;
-		cout << "minpos : " << pminpos << endl;
+		Real pminpos(SpecificValue::minpos);
+		std::cout << "type: " << typeid(Real).name() << '\n';
+		std::cout << "minpos : " << pminpos << '\n';
 		Real epsilon = Real(accuracy);
 		CGdriver(N, epsilon);
 		fdpCGdriver(N, epsilon);

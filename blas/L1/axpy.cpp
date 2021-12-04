@@ -1,6 +1,6 @@
 // axpy.cpp: example program contrasting a BLAS L1 ?axpy routine between FLOAT and POSIT
 //
-// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2021 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 #include <hprblas>
@@ -30,7 +30,6 @@ void axpy_test(const std::string& tag, int vecSize, Element x_value, Element y_v
 
 int main(int argc, char** argv)
 try {
-	//using namespace std;
 	using namespace mtl;
 	//using namespace sw::universal;
 	using namespace sw::hprblas;

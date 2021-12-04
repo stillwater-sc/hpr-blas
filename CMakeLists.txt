@@ -163,9 +163,9 @@ message(STATUS "HPR-BLAS INCLUDE DIR " ${HPR_BLAS_INCLUDE_DIR})
 
 ####
 # Configure the compiler options
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-message(STATUS "C++17 support has been enabled by default")
+message(STATUS "C++20 support has been enabled by default")
 
 macro (compile_all testing prefix folder)
     # cycle through the sources

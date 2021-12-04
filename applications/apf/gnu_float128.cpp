@@ -1,3 +1,12 @@
+#ifdef _MSC_FULL_VER 
+#include <iostream>
+int main() {
+    
+    std::cout << "Sorry compiler is neither GCC nor Intel: Boost was unenable to configure quad-precision." << std::endl;
+
+    return 0;
+}
+#else
 #include <boost/multiprecision/float128.hpp>
 #include <boost/math/special_functions/gamma.hpp>
 #include <iostream>
@@ -26,5 +35,8 @@ int main()
 
    constexpr float128 pi = 3.1415926535897932384626433832795028841971693993751058Q;
 
+   std::cout << "quad-precision PI = " << pi << std::endl;
+
    return 0;
 }
+#endif

@@ -1,13 +1,13 @@
 #pragma once
 // cholesky.hpp implementation of the Cholesky solver
 //
-// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2021 Stillwater Supercomputing, Inc.
 //
 // This file is part of the HPRBLAS project, which is released under an MIT Open Source license.
 #include <vector>
 #define POSIT_VERBOSE_OUTPUT
 #define QUIRE_TRACE_ADD
-#include <universal/number/posit/posit>
+#include <universal/number/posit/posit.hpp>
 /*
 The Cholesky decomposition of a Hermitian positive-definite matrix A is a decomposition of the form
 

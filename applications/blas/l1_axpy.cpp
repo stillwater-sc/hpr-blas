@@ -1,12 +1,12 @@
 // l1_axpy.cpp: example program contrasting a BLAS L1 ?axpy routine between FLOAT and POSIT
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2021 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include "common.hpp"
 // enable posit arithmetic exceptions
 #define POSIT_THROW_ARITHMETIC_EXCEPTION 1
-#include <universal/number/posit/posit>
+#include <universal/number/posit/posit.hpp>
 
 // axpy: a times x plus y
 template<typename scale_T, typename vector_T>
@@ -29,7 +29,6 @@ void printStridedVector(std::ostream& ostr, size_t n, vector_T& x, size_t incx =
 
 int main(int argc, char** argv)
 try {
-	using namespace std;
 	using namespace sw::universal;
 
 	constexpr size_t nbits = 16;
@@ -39,18 +38,17 @@ try {
 	int nrOfFailedTestCases = 0;
 
 	constexpr int d = 5;
-	vector< posit<nbits, es> > v1 = { 1.0, 2.0, 3.0, 4.0, 5.0 };
-	vector< posit<nbits, es> > v2(d);
-	posit<nbits, es> alpha;
-	minpos(alpha); // set alpha to minpos
+	std::vector< posit<nbits, es> > v1 = { 1.0, 2.0, 3.0, 4.0, 5.0 };
+	std::vector< posit<nbits, es> > v2(d);
+	posit<nbits, es> alpha(SpecificValue::minpos);
 
-	cout << "AXPY is " << endl;
-	printStridedVector(cout, d, v1, 1); cout << endl;
-	printStridedVector(cout, d, v2, 1); cout << endl;
+	std::cout << "AXPY is\n";
+	printStridedVector(std::cout, d, v1, 1); std::cout << '\n';
+	printStridedVector(std::cout, d, v2, 1); std::cout << '\n';
 
 	axpy(d, alpha, v1, 1, v2, 1);
 
-	printStridedVector(cout, d, v2, 1); cout << endl;
+	printStridedVector(std::cout, d, v2, 1); std::cout << '\n';
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 }

@@ -1,4 +1,4 @@
-// dot.cpp: example program contrasting a BLAS L1 ?dot routine between FLOAT and POSIT
+// dot.cpp: example program contrasting a BLAS L1 dot routine between FLOAT and POSIT
 //
 // Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
 //
@@ -33,7 +33,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////
 /// INCLUDE FILES posit library
-#include <universal/number/posit/posit>
+#include <universal/number/posit/posit.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /// useful mathematical property functions

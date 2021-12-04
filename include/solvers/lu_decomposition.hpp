@@ -8,7 +8,7 @@
 #include <vector>
 #define POSIT_VERBOSE_OUTPUT
 #define QUIRE_TRACE_ADD
-#include <universal/number/posit/posit>
+#include <universal/number/posit/posit.hpp>
 
 namespace sw {
 namespace hprblas {

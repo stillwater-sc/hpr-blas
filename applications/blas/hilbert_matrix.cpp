@@ -7,7 +7,7 @@
 // Boost arbitrary precision floats
 #include <boost/multiprecision/cpp_bin_float.hpp>
 // Universal arbitrary precision integers
-#include <universal/number/integer/integer>
+#include <universal/number/integer/integer.hpp>
 
 // enable INITLISTs with MTL vectors and matrices
 #ifndef MTL_WITH_INITLIST

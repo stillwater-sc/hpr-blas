@@ -5,7 +5,7 @@
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include "common.hpp"
 // include the posit number system
-#include <universal/number/posit/posit>
+#include <universal/number/posit/posit.hpp>
 #define MTL_WITH_INITLIST 1
 #include <boost/numeric/mtl/mtl.hpp>
 

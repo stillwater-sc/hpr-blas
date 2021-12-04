@@ -1,6 +1,6 @@
 // chebyshev.cpp: evaulation of Chebyshev polynomials for filter design
 //
-// Copyright (C) 2017-2020 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2021 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include <boost/multiprecision/cpp_bin_float.hpp>
@@ -53,18 +53,17 @@ std::ostream& operator<<(std::ostream& ostr, const std::vector<Scalar>& vec) {
 
 int main(int argc, char** argv)
 try {
-	using namespace std;
 	using namespace sw::universal;
 
-	using Real = qp;
+	using Real = double; // qp;
 	mtl::vec::dense_vector<Real> args(10), nodes(10);
 	chebyshev_nodes(args, nodes);
-	cout << setprecision(numeric_limits<qp>::digits10);
+	std::cout << std::setprecision(std::numeric_limits<Real>::digits10);
 	dumpPair(args, nodes);
 
 	mtl::vec::cos(args);
 
-	cout << nodes << endl;
+	std::cout << nodes << std::endl;
 
 	return EXIT_SUCCESS;
 }

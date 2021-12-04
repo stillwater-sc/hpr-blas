@@ -1,6 +1,6 @@
 // fused_dot.cpp example program showing a fused-dot product for error free linear algebra
 //
-// Copyright (C) 2017-2019 Stillwater Supercomputing, Inc.
+// Copyright (C) 2017-2021 Stillwater Supercomputing, Inc.
 //
 // This file is part of the universal numbers project, which is released under an MIT Open Source license.
 #include <chrono>
@@ -8,7 +8,6 @@
 // utilities to generate and print vectors and matrices
 #include "utils/matvec.hpp"
 
-using namespace sw::universal;
 constexpr double pi = 3.14159265358979323846;  // best practice for C++
 
 /*
@@ -53,7 +52,6 @@ void FillAscending(Vector& vec, typename Vector::value_type start) {
 
 int main(int argc, char** argv)
 try {
-	using namespace std;
 	using namespace std::chrono;
 	using namespace mtl;
 	using namespace sw::universal;
@@ -66,34 +64,32 @@ try {
 	int nrOfFailedTestCases = 0;
 
 	{
-		using Posit = posit<nbits, es>;
-		Posit pmaxpos;
-		std::vector<Posit> px(vecSize), py(vecSize);
+		using Scalar = posit<nbits, es>;
+		Scalar pmaxpos(SpecificValue::maxpos);
+		std::vector<Scalar> px(vecSize), py(vecSize);
 
-		maxpos(pmaxpos);
 		FillDescending(px, 0.25*pmaxpos);
 		FillAscending(py, 0.25*pmaxpos);
 
-		printVector(cout, "px", px);
-		printVector(cout, "px", py);
+		printVector(std::cout, "px", px);
+		printVector(std::cout, "px", py);
 
 		steady_clock::time_point t1 = steady_clock::now();
-		Posit presult = sw::hprblas::fdp(px, py);
+		Scalar presult = sw::hprblas::fdp(px, py);
 		steady_clock::time_point t2 = steady_clock::now();
 		double ops = vecSize * 2.0; // dot product is vecSize products and vecSize adds
-		cout << "FDP product     is " << presult << endl;
+		std::cout << "FDP product     is " << presult << '\n';
 		duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
 		double elapsed = time_span.count();
 		std::cout << "It took " << elapsed << " seconds." << std::endl;
-		std::cout << "Performance " << (uint32_t)(ops / (1000 * elapsed)) << " KOPS" << std::endl;
+		std::cout << "Performance " << (uint32_t)(ops / (1000 * elapsed)) << " KOPS" << '\n';
 	}
 
 	{
 		using Scalar = posit<2*nbits, es+1>;
-		Scalar pmaxpos;
+		Scalar pmaxpos(SpecificValue::maxpos);
 		std::vector<Scalar> px(vecSize), py(vecSize);
 
-		maxpos(pmaxpos);
 		FillDescending(px, 0.25*pmaxpos);
 		FillAscending(py, 0.25*pmaxpos);
 
@@ -104,19 +100,18 @@ try {
 		Scalar presult = sw::hprblas::dot(px, py);
 		steady_clock::time_point t2 = steady_clock::now();
 		double ops = vecSize * 2.0; // dot product is vecSize products and vecSize adds
-		cout << "DOT product     is " << presult << endl;
+		std::cout << "DOT product     is " << presult << '\n';
 		duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
 		double elapsed = time_span.count();
 		std::cout << "It took " << elapsed << " seconds." << std::endl;
-		std::cout << "Performance " << (uint32_t)(ops / (1000 * elapsed)) << " KOPS" << std::endl;
+		std::cout << "Performance " << (uint32_t)(ops / (1000 * elapsed)) << " KOPS" << '\n';
 	}
 
 	{
 		using Scalar = float;
 		std::vector<Scalar> px(vecSize), py(vecSize);
 
-		posit<32,2> pmaxpos;
-		maxpos(pmaxpos);
+		posit<32,2> pmaxpos(SpecificValue::maxpos);
 		FillDescending(px, float(0.25*pmaxpos));
 		FillAscending(py, float(0.25*pmaxpos));
 
@@ -127,11 +122,11 @@ try {
 		Scalar presult = sw::hprblas::dot(px, py);
 		steady_clock::time_point t2 = steady_clock::now();
 		double ops = vecSize * 2.0; // dot product is vecSize products and vecSize adds
-		cout << "DOT product     is " << presult << endl;
+		std::cout << "DOT product     is " << presult << '\n';
 		duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
 		double elapsed = time_span.count();
 		std::cout << "It took " << elapsed << " seconds." << std::endl;
-		std::cout << "Performance " << (uint32_t)(ops / (1000 * elapsed)) << " KOPS" << std::endl;
+		std::cout << "Performance " << (uint32_t)(ops / (1000 * elapsed)) << " KOPS" << '\n';
 	}
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
@@ -140,15 +135,15 @@ catch (char const* msg) {
 	std::cerr << msg << std::endl;
 	return EXIT_FAILURE;
 }
-catch (const posit_arithmetic_exception& err) {
+catch (const sw::universal::posit_arithmetic_exception& err) {
 	std::cerr << "Uncaught posit arithmetic exception: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
-catch (const quire_exception& err) {
+catch (const sw::universal::quire_exception& err) {
 	std::cerr << "Uncaught quire exception: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
-catch (const posit_internal_exception& err) {
+catch (const sw::universal::posit_internal_exception& err) {
 	std::cerr << "Uncaught posit internal exception: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }

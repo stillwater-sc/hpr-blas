@@ -20,13 +20,12 @@
 int main ()
 {
     // COMMON NAMESPACES
-	using namespace std;
 	using namespace mtl;
 	using namespace sw::universal;
 	using namespace sw::hprblas;
 	using namespace sw::hprblas::matpak;
 	
-    cout << setprecision(5);
+    std::cout << std::setprecision(5);
 
     /*
         // --- POSITS ---
@@ -40,14 +39,13 @@ int main ()
 		std::cout <<  A << std::endl;
 	 */ 
 
-        // --- FLOATS ---
-		using Scalar = double;
-		using Matrix = mtl::mat::dense2D< Scalar >;
-		Matrix A = rowsto< Matrix >(5,5);   //
-		cout <<  A << endl;
-		Matrix v = {{-1,0,1}}; 
+    // --- FLOATS ---
+	using Scalar = double;
+	using Matrix = mtl::mat::dense2D< Scalar >;
+	Matrix A = rowsto< Matrix >(5,5);   //
+	std::cout <<  A << std::endl;
 
-        // A = matrix 
-		cout <<  bands(A,v) << endl;
+	Matrix v = {{0,-1,0,1,0}}; 
+	std::cout <<  bands(A,v) << std::endl;
 	return 0;
 }

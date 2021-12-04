@@ -2,7 +2,7 @@
 #include <boost/numeric/mtl/mtl.hpp>
 
 int main()
-{
+try {
     using namespace mtl;
     
     dense2D<int> A(2, 2), B(2, 2), C(4, 4);
@@ -13,11 +13,15 @@ int main()
             B[r][c]= (r+1) * 1000 + (c+1) * 100;
         }
         
-    //C= kron(A, B);
-    //std::cout << "kron(A, B) is\n" << C;
+    C= kron(A, B);
+    std::cout << "kron(A, B) is\n" << C;
     
     MTL_THROW_IF(C[0][0] != 12100, mtl::runtime_error("Wrong value in C[0][0]"));
     MTL_THROW_IF(C[3][3] != 48400, mtl::runtime_error("Wrong value in C[3][3]"));
 
-    return 0;
+    return EXIT_SUCCESS;
+}
+catch (const mtl::runtime_error& e) {
+    std::cerr << "Caught an MTL runtime error: " << e.what() << std::endl;
+    return EXIT_FAILURE;
 }

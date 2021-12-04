@@ -5,7 +5,7 @@
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
 
-#include <universal/number/posit/posit>
+#include <universal/number/posit/posit.hpp>
 
  // generate specific test case that you can trace with the trace conditions in posit.h
  // for most bugs they are traceable with _trace_conversion and _trace_sub
