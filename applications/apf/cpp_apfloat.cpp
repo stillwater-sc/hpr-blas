@@ -16,20 +16,36 @@ int main()
 	using namespace sw::universal;
 	using namespace boost::multiprecision;
 
+	/* cfloat print behavior you need to emulate:
+	native single precision : 0b0.11111110.00000000000000000000000 : 170141183460469231731687303715884105728.0000000000    <-- fixed format takes precision as the number of bits after the fixed point
+	cfloat single precision : 0b0.11111110.00000000000000000000000 : 170141183460469231731687303715884105728.00000000000000000000000  <-- you are taking the precision of the mantissa
+	boost  single precision :                                      : 170141183460469231731687303715884105728.0000000000
+	native single precision : 0b0.11111110.00000000000000000000000 : 1.7014118346e+38                                      <-- scientific format takes precision as the number of bits after the decimal point
+	cfloat single precision : 0b0.11111110.00000000000000000000000 : 1.70141e+38                                           <-- you are not honoring precision
+	boost  single precision :                                      : 1.7014118346e+38
+	*/
 	auto oldPrecision = std::cout.precision();
-	constexpr std::streamsize newPrecision = 30;
+	constexpr std::streamsize newPrecision = 10;
 	{
-		float spnat = pi;
-		cfloat<32, 8, uint32_t, true> spcf = pi;
-		cpp_bin_float_single spmp = pi;
+		float v = 1.0f * pow(2.0f, 127.0f);
+		float spnat = v;
+		cfloat<32, 8, uint32_t, true> spcf = v;
+		cpp_bin_float_single spmp = v;
 		std::cout << std::setprecision(newPrecision);
-		std::cout << "single precision : " << to_binary(spnat) << '\n';
-		std::cout << std::fixed << spcf << '\n';
-		std::cout << "single precision : " << spmp << '\n';
-		std::cout << std::left << spmp << '\n';
+
+		std::cout << std::fixed;
+		std::cout << "native single precision : " << to_binary(spnat) << " : " << spnat << '\n';
+		std::cout << "cfloat single precision : " << to_binary(spcf) << " : " << spcf << '\n';
+		std::cout << "boost  single precision : " << "                                    " << " : " << spmp << '\n';
+		std::cout << std::scientific;
+		std::cout << "native single precision : " << to_binary(spnat) << " : " << spnat << '\n';
+		std::cout << "cfloat single precision : " << to_binary(spcf) << " : " << spcf << '\n';
+		std::cout << "boost  single precision : " << "                                    " << " : " << spmp << '\n';
+
+		std::cout << spmp << '\n';
 		std::cout << std::setw(newPrecision) << std::string(pistr) << '\n';
 	}
-
+	return 0;
 	{
 		cpp_bin_float_quad qp(pistr);
 		std::cout << "quad precision   : " << qp << '\n';
