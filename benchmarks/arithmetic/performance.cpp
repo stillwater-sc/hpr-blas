@@ -14,10 +14,49 @@
 #include <universal/verification/test_status.hpp> // ReportTestResult
 #include <universal/verification/performance_runner.hpp>
 
-/*
-   The goal of the arbitrary fixed-precision cfloats is to provide a constrained 
-   linear floating-point type to explore the benefits of mixed-precision algorithms.
-*/
+using cfloat_8_2_uint8_t = sw::universal::cfloat<8, 2, uint8_t>;
+using cfloat_16_5_uint16_t = sw::universal::cfloat<16, 5, uint16_t>;
+using cfloat_32_8_uint32_t = sw::universal::cfloat<32, 8, uint32_t>;
+using cfloat_64_11_uint32_t = sw::universal::cfloat<64, 11, uint32_t>;
+using cfloat_64_11_uint64_t = sw::universal::cfloat<64, 11, uint64_t>;
+using cfloat_128_11_uint32_t = sw::universal::cfloat<128, 11, uint32_t>;
+using cfloat_128_15_uint32_t = sw::universal::cfloat<128, 15, uint32_t>;
+using cfloat_256_15_uint32_t = sw::universal::cfloat<256, 15, uint32_t>;
+using cfloat_512_15_uint32_t = sw::universal::cfloat<512, 15, uint32_t>;
+using cfloat_1024_15_uint32_t = sw::universal::cfloat<1024, 15, uint32_t>;
+
+using boostmp_8_2_uint8_t = boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<5, boost::multiprecision::backends::digit_base_2, void, std::int8_t, -0, 1>, boost::multiprecision::et_off>;
+using boostmp_16_5_uint16_t = boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<5, boost::multiprecision::backends::digit_base_2, void, std::int16_t, -14, 15>, boost::multiprecision::et_off>;
+using boostmp_32_8_uint32_t = boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<24, boost::multiprecision::backends::digit_base_2, void, std::int16_t, -126, 127>, boost::multiprecision::et_off>;
+using boostmp_64_11_uint64_t = boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<52, boost::multiprecision::backends::digit_base_2, void, std::int16_t, -1022, 1023>, boost::multiprecision::et_off>;
+using boostmp_128_11_uint32_t = boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<116, boost::multiprecision::backends::digit_base_2, void, std::int16_t, -1022, 1023>, boost::multiprecision::et_off>;
+using boostmp_128_15_uint32_t = boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<112, boost::multiprecision::backends::digit_base_2, void, std::int16_t, -16382, 16385>, boost::multiprecision::et_off>;
+using boostmp_256_15_uint32_t = boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<240, boost::multiprecision::backends::digit_base_2, void, std::int16_t, -16382, 16385>, boost::multiprecision::et_off>;
+using boostmp_512_15_uint32_t = boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<496, boost::multiprecision::backends::digit_base_2, void, std::int16_t, -16382, 16385>, boost::multiprecision::et_off>;
+using boostmp_1024_15_uint32_t = boost::multiprecision::number<boost::multiprecision::backends::cpp_bin_float<1008, boost::multiprecision::backends::digit_base_2, void, std::int16_t, -16382, 16385>, boost::multiprecision::et_off>;
+
+void PrintDataTypeSizes() {
+	std::cout << "cfloat_8_2_uint8_t        : " << std::setw(5) << sizeof(cfloat_8_2_uint8_t) << "  bytes\n";
+	std::cout << "cfloat_16_5_uint16_t      : " << std::setw(5) << sizeof(cfloat_16_5_uint16_t) << "  bytes\n";
+	std::cout << "cfloat_32_8_uint32_t      : " << std::setw(5) << sizeof(cfloat_32_8_uint32_t) << "  bytes\n";
+	std::cout << "cfloat_64_11_uint32_t     : " << std::setw(5) << sizeof(cfloat_64_11_uint64_t) << "  bytes\n";
+	std::cout << "cfloat_64_11_uint64_t     : " << std::setw(5) << sizeof(cfloat_64_11_uint64_t) << "  bytes\n";
+	std::cout << "cfloat_128_11_uint32_t    : " << std::setw(5) << sizeof(cfloat_128_11_uint32_t) << "  bytes\n";
+	std::cout << "cfloat_128_15_uint32_t    : " << std::setw(5) << sizeof(cfloat_128_15_uint32_t) << "  bytes\n";
+	std::cout << "cfloat_256_15_uint32_t    : " << std::setw(5) << sizeof(cfloat_256_15_uint32_t) << "  bytes\n";
+	std::cout << "cfloat_512_15_uint32_t    : " << std::setw(5) << sizeof(cfloat_512_15_uint32_t) << "  bytes\n";
+	std::cout << "cfloat_1024_15_uint32_t   : " << std::setw(5) << sizeof(cfloat_1024_15_uint32_t) << "  bytes\n";
+
+	std::cout << "boostmp_8_2_uint8_t       : " << std::setw(5) << sizeof(boostmp_8_2_uint8_t) << "  bytes\n";
+	std::cout << "boostmp_16_5_uint16_t     : " << std::setw(5) << sizeof(boostmp_16_5_uint16_t) << "  bytes\n";
+	std::cout << "boostmp_32_8_uint32_t     : " << std::setw(5) << sizeof(boostmp_32_8_uint32_t) << "  bytes\n";
+	std::cout << "boostmp_64_11_uint64_t    : " << std::setw(5) << sizeof(boostmp_64_11_uint64_t) << "  bytes\n";
+	std::cout << "boostmp_128_11_uint32_t   : " << std::setw(5) << sizeof(boostmp_128_11_uint32_t) << "  bytes\n";
+	std::cout << "boostmp_128_15_uint32_t   : " << std::setw(5) << sizeof(boostmp_128_15_uint32_t) << "  bytes\n";
+	std::cout << "boostmp_256_15_uint32_t   : " << std::setw(5) << sizeof(boostmp_256_15_uint32_t) << "  bytes\n";
+	std::cout << "boostmp_512_15_uint32_t   : " << std::setw(5) << sizeof(boostmp_512_15_uint32_t) << "  bytes\n";
+	std::cout << "boostmp_1024_15_uint32_t  : " << std::setw(5) << sizeof(boostmp_1024_15_uint32_t) << "  bytes\n";
+}
 
 template<typename cfloatConfiguration>
 void CopyWorkload(size_t NR_OPS) {
@@ -163,16 +202,6 @@ void TestBoostMPArithmeticOperatorPerformance() {
 	using namespace boost::multiprecision;
 	std::cout << "boost::multiprecision arithmetic operator performance\n";
 
-	using boostmp_8_2_uint8_t = number<backends::cpp_bin_float<5, backends::digit_base_2, void, std::int8_t, -0, 1>, et_off>;
-	using boostmp_16_5_uint16_t = number<backends::cpp_bin_float<5, backends::digit_base_2, void, std::int16_t, -14, 15>, et_off>;
-	using boostmp_32_8_uint32_t = number<backends::cpp_bin_float<24, backends::digit_base_2, void, std::int16_t, -126, 127>, et_off>;
-	using boostmp_64_11_uint64_t = number<backends::cpp_bin_float<52, backends::digit_base_2, void, std::int16_t, -1022, 1023>, et_off>;
-	using boostmp_128_11_uint32_t = number<backends::cpp_bin_float<116, backends::digit_base_2, void, std::int16_t, -1022, 1023>, et_off>;
-	using boostmp_128_15_uint32_t = number<backends::cpp_bin_float<112, backends::digit_base_2, void, std::int16_t, -16382, 16385>, et_off>;
-	using boostmp_256_15_uint32_t = number<backends::cpp_bin_float<240, backends::digit_base_2, void, std::int16_t, -16382, 16385>, et_off>;
-	using boostmp_512_15_uint32_t = number<backends::cpp_bin_float<496, backends::digit_base_2, void, std::int16_t, -16382, 16385>, et_off>;
-	using boostmp_1024_15_uint32_t = number<backends::cpp_bin_float<1008, backends::digit_base_2, void, std::int16_t, -16382, 16385>, et_off>;
-
 	uint64_t NR_OPS = 1000000;
 
 	PerformanceRunner("boostmp<8,2,uint8_t>      add/subtract   ", AdditionSubtractionWorkload< boostmp_8_2_uint8_t >, NR_OPS);
@@ -246,6 +275,7 @@ try {
 	TestDecodePerformance();
 	TestArithmeticOperatorPerformance();
 	TestBoostMPArithmeticOperatorPerformance();
+	PrintDataTypeSizes();
 
 	return (nrOfFailedTestCases > 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 
