@@ -4,7 +4,6 @@
 //
 // This file is part of the HPR-BLAS project, which is released under an MIT Open Source license.
 
-//#include <chrono>
 // Boost arbitrary precision floats
 #include <boost/multiprecision/cpp_bin_float.hpp>
 
@@ -20,6 +19,14 @@
 
 using namespace sw::universal;
 
+template<typename Scalar>
+void Equation() {
+	Scalar a{ 1.0 };
+	Scalar b(2.0);
+	Scalar c = a + b;
+	std::cout << c << std::endl;
+}
+
 int main(int argc, char** argv)
 try {
 	using namespace std;
@@ -31,12 +38,9 @@ try {
 	using dp = boost::multiprecision::cpp_bin_float_double;
 	using qp = boost::multiprecision::cpp_bin_float_quad;
 
-	{
-		sp a{ 1.0 };
-		sp b( 2.0 );
-		sp c = a + b;
-		cout << c << endl;
-	}
+
+
+	Equation<qp>();
 
 	return EXIT_SUCCESS;
 }
@@ -44,16 +48,12 @@ catch (char const* msg) {
 	std::cerr << msg << std::endl;
 	return EXIT_FAILURE;
 }
-catch (const posit_arithmetic_exception& err) {
-	std::cerr << "Uncaught posit arithmetic exception: " << err.what() << std::endl;
+catch (const sw::universal::universal_arithmetic_exception& err) {
+	std::cerr << "Uncaught universal arithmetic exception: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
-catch (const quire_exception& err) {
-	std::cerr << "Uncaught quire exception: " << err.what() << std::endl;
-	return EXIT_FAILURE;
-}
-catch (const posit_internal_exception& err) {
-	std::cerr << "Uncaught posit internal exception: " << err.what() << std::endl;
+catch (const sw::universal::universal_internal_exception& err) {
+	std::cerr << "Uncaught universal internal exception: " << err.what() << std::endl;
 	return EXIT_FAILURE;
 }
 catch (std::runtime_error& err) {

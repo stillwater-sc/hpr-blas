@@ -315,19 +315,16 @@ void fill_L(Matrix& A, double lowerbound = 0.0, double upperbound = 1.0)
 
 // Greatest Common Divisor of two numbers, a and b
 template<typename IntegerType>
-IntegerType gcd(IntegerType a, IntegerType b)
-{
-	if (b == IntegerType(0))	return a;
-	return gcd(b, a % b);
+IntegerType gcd(IntegerType a, IntegerType b) {
+	return b == 0 ? a : sw::hprblas::gcd(b, a % b);
 }
 
 // Least Common Multiple of n numbers
 template<typename IntegerType>
-IntegerType findlcm(const std::vector<IntegerType>& v)
-{
+IntegerType findlcm(const std::vector<IntegerType>& v) {
 	IntegerType lcm = v[0];
 	for (size_t i = 1; i < v.size(); i++) {
-		lcm = (v[i] * lcm) / gcd(v[i], lcm);
+		lcm = (v[i] * lcm) / sw::hprblas::gcd(v[i], lcm);
 	}
 	return lcm;
 }
